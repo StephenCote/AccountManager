@@ -1,6 +1,6 @@
 <Template>
 <import-xml src = "Templates/TemplateTools.xml" id = "TemplateTools" />
-<div class = "uwm-content-section" rid = "content"></div>
+<div class = "uwm-content" rid = "content"></div>
 <embedded-script><![CDATA[
 	template_init : function(){
 		var ctl = this;
@@ -43,19 +43,24 @@
 			});
 		});
 	},
-	renderStep : function(i, b){
+	renderStep : function(i, b, a){
 		var vP = this.getProperties()[i];
 		if(!vP) return;
-		vP.step += (b ? 1 : -1);
+		
+		if(typeof a == "number") vP.step = a;
+		else vP.step += (b ? 1 : -1);
 		vP.step = Math.max(Math.min(vP.step,vP.steps-1),0);
-		for(var i = 0; i < vP.steps; i++){
-			if(i == vP.step){
-				vP.blocks[i].style.display = "block";
-				vP.images[i].style.display = "";
+		console.log("Step: " + a + " : " + vP.step);
+		for(var s = 0; s < vP.steps; s++){
+			if(s == vP.step){
+				vP.blocks[s].style.display = "block";
+				if(vP.images[s]) vP.images[s].style.display = "";
+				if(vP.buttons[s]) vP.buttons[s].disabled = true;
 			}
 			else{
-				vP.blocks[i].style.display = "none";
-				vP.images[i].style.display = "none";
+				vP.blocks[s].style.display = "none";
+				if(vP.images[s]) vP.images[s].style.display = "none";
+				if(vP.buttons[s]) vP.buttons[s].disabled = false;
 			}
 		}
 		vP.controls[0].disabled = (vP.step == 0);
@@ -67,6 +72,7 @@
 		var oCtr = this.getElementByRID("content");
 		var oCont = document.createElement("div");
 		oCont.setAttribute("style","clear:both");
+		oCont.setAttribute("class","uwm-content-section uwm-box-border uwm-box-shadow");
 		oCtr.appendChild(oCont);
 		
 		var _p = this.getProperties();
@@ -76,7 +82,8 @@
 			step : 0,
 			controls : [],
 			images : [],
-			blocks : []
+			blocks : [],
+			buttons : []
 		};
 		var vP = _p[o.objectId];
 		var oPCont, aCont,oICont;
@@ -94,11 +101,14 @@
 		if(bMode){
 			oICont = document.createElement("div");
 			oPCont = document.createElement("div");
-			oPCont.style.clear = "both";
 			oACont = document.createElement("div");
+			oICont.style.cssText = "float: left; margin-right: 1em;margin-bottom: 1em; margin-left: .5em; margin-top: .5em;";
+			oPCont.style.clear = "both";
+			oPCont.style.textAlign = "center";
 			oCont.appendChild(oICont);
-			oCont.appendChild(oPCont);
 			oCont.appendChild(oACont);
+			oCont.appendChild(oPCont);
+			
 		}
 		var aOD = oCtr.getElementsByTagName("div");
 		
@@ -132,13 +142,26 @@
 					vP.blocks.push(aD[i]);
 					var aI = aD[i].getElementsByTagName("img");
 					if(aI.length > 0){
-					
+						/// Remove any clear 
+						aD[i].style.clear = "";
 						Hemi.xml.setInnerXHTML(oICont, aI[0], 1);
 						
 						vP.images[i] = oICont.lastChild;
 						vP.images[i].onclick = function(){
 							ctl.renderStep(o.objectId, 1);
 						};
+						
+						var oN = document.createElement("input");
+						oN.setAttribute("type","button");
+						oN.setAttribute("value",(i + 1));
+						oN.setAttribute("idx","" + i);
+						oN.onclick = function(e){
+							var oB = Hemi.event.getEventSource(e);
+							ctl.renderStep(o.objectId, 0, parseInt(oB.getAttribute("idx")));
+						};
+						vP.buttons[i] = oN;
+						oPCont.insertBefore(oN,oI2);
+						
 						/// Strip off any class
 						///
 						vP.images[i].className = "";
@@ -149,6 +172,7 @@
 						aD[i].style.display = "none";
 						if(vP.images[i]) vP.images[i].style.display = "none";
 					}
+					else if(vP.buttons[i]) vP.buttons[i].disabled = true;
 					
 				}
 			}
