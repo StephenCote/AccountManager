@@ -47,6 +47,7 @@ import org.cote.accountmanager.objects.types.AuditEnumType;
 import org.cote.accountmanager.service.rest.BaseService;
 import org.cote.accountmanager.service.rest.SchemaBean;
 import org.cote.accountmanager.service.rest.ServiceSchemaBuilder;
+import org.cote.accountmanager.service.util.ArticleUtil;
 
 @DeclareRoles({"admin","user"})
 @Path("/cache")
@@ -75,6 +76,7 @@ public class GenericCacheService {
 	public Response clearFactoryCaches(@PathParam("type") String type, @PathParam("objectType") String objectType, @PathParam("path") String path, @Context HttpServletRequest request){
 		logger.info("Request to clear all factory caches");
 		Factories.clearCaches();
+		ArticleUtil.clearCache();
 		return Response.status(200).entity(true).build();
 	}
 
