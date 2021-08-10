@@ -29,11 +29,6 @@ import org.junit.Test;
 import com.unboundid.scim2.client.ScimService;
 import com.unboundid.scim2.common.exceptions.ScimException;
 import com.unboundid.scim2.common.types.UserResource;
-import com.unboundid.scim2.common.types.Name;
-import com.unboundid.scim2.common.types.Email;
-import com.unboundid.scim2.common.GenericScimResource;
-import com.unboundid.scim2.common.messages.ListResponse;
-import com.unboundid.scim2.common.filters.Filter;
 
 public class TestSCIM extends BaseClientTest {
 

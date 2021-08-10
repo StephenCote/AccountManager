@@ -2,15 +2,10 @@ package org.cote.accountmanager.client.test;
 
 import static org.junit.Assert.assertTrue;
 
-import java.io.File;
-import java.util.ArrayList;
 import java.util.List;
-
-import javax.ws.rs.core.GenericType;
 
 import org.cote.accountmanager.client.ClientContext;
 import org.cote.accountmanager.client.util.AM6Util;
-
 import org.cote.accountmanager.objects.BaseGroupType;
 import org.cote.accountmanager.objects.DataType;
 import org.cote.accountmanager.objects.DirectoryGroupType;
@@ -19,10 +14,6 @@ import org.cote.accountmanager.objects.types.NameEnumType;
 import org.cote.accountmanager.util.FileUtil;
 import org.cote.accountmanager.util.JSONUtil;
 import org.junit.Test;
-
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.type.CollectionType;
 
 public class TestExporter extends BaseClientTest {
 

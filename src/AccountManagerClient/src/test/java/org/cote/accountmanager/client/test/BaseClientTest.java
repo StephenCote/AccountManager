@@ -31,9 +31,7 @@ import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.UnsupportedEncodingException;
 import java.util.Properties;
-import java.util.UUID;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -51,7 +49,6 @@ import org.cote.accountmanager.objects.AuthenticationResponseType;
 import org.cote.accountmanager.objects.CredentialEnumType;
 import org.cote.accountmanager.objects.DirectoryGroupType;
 import org.cote.accountmanager.objects.NameIdType;
-import org.cote.accountmanager.objects.SecurityType;
 import org.cote.accountmanager.objects.UserType;
 import org.cote.accountmanager.objects.types.GroupEnumType;
 import org.cote.accountmanager.objects.types.NameEnumType;

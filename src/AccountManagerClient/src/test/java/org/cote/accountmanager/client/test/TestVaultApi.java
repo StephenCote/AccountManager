@@ -6,15 +6,10 @@ import static org.junit.Assert.assertTrue;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-import java.util.stream.Stream;
 
 import org.cote.accountmanager.client.util.AM6Util;
-import org.cote.accountmanager.objects.VaultType;
 import org.junit.Test;
 
 public class TestVaultApi extends BaseClientTest {

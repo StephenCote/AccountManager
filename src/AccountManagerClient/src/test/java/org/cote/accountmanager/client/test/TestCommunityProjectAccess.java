@@ -7,17 +7,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.cote.accountmanager.client.Client;
-import org.cote.accountmanager.client.ClientContext;
 import org.cote.accountmanager.client.CommunityContext;
 import org.cote.accountmanager.client.util.AM6Util;
-import org.cote.accountmanager.objects.AccountGroupType;
 import org.cote.accountmanager.objects.AccountType;
 import org.cote.accountmanager.objects.BaseGroupType;
 import org.cote.accountmanager.objects.BasePermissionType;
 import org.cote.accountmanager.objects.BaseRoleType;
 import org.cote.accountmanager.objects.DirectoryGroupType;
 import org.cote.accountmanager.objects.EntitlementType;
-import org.cote.accountmanager.objects.PersonRoleType;
 import org.cote.accountmanager.objects.PersonType;
 import org.cote.accountmanager.objects.types.NameEnumType;
 import org.cote.accountmanager.objects.types.RoleEnumType;

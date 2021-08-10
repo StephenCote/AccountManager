@@ -3,13 +3,8 @@ package org.cote.accountmanager.client.test;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
-import java.net.URLEncoder;
-import java.util.ArrayList;
 import java.util.List;
 
-import javax.ws.rs.core.GenericType;
-
-import org.cote.accountmanager.client.ClientContext;
 import org.cote.accountmanager.client.ClientSigningKeyResolver;
 import org.cote.accountmanager.client.util.AM6Util;
 import org.cote.accountmanager.exceptions.DataException;
@@ -17,13 +12,9 @@ import org.cote.accountmanager.objects.DataType;
 import org.cote.accountmanager.objects.DirectoryGroupType;
 import org.cote.accountmanager.objects.types.GroupEnumType;
 import org.cote.accountmanager.objects.types.NameEnumType;
-import org.cote.accountmanager.util.BinaryUtil;
 import org.cote.accountmanager.util.DataUtil;
-import org.cote.accountmanager.util.JSONUtil;
-
 import org.junit.Test;
 
-import io.jsonwebtoken.Header;
 import io.jsonwebtoken.Jwts;
 
 public class TestApi extends BaseClientTest {

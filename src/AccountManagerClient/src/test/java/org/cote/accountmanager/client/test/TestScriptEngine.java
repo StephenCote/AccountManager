@@ -1,10 +1,6 @@
 package org.cote.accountmanager.client.test;
 
-import java.util.HashMap;
 import java.util.Map;
-
-import javax.script.ScriptEngineFactory;
-import javax.script.ScriptEngineManager;
 
 import org.cote.accountmanager.client.services.ScriptService;
 import org.cote.accountmanager.exceptions.ArgumentException;
