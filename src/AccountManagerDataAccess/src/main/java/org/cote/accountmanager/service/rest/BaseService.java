@@ -57,7 +57,6 @@ import org.cote.accountmanager.data.services.EffectiveAuthorizationService;
 import org.cote.accountmanager.data.services.GroupService;
 import org.cote.accountmanager.data.services.ITypeSanitizer;
 import org.cote.accountmanager.data.services.RoleService;
-import org.cote.accountmanager.data.services.SessionSecurity;
 import org.cote.accountmanager.data.services.UserService;
 import org.cote.accountmanager.data.util.UrnUtil;
 import org.cote.accountmanager.exceptions.ArgumentException;

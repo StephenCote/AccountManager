@@ -32,9 +32,7 @@ import org.cote.accountmanager.data.Factories;
 import org.cote.accountmanager.data.factory.INameIdFactory;
 import org.cote.accountmanager.exceptions.FactoryException;
 import org.cote.accountmanager.objects.NameIdType;
-import org.cote.accountmanager.objects.UserType;
 import org.cote.accountmanager.objects.types.FactoryEnumType;
-
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwsHeader;

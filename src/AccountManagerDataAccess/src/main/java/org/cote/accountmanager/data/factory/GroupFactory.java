@@ -42,7 +42,6 @@ import org.cote.accountmanager.exceptions.ArgumentException;
 import org.cote.accountmanager.exceptions.FactoryException;
 import org.cote.accountmanager.objects.AccountGroupType;
 import org.cote.accountmanager.objects.BaseGroupType;
-import org.cote.accountmanager.objects.BaseRoleType;
 import org.cote.accountmanager.objects.BucketGroupType;
 import org.cote.accountmanager.objects.DirectoryGroupType;
 import org.cote.accountmanager.objects.NameIdType;

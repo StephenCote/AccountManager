@@ -20,7 +20,6 @@ import org.cote.accountmanager.data.query.QueryFields;
 import org.cote.accountmanager.exceptions.ArgumentException;
 import org.cote.accountmanager.exceptions.FactoryException;
 import org.cote.accountmanager.objects.AccessRequestType;
-import org.cote.accountmanager.objects.ApprovalEnumType;
 import org.cote.accountmanager.objects.ApprovalResponseEnumType;
 import org.cote.accountmanager.objects.ApproverEnumType;
 import org.cote.accountmanager.objects.NameIdType;

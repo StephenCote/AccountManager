@@ -9,7 +9,6 @@ import org.cote.accountmanager.data.services.PolicyService;
 import org.cote.accountmanager.exceptions.ArgumentException;
 import org.cote.accountmanager.exceptions.DataException;
 import org.cote.accountmanager.exceptions.FactoryException;
-import org.cote.accountmanager.objects.DataType;
 import org.cote.accountmanager.objects.PolicyDefinitionType;
 import org.cote.accountmanager.objects.PolicyRequestType;
 import org.cote.accountmanager.objects.PolicyResponseEnumType;

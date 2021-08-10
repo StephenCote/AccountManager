@@ -49,7 +49,6 @@ import org.cote.accountmanager.data.DBFactory;
 import org.cote.accountmanager.data.DBFactory.CONNECTION_TYPE;
 import org.cote.accountmanager.data.Factories;
 import org.cote.accountmanager.data.factory.GroupParticipationFactory;
-import org.cote.accountmanager.data.factory.ParticipationFactory;
 import org.cote.accountmanager.data.factory.RoleFactory;
 import org.cote.accountmanager.data.factory.RoleParticipationFactory;
 import org.cote.accountmanager.exceptions.ArgumentException;
