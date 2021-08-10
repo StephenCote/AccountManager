@@ -1,7 +1,6 @@
 package org.cote.rest.scim;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import org.cote.accountmanager.objects.AccountType;
