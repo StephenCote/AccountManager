@@ -166,7 +166,6 @@ public class AM6Util {
 		;
 		
 		T out_obj = null;
-		logger.info("Received status: " + response.getStatus() + " : " + resource.getUri());
 		if(response.getStatus() == successStatus){
 			try {
 				out_obj = response.readEntity(cls);
