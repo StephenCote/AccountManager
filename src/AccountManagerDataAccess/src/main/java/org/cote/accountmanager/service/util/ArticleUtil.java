@@ -361,13 +361,19 @@ public class ArticleUtil {
 				Matcher headerM = headerLinkPattern.matcher(contentStr);
 				/// this is an error if it doesn't find because it was just added when missing
 				///
+				String articleTitle = "";
 				if(headerM.find()){
 					/// If single mode, change the page title to be that of the article
 					///
-					if(singleMode == true) template = template.replaceAll("%PAGETITLE%",headerM.group(1));
+					/// articleTitle = headerM.group(1);
+					
+					if(singleMode == true) template = template.replaceAll("%PAGETITLE%",articleTitle);
 					/// otherwise, add a link to the single instance
 					///
 					else contentStr = headerM.replaceFirst("<h1><a class = \"uwm-content-title-link\" href = \"" + linkUrl + "\">$1</a></h1>");
+					/// else articleTitle =  headerM.replaceFirst("<h1><a class = \"uwm-content-title-link\" href = \"" + linkUrl + "\">$1</a></h1>");
+					/// headerM.replaceFirst("");
+					
 				}
 				String metaStr = "Written by " + author + " on " + CalendarUtil.exportDateAsString(CalendarUtil.getDate(data.getCreatedDate()), "yyyy/MM/dd");
 				meta = meta.replace("%META%", metaStr);
@@ -386,6 +392,7 @@ public class ArticleUtil {
 						.replace("%ARTICLE_ID%", data.getObjectId())
 						.replace("%ARTICLE_TAGS%", tagStr.toString())
 						.replace("%META%", meta)
+				///		.replace("%ARTICLE_TITLE%", articleTitle)
 				;
 				buff.append(section + "\n");
 			} catch (DataException e) {

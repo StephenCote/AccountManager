@@ -165,7 +165,8 @@
 						/// Strip off any class
 						///
 						vP.images[i].className = "";
-						if(window.pictureBookMode.height) vP.images[i].height = window.pictureBookMode.height;
+						if(window.pictureBookMode.height) vP.images[i].style.maxHeight = window.pictureBookMode.height + "px";
+						if(window.pictureBookMode.width) vP.images[i].style.maxWidth = window.pictureBookMode.width + "px";
 						aI[0].style.display = "none";
 					}
 					if(i > 0){
