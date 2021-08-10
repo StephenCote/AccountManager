@@ -100,7 +100,7 @@ public class TestApi extends BaseClientTest {
 		int count = AM6Util.count(testUserContext, NameEnumType.DATA, subDirectory.getObjectId());
 		logger.info("Count: " + count);
 		
-		List<DataType> dataList = AM6Util.list(testUserContext, new ArrayList<DataType>().getClass(), NameEnumType.DATA, subDirectory.getObjectId(), 0L, 10);
+		List<DataType> dataList = AM6Util.list(testUserContext, DataType.class, NameEnumType.DATA, subDirectory.getObjectId(), 0L, 10);
 		logger.info("List size: " + dataList.size());
 	}
 	
@@ -151,7 +151,7 @@ public class TestApi extends BaseClientTest {
 		int count = AM6Util.count(testUserContext, NameEnumType.DATA, subDirectory.getObjectId());
 		logger.info("Count: " + count);
 		
-		List<DataType> dataList = AM6Util.list(testUserContext, new ArrayList<DataType>().getClass(), NameEnumType.DATA, subDirectory.getObjectId(), 0L, 10);
+		List<DataType> dataList = AM6Util.list(testUserContext, DataType.class, NameEnumType.DATA, subDirectory.getObjectId(), 0L, 10);
 		logger.info("List size: " + dataList.size());
 	}
 }

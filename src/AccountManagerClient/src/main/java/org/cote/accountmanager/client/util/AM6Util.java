@@ -1,9 +1,12 @@
 package org.cote.accountmanager.client.util;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.WebTarget;
+import javax.ws.rs.core.GenericType;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
@@ -11,6 +14,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cote.accountmanager.client.ClientContext;
 import org.cote.accountmanager.objects.AuthenticationRequestType;
+import org.cote.accountmanager.objects.DataType;
 import org.cote.accountmanager.objects.DirectoryGroupType;
 import org.cote.accountmanager.objects.NameIdType;
 import org.cote.accountmanager.objects.UserType;
@@ -18,6 +22,10 @@ import org.cote.accountmanager.objects.types.NameEnumType;
 import org.cote.accountmanager.util.BinaryUtil;
 import org.cote.accountmanager.util.JSONUtil;
 import org.glassfish.jersey.client.ClientProperties;
+
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.type.CollectionType;
 
 public class AM6Util {
 	public static final Logger logger = LogManager.getLogger(AM6Util.class);
@@ -71,9 +79,11 @@ public class AM6Util {
 		return getEntity(context, Integer.class,webResource);
 	}
 
-	public static <T> T list(ClientContext context, Class<T> cls, NameEnumType nameType, String objectId, long startIndex, int recordCount){
+	public static <T> List<T> list(ClientContext context, Class<T> cls, NameEnumType nameType, String objectId, long startIndex, int recordCount){
+
 		WebTarget webResource = ClientUtil.getResource(ClientUtil.getServer() + ClientUtil.getAccountManagerApp() + listUri + "/" + nameType.toString() + "/" + objectId + "/" + Long.toString(startIndex) + "/" + Integer.toString(recordCount));
-		return getEntity(context, cls,webResource);
+		return getEntityList(context, cls, webResource);
+
 	}
 	
 	@SuppressWarnings("unchecked")
@@ -116,6 +126,40 @@ public class AM6Util {
 	public static <T> T getEntity(ClientContext context, Class<T> cls, WebTarget resource){
 		return getEntity(context, cls, resource, MediaType.APPLICATION_JSON_TYPE, 200);
 	}
+	public static <T> List<T> getEntityList(ClientContext context, Class<T> cls, WebTarget resource){
+		return getEntityList(context, cls, resource, MediaType.APPLICATION_JSON_TYPE, 200);
+	}
+
+	public static <T> List<T> getEntityList(ClientContext context, Class<T> cls, WebTarget resource, MediaType responseType, int successStatus){
+		
+		Response response = 
+			ClientUtil
+				.getRequestBuilder(context, resource)
+				.accept(responseType)
+				.property(ClientProperties.CONNECT_TIMEOUT, 360000)
+				.property(ClientProperties.READ_TIMEOUT, 360000)
+				.get(Response.class)
+		;
+		
+		ArrayList<T> out_obj = null;
+		if(response.getStatus() == successStatus){
+			try {
+				ObjectMapper mapper = new ObjectMapper();
+				CollectionType listType =  mapper.getTypeFactory().constructCollectionType(ArrayList.class, cls);
+				String json = response.readEntity(String.class);
+				out_obj = mapper.readValue(json, listType);
+			}
+			catch(Exception e) {
+				logger.warn(e.getMessage());
+				e.printStackTrace();
+			}
+		}
+		else {
+			logger.warn("Received response: " + response.getStatus() + " for " + resource.getUri());
+		}
+		return out_obj;
+	}
+	
 	public static <T> T getEntity(ClientContext context, Class<T> cls, WebTarget resource, MediaType responseType, int successStatus){
 
 		Response response = 
@@ -128,7 +172,7 @@ public class AM6Util {
 		;
 		
 		T out_obj = null;
-		/// logger.info("Received status: " + response.getStatus());
+		logger.info("Received status: " + response.getStatus() + " : " + resource.getUri());
 		if(response.getStatus() == successStatus){
 			try {
 				out_obj = response.readEntity(cls);
@@ -137,13 +181,12 @@ public class AM6Util {
 				/// currently passing nulls back as a 200 status since, so the response shows success but the entity is null
 				/// at the moment, sinking the error
 				logger.warn(e.getMessage());
-				/// logger.error("Trace: " + e.getStackTrace());
+				e.printStackTrace();
 			}
 		}
 		else {
 			logger.warn("Received response: " + response.getStatus() + " for " + resource.getUri());
 		}
-		/// logger.info("Received entity: " + out_obj);
 		if(out_obj == null && cls.equals(Boolean.class)) out_obj = (T)Boolean.FALSE;
 		return out_obj;
 	}

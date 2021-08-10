@@ -57,8 +57,8 @@ public class AuthenticationUtil {
 		AuthenticationResponseType authResp = null;
 		context.clearContext();
 		ClientContext defaultContext = new ClientContext();
-		String cacheKey = "Token::" + server + "::" + orgPath + "::" + name;
-		String userKey = "User::" + server + "::" + orgPath + "::" + name;
+		String cacheKey = "Token-" + server + "-" + orgPath + "-" + name;
+		String userKey = "User-" + server + "-" + orgPath + "-" + name;
 		ApiClientConfigurationType api = CacheUtil.readCache(defaultContext, server, ApiClientConfigurationType.class);
 		if(api == null){
 			logger.error("API configuration does not exist.");

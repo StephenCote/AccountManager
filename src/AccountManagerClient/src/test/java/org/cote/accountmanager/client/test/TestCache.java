@@ -68,7 +68,7 @@ public class TestCache extends BaseClientTest {
 				startRecord += recordCount;
 				List<DataType> dataList = CacheUtil.readCache(testUserContext, listKey, new ArrayList<DataType>().getClass());
 				if(dataList == null) {
-					dataList = AM6Util.list(testUserContext, new ArrayList<DataType>().getClass(), NameEnumType.DATA, testDataCont.getObjectId(), startRecord, recordCount);
+					dataList = AM6Util.list(testUserContext, DataType.class, NameEnumType.DATA, testDataCont.getObjectId(), startRecord, recordCount);
 					CacheUtil.cache(testUserContext, listKey, dataList);
 				}
 			}
