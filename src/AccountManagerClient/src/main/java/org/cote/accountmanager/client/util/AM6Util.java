@@ -2,11 +2,9 @@ package org.cote.accountmanager.client.util;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.WebTarget;
-import javax.ws.rs.core.GenericType;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
@@ -14,16 +12,12 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cote.accountmanager.client.ClientContext;
 import org.cote.accountmanager.objects.AuthenticationRequestType;
-import org.cote.accountmanager.objects.DataType;
-import org.cote.accountmanager.objects.DirectoryGroupType;
 import org.cote.accountmanager.objects.NameIdType;
 import org.cote.accountmanager.objects.UserType;
 import org.cote.accountmanager.objects.types.NameEnumType;
 import org.cote.accountmanager.util.BinaryUtil;
-import org.cote.accountmanager.util.JSONUtil;
 import org.glassfish.jersey.client.ClientProperties;
 
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.type.CollectionType;
 

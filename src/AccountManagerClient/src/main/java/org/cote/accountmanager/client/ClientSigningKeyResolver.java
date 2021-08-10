@@ -30,11 +30,8 @@ import org.apache.logging.log4j.Logger;
 import org.cote.accountmanager.beans.SecurityBean;
 import org.cote.accountmanager.client.util.AM6Util;
 import org.cote.accountmanager.client.util.CacheUtil;
-import org.cote.accountmanager.exceptions.FactoryException;
 import org.cote.accountmanager.factory.SecurityFactory;
 import org.cote.accountmanager.objects.SecurityType;
-import org.cote.accountmanager.objects.UserType;
-import org.cote.accountmanager.objects.types.FactoryEnumType;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwsHeader;

@@ -19,10 +19,8 @@ import org.apache.commons.cli.ParseException;
 import org.apache.commons.cli.PosixParser;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.cote.accountmanager.objects.OrganizationType;
-import org.cote.accountmanager.objects.UserType;
-import org.cote.accountmanager.objects.types.NameEnumType;
 import org.cote.accountmanager.client.action.IClientAction;
+import org.cote.accountmanager.objects.types.NameEnumType;
 
 public class ConsoleProcessor {
 	private String prompt = null;

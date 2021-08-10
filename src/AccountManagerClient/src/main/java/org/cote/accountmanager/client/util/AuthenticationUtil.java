@@ -1,8 +1,6 @@
 package org.cote.accountmanager.client.util;
 
 import java.io.UnsupportedEncodingException;
-import java.util.HashMap;
-import java.util.Map;
 
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.WebTarget;
@@ -20,7 +18,6 @@ import org.cote.accountmanager.objects.AuthenticationResponseType;
 import org.cote.accountmanager.objects.CredentialEnumType;
 import org.cote.accountmanager.objects.CredentialType;
 import org.cote.accountmanager.objects.UserType;
-import org.cote.accountmanager.util.JSONUtil;
 
 public class AuthenticationUtil {
 	//private static Map<String,String> sessionMap = new HashMap<String,String>();

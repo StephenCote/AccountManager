@@ -1,9 +1,6 @@
 package org.cote.accountmanager.client.util;
 
 import java.io.File;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
-import java.util.Base64;
 import java.util.List;
 import java.util.regex.Pattern;
 
@@ -13,7 +10,6 @@ import org.cote.accountmanager.client.ClientContext;
 import org.cote.accountmanager.util.DirectoryUtil;
 import org.cote.accountmanager.util.FileUtil;
 import org.cote.accountmanager.util.JSONUtil;
-import org.cote.accountmanager.util.SecurityUtil;
 
 public class CacheUtil {
 	

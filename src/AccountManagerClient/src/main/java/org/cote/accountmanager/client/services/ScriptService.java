@@ -25,19 +25,12 @@ package org.cote.accountmanager.client.services;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.regex.Pattern;
 
-import javax.script.Bindings;
-import javax.script.Compilable;
 import javax.script.CompiledScript;
-import javax.script.ScriptEngine;
-import javax.script.ScriptEngineManager;
-import javax.script.ScriptException;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cote.accountmanager.client.ClientContext;
-import org.cote.accountmanager.client.util.AM6Util;
 import org.cote.accountmanager.exceptions.ArgumentException;
 import org.cote.accountmanager.exceptions.DataException;
 import org.cote.accountmanager.exceptions.FactoryException;
@@ -47,9 +40,7 @@ import org.cote.accountmanager.objects.FunctionType;
 import org.cote.accountmanager.objects.UserType;
 import org.cote.accountmanager.util.DataUtil;
 import org.graalvm.polyglot.Context;
-import org.graalvm.polyglot.Engine;
 import org.graalvm.polyglot.HostAccess;
-import org.graalvm.polyglot.PolyglotAccess;
 import org.graalvm.polyglot.Value;
 
 public class ScriptService {

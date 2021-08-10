@@ -1,8 +1,5 @@
 package org.cote.accountmanager.client;
 
-import java.io.IOException;
-import java.util.Properties;
-
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.Options;
@@ -14,7 +11,6 @@ import org.cote.accountmanager.client.util.AuthenticationUtil;
 import org.cote.accountmanager.client.util.CacheUtil;
 import org.cote.accountmanager.objects.ApiClientConfigurationType;
 import org.cote.accountmanager.objects.AuthenticationResponseType;
-import org.cote.accountmanager.objects.DirectoryGroupType;
 
 
 public class ClientMain {
