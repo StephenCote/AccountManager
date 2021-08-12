@@ -64,9 +64,13 @@
 					</includes>
 					<excludes>
 						<!-- 
-						 <exclude>**/TestPolicyService.java</exclude>
 						
+						 <exclude>**/TestObjectEntitlementQuery.java</exclude>
+						 
 						 -->
+						 <exclude>**/TestEffectiveAuthorization.java</exclude>
+						 
+						  <exclude>**/TestPolicyService.java</exclude>
 						 <exclude>**/TestPermissions.java</exclude>
 						
 						 <exclude>**/TestPolicyOperation.java</exclude>
@@ -88,7 +92,7 @@
 						
 						<exclude>**/TestGroupAuthorization.java</exclude>
 						
-						<exclude>**/TestEffectiveAuthorization.java</exclude>
+						
 						<exclude>**/TestOrganizationFactory.java</exclude>
 						<exclude>**/TestFunctionFactPolicy.java</exclude>
 						<exclude>**/TestFunctionFactory.java</exclude>
