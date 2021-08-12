@@ -177,6 +177,9 @@ public class AuthorizedSearchService {
 	 * along with unrolling group and role memberships, as well as owned objects (which EAS doesn't do) to return a list of entitlements that match the supplied permission list
 	 * including optional search query parameters so that large sets may be counted and filtered for paginated search results
 	 * 
+	 * NOTE: Because this method includes the owner, if the desire is to only find entitlements it's better to use the EAS version which only includes entitlements other than the owner
+	 * 
+	 * 
 	 * 2021/08/12 - This is a variation of the getEffectiveMemberEntitlements method in EffectiveAuthorizationService
 	 * The primary differences are this one accepts query parameters, and includes any owned objects, versus the EAS version which only returns entitlements that has been declared
 	 */
