@@ -215,6 +215,26 @@
 		_search : function(){
 			var filter = this.getElementByRID("filter").value;
 			if(this.search) this.search(filter);
+			else this.defaultSearch(filter);
+		},
+		defaultSearch : function(sFilter){
+			var oM = AM6Client.newFieldMatch("TEXT","NAME","LIKE","*" + sFilter + "*");
+			var oS = AM6Client.newSortQuery("NAME","ASCENDING");
+			var oReq = AM6Client.newSearchRequest(this.getProperties().typeName.toUpperCase(),0,0,0,10,false,oS,[oM]);
+			var ctl = this;
+			AM6Client.search(oReq,function(s,v){
+				if(v && v.json){
+					///alert(v.json);
+					var oL = ctl.getList();
+					oL.clearItems();
+					ctl.setTotalCount(v.json.length);
+					for(var i = 0; i < v.json.length; i++){
+						var sn = (ctl.decorateListItemName ? ctl.decorateListItemName(v.json[i]) : v.json[i].name);
+						console.log(sn);
+						oL.addItem(sn, v.json[i]);
+					}
+				}
+			});
 		},
 		configList : function(){
 			if(!this.local_handle_resize) this.local_handle_resize = this.resizeList;
