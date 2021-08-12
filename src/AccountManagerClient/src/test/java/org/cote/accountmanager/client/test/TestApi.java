@@ -47,9 +47,10 @@ public class TestApi extends BaseClientTest {
 	@Test
 	public void TestCreateData() {
 		String testDataName = "Test Data 1";
+		String path = "~/TestData";
 		DirectoryGroupType homeDirectory = AM6Util.findObject(testUserContext, DirectoryGroupType.class, NameEnumType.GROUP, "DATA", "~");
 		assertNotNull("Couldn't Find Home Directory",homeDirectory);
-		String testPath = AM6Util.getEncodedPath("~/TestData");
+		String testPath = AM6Util.getEncodedPath(path);
 
 		DirectoryGroupType subDirectory = AM6Util.findObject(testUserContext, DirectoryGroupType.class, NameEnumType.GROUP, "DATA", testPath);
 
