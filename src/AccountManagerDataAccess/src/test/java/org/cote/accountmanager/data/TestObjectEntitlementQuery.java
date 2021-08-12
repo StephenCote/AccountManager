@@ -81,7 +81,6 @@ public class TestObjectEntitlementQuery extends BaseDataAccessTest {
 		DataType data3 = newTextData("Search Data 3","This is the text data",testUser,dDir);
 		BasePermissionType per1 = null;
 		BasePermissionType per2 = null;
-
 		try  {
 
 			per1 = AuthorizationService.getViewPermissionForMapType(NameEnumType.DATA, testUser.getOrganizationId());
@@ -103,15 +102,16 @@ public class TestObjectEntitlementQuery extends BaseDataAccessTest {
 		search.setSort(sort);
 		search.setStartRecord(0L);
 		search.setRecordCount(10);
-		
+		search.setIncludeThumbnail(false);
 		FieldMatch m = new FieldMatch();
 		m.setDataType(SqlDataEnumType.TEXT);
 		m.setComparator(ComparatorEnumType.LIKE);
 		m.setEncodedValue("text*");
 		m.setFieldName(ColumnEnumType.MIMETYPE);
 		search.getFields().add(m);
-		
+
 		List<EntitlementType> ents = AuthorizedSearchService.searchForEffectiveMemberEntitlements(search, testUser2, new Long[] {per1.getId(),per2.getId()});
+		logger.info("Received " + ents.size());
 		assertTrue("Expected a matching set of entitlements", ents.size() > 0);
 
 		List<BaseGroupType> dataL = AuthorizedSearchService.searchByEffectiveMemberEntitlement(search, testUser2);
