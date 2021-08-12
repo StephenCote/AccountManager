@@ -27,6 +27,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
+import java.util.List;
 import java.util.Map;
 
 import org.cote.accountmanager.data.factory.PersonFactory;
@@ -43,6 +44,7 @@ import org.cote.accountmanager.objects.BasePermissionType;
 import org.cote.accountmanager.objects.BaseRoleType;
 import org.cote.accountmanager.objects.DataType;
 import org.cote.accountmanager.objects.DirectoryGroupType;
+import org.cote.accountmanager.objects.EntitlementType;
 import org.cote.accountmanager.objects.NameIdType;
 import org.cote.accountmanager.objects.PersonRoleType;
 import org.cote.accountmanager.objects.PersonType;
@@ -164,5 +166,8 @@ public class TestEffectiveAuthorization extends BaseDataAccessTest {
 		assertTrue("Authorization check failed: " + authZStr,isAuthZ); 
 		assertTrue("Failed to deauthorize: " + object.getUrn(),deAuthZ); 
 		assertFalse("Succeeded when failured expected: " + authZStr,notAuthZ); 
+		
+		List<EntitlementType> ents = EffectiveAuthorizationService.getEffectiveMemberEntitlements(object, null, new BasePermissionType[] {}, false);
+		logger.info("Received: " + ents.size() + " entitlements");
 	}
 }
