@@ -11,9 +11,7 @@
 			}
 			this.getProperties().stepMap = {};
 			var oS = new org.cote.objects.baseSearchRequestType();
-			oS.sort = new org.cote.objects.sortQueryType();
-			oS.sort.sortOrder = "DESCENDING";
-			oS.sort.sortField = "CREATEDDATE";
+			oS.sort = AM6Client.newSortQuery("CREATEDDATE", "DESCENDING");
 			oS.organizationId = 0;
 			oS.fullRecord = true;
 			oS.populateGroup = false;
