@@ -78,6 +78,9 @@ import org.cote.accountmanager.objects.types.ValueEnumType;
 
 public class QueryFields {
 	public static final Logger logger = LogManager.getLogger(QueryFields.class);
+	
+
+	
 	public QueryFields(){
 		
 	}
@@ -868,6 +871,7 @@ public class QueryFields {
 	public static QueryField getFieldAccountType(AccountEnumType val){
 		return getStringField("accounttype",val.toString());
 	}
+
 
 	public static QueryField[] getFieldParticipantMatch(NameIdType map, ParticipantEnumType type){
 		List<QueryField> matches = new ArrayList<>();
