@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <schema targetNamespace="http://www.cote.org/accountmanager/objects"
 	elementFormDefault="qualified" xmlns="http://www.w3.org/2001/XMLSchema"
-	xmlns:tns="http://www.cote.org/accountmanager/objects">
+	xmlns:tns="http://www.cote.org/accountmanager/objects" xmlns:Q1="http://www.cote.org/accountmanager/objects/types">
 	<include schemaLocation="DataType.xsd"></include>
 	<include schemaLocation="SqlStatement.xsd"></include>
 	<include schemaLocation="NameId.xsd"></include>
 	<include schemaLocation="TagType.xsd"></include>
-
+	<import schemaLocation="Types.xsd" namespace="http://www.cote.org/accountmanager/objects/types"></import>
 	<complexType name="DataTagSearchRequest">
 		<complexContent>
 			<extension base="tns:BaseSearchRequestType">
@@ -32,5 +32,22 @@
 			<annotation>
 				<documentation>Used primarily for DataType to specify whether or not a list of data returns the blob data along with the meta information.</documentation>
 			</annotation></attribute>
+	</complexType>
+
+	<complexType name="ObjectSearchRequestType">
+		<complexContent>
+			<extension base="tns:BaseSearchRequestType">
+				<sequence>
+					<element name="fields" type="tns:FieldMatch"
+						minOccurs="0" maxOccurs="unbounded">
+					</element>
+				</sequence>
+
+
+
+				<attribute name="objectType" type="Q1:NameEnumType"></attribute>
+				<attribute name="includeThumbnail" type="boolean" default="true"></attribute>
+			</extension>
+		</complexContent>
 	</complexType>
 </schema>
