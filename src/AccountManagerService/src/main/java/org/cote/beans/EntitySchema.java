@@ -48,8 +48,10 @@ import org.cote.accountmanager.objects.DataTagSearchRequest;
 import org.cote.accountmanager.objects.DataType;
 import org.cote.accountmanager.objects.DirectoryGroupType;
 import org.cote.accountmanager.objects.FactType;
+import org.cote.accountmanager.objects.FieldMatch;
 import org.cote.accountmanager.objects.FunctionFactType;
 import org.cote.accountmanager.objects.FunctionType;
+import org.cote.accountmanager.objects.ObjectSearchRequestType;
 import org.cote.accountmanager.objects.OperationType;
 import org.cote.accountmanager.objects.OrganizationType;
 import org.cote.accountmanager.objects.PatternType;
@@ -175,6 +177,9 @@ public class EntitySchema {
 	private DataTagSearchRequest dataTagSearchRequest = null;
 	private BaseSearchRequestType baseSearchRequestType = null;
 	private SortQueryType sortQueryType = null;
+	private ObjectSearchRequestType objectSearchRequestType = null;
+	private FieldMatch fieldMatch = null;
+	
 	public EntitySchema(){
 		controlType = new ControlType();
 		accessRequestType = new AccessRequestType();
@@ -250,9 +255,35 @@ public class EntitySchema {
 		timeType = new TimeType();
 		validationRuleType = new ValidationRuleType();
 		workType = new WorkType();
+		objectSearchRequestType = new ObjectSearchRequestType();
+		fieldMatch = new FieldMatch();
 	}
 
 	
+
+	public FieldMatch getFieldMatch() {
+		return fieldMatch;
+	}
+
+
+
+	public void setFieldMatch(FieldMatch fieldMatch) {
+		this.fieldMatch = fieldMatch;
+	}
+
+
+
+	public ObjectSearchRequestType getObjectSearchRequestType() {
+		return objectSearchRequestType;
+	}
+
+
+
+	public void setObjectSearchRequestType(ObjectSearchRequestType objectSearchRequestType) {
+		this.objectSearchRequestType = objectSearchRequestType;
+	}
+
+
 
 	public ControlType getControlType() {
 		return controlType;
