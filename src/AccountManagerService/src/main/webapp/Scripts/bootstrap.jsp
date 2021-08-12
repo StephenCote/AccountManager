@@ -16,7 +16,8 @@ response.setCharacterEncoding("UTF-8");
     window.galleryDarkMode = 1;
     window.pictureBookMode = {
     	enabled : 1,
-    	height : 300
+    	height : 300,
+    	width : 300
     };
     
 	if(!window.g_application_path) window.g_application_path = "/AccountManagerService/";
