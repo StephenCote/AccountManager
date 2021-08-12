@@ -96,5 +96,7 @@
 			default="NULL">
 		</attribute>
 		<attribute name="tableName" type="string"></attribute>
+		<attribute name="encodedValue" type="string"></attribute>
+		<attribute name="fieldName" type="pref:ColumnEnumType"></attribute>
 	</complexType>
 </schema>
