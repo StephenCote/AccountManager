@@ -9,8 +9,9 @@
 		//
 		template_init : function(){
 			this.getProperties().iconView = 1;
-			this.initGrid("Data",(this.getProperties().defaultPath ? this.getProperties().defaultPath : uwm.getPathForType("Data","~/Data")));
+			this.initGrid("Data",(this.getProperties().defaultPath ? this.getProperties().defaultPath : uwm.getPathForType("Data","~/Data")),0,0,0,0,0,1);
 		},
+
 		preparePathChange : function(oObj, sFilt){
 			var _s = this.getProperties(), _o = this.getObjects();
 			if(!oObj || oObj.nameType != "GROUP" || oObj.groupType != "BUCKET"){
