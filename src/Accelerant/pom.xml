@@ -52,7 +52,7 @@
 				</dependencies>
 
 				<configuration>
-					<skipTests>false</skipTests>
+					<skipTests>true</skipTests>
 					<argLine>-Xmx4096m</argLine>
 					<includes>
 						<include>**/Test*.java</include>
