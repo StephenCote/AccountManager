@@ -548,8 +548,8 @@ public abstract class FactoryBase {
 			}
 			else if (fieldComp == ComparatorEnumType.LIKE)
 			{
-				// WARN: This is a SQL Injection Point -- need to fix or be sure to restrict
-				// At the moment, assuming it's a string value
+				// 2021/08/12 - revising old warning about this being a SQL Injection Point
+				// It is parameterized so the value is properly encoded 
 				//
 				matchBuff.append(String.format("%s LIKE %s", fieldName, paramToken));
 				continue;
