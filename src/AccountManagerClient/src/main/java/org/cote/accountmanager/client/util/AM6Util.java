@@ -363,9 +363,9 @@ public class AM6Util {
 		return getEntity(context, cls, resource);
 	}
 
-	public static <T> T listMembers(ClientContext context, Class<T> cls, String sObjType, String sObjId, String sActType) {
-		WebTarget resource = ClientUtil.getResource(ClientUtil.getServer() + ClientUtil.getAccountManagerApp() + authZUri + "/" + sObjType + "/" + sObjId + "/permit/" + sActType);
-		return getEntity(context, cls, resource);
+	public static <T> List<T> listMembers(ClientContext context, Class<T> cls, String sObjType, String sObjId, String sActType) {
+		WebTarget resource = ClientUtil.getResource(ClientUtil.getServer() + ClientUtil.getAccountManagerApp() + authZUri + "/" + sObjType + "/" + sObjId + "/" + sActType);
+		return getEntityList(context, cls, resource);
 	}
 
 	public static <T> T setMember(ClientContext context, Class<T> cls, String sObjType, String sObjId, String sActType, String sActId, boolean enable) {
