@@ -31,6 +31,7 @@ import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.List;
 import java.util.Properties;
 
 import org.apache.logging.log4j.LogManager;
@@ -41,12 +42,14 @@ import org.cote.accountmanager.client.util.AM6Util;
 import org.cote.accountmanager.client.util.AuthenticationUtil;
 import org.cote.accountmanager.client.util.CacheUtil;
 import org.cote.accountmanager.client.util.ClientUtil;
+import org.cote.accountmanager.exceptions.DataException;
 import org.cote.accountmanager.exceptions.FactoryException;
 import org.cote.accountmanager.objects.ApiClientConfigurationType;
 import org.cote.accountmanager.objects.AuthenticationRequestType;
 import org.cote.accountmanager.objects.AuthenticationResponseEnumType;
 import org.cote.accountmanager.objects.AuthenticationResponseType;
 import org.cote.accountmanager.objects.CredentialEnumType;
+import org.cote.accountmanager.objects.DataType;
 import org.cote.accountmanager.objects.DirectoryGroupType;
 import org.cote.accountmanager.objects.NameIdType;
 import org.cote.accountmanager.objects.UserType;
@@ -54,6 +57,7 @@ import org.cote.accountmanager.objects.types.GroupEnumType;
 import org.cote.accountmanager.objects.types.NameEnumType;
 import org.cote.accountmanager.objects.types.UserEnumType;
 import org.cote.accountmanager.objects.types.UserStatusEnumType;
+import org.cote.accountmanager.util.DataUtil;
 import org.cote.accountmanager.util.JSONUtil;
 import org.cote.accountmanager.util.StreamUtil;
 import org.cote.propellant.objects.LifecycleType;
@@ -295,6 +299,50 @@ public class BaseClientTest{
 			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
 		return data;
+	}
+	
+	public DataType getCreateData(ClientContext context, String subGroupName, String dataName, String dataContents) {
+		DirectoryGroupType homeDirectory = AM6Util.findObject(context, DirectoryGroupType.class, NameEnumType.GROUP, "DATA", "~");
+		assertNotNull("Couldn't Find Home Directory",homeDirectory);
+		String testPath = AM6Util.getEncodedPath("~/" + subGroupName);
+
+		DirectoryGroupType subDirectory = AM6Util.findObject(testUserContext, DirectoryGroupType.class, NameEnumType.GROUP, "DATA", testPath);
+
+		if(subDirectory == null) {
+			subDirectory = new DirectoryGroupType();
+			subDirectory.setNameType(NameEnumType.GROUP);
+			subDirectory.setGroupType(GroupEnumType.DATA);
+			subDirectory.setName(subGroupName);
+			subDirectory.setParentId(homeDirectory.getId());
+			assertTrue("Failed to add directory",AM6Util.updateObject(context, Boolean.class, subDirectory));
+			subDirectory = AM6Util.findObject(context, DirectoryGroupType.class, NameEnumType.GROUP, "DATA", testPath);
+		}
+		assertNotNull("Couldn't find sub directory",subDirectory);
+		// logger.info(JSONUtil.exportObject(subDirectory));
+		DataType testData = AM6Util.getObjectByName(context, DataType.class, NameEnumType.DATA, subDirectory.getObjectId(), dataName, false);
+		if(testData != null) {
+			assertTrue("Failed to delete data", AM6Util.deleteObject(context, Boolean.class, NameEnumType.DATA, testData.getObjectId()));
+			testData = null;
+		}
+		if(testData == null) {
+			DataType data = new DataType();
+			data.setNameType(NameEnumType.DATA);
+			data.setMimeType("text/plain");
+			try {
+				DataUtil.setValue(data, dataContents.getBytes());
+			} catch (DataException e) {
+				logger.error(e);
+			}
+			assertTrue("Data contains no value", data.getDataBytesStore().length > 0);
+			data.setName(dataName);
+			data.setGroupPath(subDirectory.getPath());
+			assertTrue("Failed to add data",AM6Util.updateObject(testUserContext, Boolean.class, data));
+			testData = AM6Util.getObjectByName(context, DataType.class, NameEnumType.DATA, subDirectory.getObjectId(), dataName, false);
+
+		}
+		assertNotNull("Couldn't find test data",testData);
+
+		return testData;
 	}
 	
 }
