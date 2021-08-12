@@ -51,6 +51,7 @@ import org.cote.accountmanager.data.factory.OrganizationFactory;
 import org.cote.accountmanager.data.factory.TagFactory;
 import org.cote.accountmanager.data.factory.TagParticipationFactory;
 import org.cote.accountmanager.data.services.AuditService;
+import org.cote.accountmanager.data.services.AuthorizedSearchService;
 import org.cote.accountmanager.exceptions.ArgumentException;
 import org.cote.accountmanager.exceptions.FactoryException;
 import org.cote.accountmanager.objects.AuditType;
@@ -59,10 +60,12 @@ import org.cote.accountmanager.objects.BaseTagType;
 import org.cote.accountmanager.objects.DataTagSearchRequest;
 import org.cote.accountmanager.objects.DataType;
 import org.cote.accountmanager.objects.NameIdType;
+import org.cote.accountmanager.objects.ObjectSearchRequestType;
 import org.cote.accountmanager.objects.UserType;
 import org.cote.accountmanager.objects.types.ActionEnumType;
 import org.cote.accountmanager.objects.types.AuditEnumType;
 import org.cote.accountmanager.objects.types.FactoryEnumType;
+import org.cote.accountmanager.objects.types.NameEnumType;
 import org.cote.accountmanager.objects.types.ParticipantEnumType;
 import org.cote.accountmanager.service.rest.BaseService;
 import org.cote.accountmanager.service.rest.SchemaBean;
@@ -71,7 +74,7 @@ import org.cote.accountmanager.service.util.ServiceUtil;
 import org.cote.accountmanager.util.BinaryUtil;
 
 @DeclareRoles({"admin","user"})
-@Path("/search/{type:[A-Za-z]+}")
+@Path("/search")
 public class GenericSearchService {
 
 	private static SchemaBean schemaBean = null;
@@ -91,7 +94,7 @@ public class GenericSearchService {
 	 }
 	@RolesAllowed({"user"})
 	@GET
-	@Path("/{objectType:[A-Za-z]+}")
+	@Path("/{type:[A-Za-z]+}/{objectType:[A-Za-z]+}")
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response findRootObject(@PathParam("type") String type, @PathParam("objectType") String objectType, @Context HttpServletRequest request){
 		logger.info("Request to find root object from: " + type);
@@ -130,7 +133,7 @@ public class GenericSearchService {
 	
 	@RolesAllowed({"user"})
 	@GET
-	@Path("/{objectType:[A-Za-z]+}/{path:[@\\.~\\/%\\sa-zA-Z_0-9\\-]+}")
+	@Path("/{type:[A-Za-z]+}/{objectType:[A-Za-z]+}/{path:[@\\.~\\/%\\sa-zA-Z_0-9\\-]+}")
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response findObject(@PathParam("type") String type, @PathParam("objectType") String objectType, @PathParam("path") String path, @Context HttpServletRequest request){
 
@@ -175,7 +178,7 @@ public class GenericSearchService {
 	
 	@RolesAllowed({"user"})
 	@POST
-	@Path("/tags")
+	@Path("/{type:[A-Za-z]+}/tags")
 	@Produces(MediaType.APPLICATION_JSON) @Consumes(MediaType.APPLICATION_JSON)
 	public Response findByTag(DataTagSearchRequest searchRequest,@Context HttpServletRequest request){
 
@@ -206,7 +209,7 @@ public class GenericSearchService {
 	
 	@RolesAllowed({"user"})
 	@POST
-	@Path("/tags/count")
+	@Path("/{type:[A-Za-z]+}/tags/count")
 	@Produces(MediaType.APPLICATION_JSON) @Consumes(MediaType.APPLICATION_JSON)
 	public int countByTag(DataTagSearchRequest searchRequest,@Context HttpServletRequest request){
 		int count = 0;
@@ -226,7 +229,7 @@ public class GenericSearchService {
 	
 	@RolesAllowed({"user"})
 	@GET
-	@Path("/tags/{objectId:[0-9A-Za-z\\-]+}")
+	@Path("/{type:[A-Za-z]+}/tags/{objectId:[0-9A-Za-z\\-]+}")
 	@Produces(MediaType.APPLICATION_JSON) @Consumes(MediaType.APPLICATION_JSON)
 	public Response findTags(@PathParam("type") String type, @PathParam("objectId") String objectId,@Context HttpServletRequest request){
 		List<BaseTagType> tags = new ArrayList<>();
@@ -252,9 +255,9 @@ public class GenericSearchService {
 	
 	@RolesAllowed({"user"})
 	@POST
-	@Path("/{objectId:[0-9A-Za-z\\-]+}")
+	@Path("/{type:[A-Za-z]+}/{objectId:[0-9A-Za-z\\-]+}")
 	@Produces(MediaType.APPLICATION_JSON) @Consumes(MediaType.APPLICATION_JSON)
-	public Response findBy(BaseSearchRequestType searchRequest,@PathParam("type") String type, @PathParam("objectId") String objectId, @Context HttpServletRequest request){
+	public Response findInGroup(BaseSearchRequestType searchRequest,@PathParam("type") String type, @PathParam("objectId") String objectId, @Context HttpServletRequest request){
 
 		BaseSearchRequestType search = searchRequest;
 		if(search == null) search = new BaseSearchRequestType();
@@ -271,7 +274,6 @@ public class GenericSearchService {
 			INameIdFactory iFact = BaseService.getFactory(auditType);
 			if(iFact.isClusterByParent() && !iFact.isClusterByGroup()){
 				logger.error("Search list by cluster parent not yet implemented");
-				//objs = BaseService.listByParentObjectId(auditType, "UNKNOWN", objectId, startIndex, recordCount, request);
 			}
 			else if(auditType == AuditEnumType.DATA || iFact.isClusterByGroup() || iFact.isClusterByParent()){
 
@@ -289,6 +291,50 @@ public class GenericSearchService {
 		return Response.status(200).entity(objs).build();
 	}
 	
+	@RolesAllowed({"user"})
+	@POST
+	@Path("/count")
+	@Produces(MediaType.APPLICATION_JSON) @Consumes(MediaType.APPLICATION_JSON)
+	public int countBy(ObjectSearchRequestType searchRequest,@Context HttpServletRequest request){
+		UserType user = ServiceUtil.getUserFromSession(request);
+		NameIdType actor = user;
+		if(searchRequest.getContextActorId() != null && !searchRequest.getContextActorType().equals(NameEnumType.UNKNOWN)) {
+			actor = BaseService.readByObjectId(AuditEnumType.valueOf(searchRequest.getContextActorType().toString()), searchRequest.getContextActorId(), user);
+			if(actor == null) {
+				logger.error("Unable to read specified actor " + searchRequest.getContextActorType().toString() + " " + searchRequest.getContextActorId());
+				return 0;
+			}
+		}
+		int count = AuthorizedSearchService.countByEffectiveMemberEntitlement(searchRequest, actor);
+		logger.info("Returning " + count + " count");
+		return count;
+	}
+	
+
+	@RolesAllowed({"user"})
+	@POST
+	@Path("/")
+	@Produces(MediaType.APPLICATION_JSON) @Consumes(MediaType.APPLICATION_JSON)
+	public Response findByAuthorization(ObjectSearchRequestType searchRequest,@Context HttpServletRequest request){
+
+		UserType user = ServiceUtil.getUserFromSession(request);
+		NameIdType actor = user;
+		List<Object> list = new ArrayList<>();
+		if(searchRequest.getContextActorId() != null && !searchRequest.getContextActorType().equals(NameEnumType.UNKNOWN)) {
+			actor = BaseService.readByObjectId(AuditEnumType.valueOf(searchRequest.getContextActorType().toString()), searchRequest.getContextActorId(), user);
+			if(actor == null) {
+				logger.error("Unable to read specified actor " + searchRequest.getContextActorType().toString() + " " + searchRequest.getContextActorId());
+				return Response.status(200).entity(list).build();
+			}
+		}
+		list = AuthorizedSearchService.searchByEffectiveMemberEntitlement(searchRequest, actor);
+
+		
+		logger.info("Returning " + list.size() + " items");
+		return Response.status(200).entity(list).build();
+		
+
+	}
 
 	
 }
