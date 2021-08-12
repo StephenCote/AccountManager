@@ -98,6 +98,10 @@ public class AuthorizedSearchService {
 				logger.error("Invalid column name: " + fm.getFieldName().toString());
 				continue;
 			}
+			if(fm.getDataType().equals(SqlDataEnumType.UNKNOWN)) {
+				logger.error("Invalid data type");
+				continue;
+			}
 			QueryField f = new QueryField(fm.getDataType(), FieldMap.getColumnMap().get(fm.getFieldName()), (fm.getComparator().equals(ComparatorEnumType.LIKE) ? fm.getEncodedValue().replaceAll("\\*","%") : fm.getEncodedValue()));
 			f.setComparator(fm.getComparator());
 			fields.add(f);
@@ -153,6 +157,10 @@ public class AuthorizedSearchService {
 					match.setComparator(ComparatorEnumType.IN);
 					QueryField[] subFields = ArrayUtils.addAll(fields.toArray(new QueryField[0]), match);
 					List<NameIdType> tmpDataList = fact.getByField(subFields , member.getOrganizationId());
+					for(NameIdType obj : tmpDataList) {
+						fact.depopulate(obj);
+						fact.denormalize(obj);
+					}
 					outL.addAll(FactoryBase.convertList(tmpDataList));
 					buff.delete(0,  buff.length());
 				}
@@ -160,12 +168,29 @@ public class AuthorizedSearchService {
 		}
 		catch(FactoryException | ArgumentException e) {
 			logger.error(e);
+			e.printStackTrace();
 		}
 		
 		return outL;
 	}
 	
 	/// Convenience method to return a count of the entitlements
+	public static int countByEffectiveMemberEntitlement(ObjectSearchRequestType request, NameIdType member) {
+		BasePermissionType viewObjPer = null;
+		BasePermissionType viewGroupPer = null;
+		NameEnumType objectType = request.getObjectType();
+		try {
+			viewObjPer = AuthorizationService.getViewPermissionForMapType(objectType, member.getOrganizationId());
+			viewGroupPer = AuthorizationService.getViewPermissionForMapType(NameEnumType.GROUP, member.getOrganizationId());
+		} catch (FactoryException | ArgumentException e) {
+			logger.error(e.getMessage());
+		}
+		if(viewObjPer == null || viewGroupPer == null) {
+			logger.error("Unable to find object view permissions");
+			return 0;
+		}
+		return countByEffectiveMemberEntitlement(request, member, new Long[] {viewObjPer.getId(), viewGroupPer.getId()});
+	}
 	public static int countByEffectiveMemberEntitlement(ObjectSearchRequestType request, NameIdType member, Long[] permissionIds) {
 		return searchForEffectiveMemberEntitlements(request, member, permissionIds).size();
 	}
@@ -222,7 +247,8 @@ public class AuthorizedSearchService {
 		/// 1 - objtype
 		+ "\nSELECT D.id as participationid,  -1 as affectid, 'UNKNOWN' as affecttype, D.ownerId as referenceid, 'USER' as referencetype from %s D"
 		/// 2  = token 1 ownerid
-		+ " WHERE ownerId = %s"
+		+ (objectType.equals(NameEnumType.DATA) && !request.getIncludeThumbnail() ? " INNER JOIN groups G on G.id = D.groupId AND NOT G.name = '.thumbnail'" : "")
+		+ " WHERE D.ownerId = %s"
 		+ "\n UNION ALL"
 		/// START GROUPID
 		+ " SELECT D.id, GP.affectid,GP.affecttype,GP.participantid as referenceid, GP.participanttype as referencetype"
