@@ -217,6 +217,7 @@ public class BaseDataAccessTest{
 		try{
 			data = ((DataFactory)Factories.getFactory(FactoryEnumType.DATA)).getDataByName(name, dir);
 			if(data != null){
+				((DataFactory)Factories.getFactory(FactoryEnumType.DATA)).denormalize(data);
 				return data;
 			}
 			data = ((DataFactory)Factories.getFactory(FactoryEnumType.DATA)).newData(owner, dir.getId());
@@ -225,6 +226,7 @@ public class BaseDataAccessTest{
 			DataUtil.setValue(data, value.getBytes("UTF-8"));
 			((DataFactory)Factories.getFactory(FactoryEnumType.DATA)).add(data);
 			data = ((DataFactory)Factories.getFactory(FactoryEnumType.DATA)).getDataByName(name, dir);
+			((DataFactory)Factories.getFactory(FactoryEnumType.DATA)).denormalize(data);
 		}
 		catch(FactoryException | ArgumentException | DataException | UnsupportedEncodingException e) {
 			
