@@ -13,6 +13,7 @@ import org.apache.logging.log4j.Logger;
 import org.cote.accountmanager.client.ClientContext;
 import org.cote.accountmanager.objects.AuthenticationRequestType;
 import org.cote.accountmanager.objects.NameIdType;
+import org.cote.accountmanager.objects.ObjectSearchRequestType;
 import org.cote.accountmanager.objects.UserType;
 import org.cote.accountmanager.objects.types.NameEnumType;
 import org.cote.accountmanager.util.BinaryUtil;
@@ -68,6 +69,17 @@ public class AM6Util {
 	}
 
 	
+	public static int count(ClientContext context, ObjectSearchRequestType request){
+		WebTarget webResource = ClientUtil.getResource(ClientUtil.getServer() + ClientUtil.getAccountManagerApp() + searchUri + "/count");
+		return postEntity(context, Integer.class,webResource,request);
+	}
+	public static <T> List<T> search(ClientContext context, Class<T> cls, ObjectSearchRequestType request){
+
+		WebTarget webResource = ClientUtil.getResource(ClientUtil.getServer() + ClientUtil.getAccountManagerApp() + searchUri);
+		return postEntityList(context, cls, webResource,request);
+
+	}
+	
 	public static int count(ClientContext context, NameEnumType nameType, String objectId){
 		WebTarget webResource = ClientUtil.getResource(ClientUtil.getServer() + ClientUtil.getAccountManagerApp() + listUri + "/" + nameType.toString() + "/" + objectId + "/count");
 		return getEntity(context, Integer.class,webResource);
@@ -88,7 +100,7 @@ public class AM6Util {
 	
 	public static <T> T updateObject(ClientContext context, Class<T> cls, NameIdType object){
 		WebTarget webResource = ClientUtil.getResource(ClientUtil.getServer() + ClientUtil.getAccountManagerApp() + resourceUri + "/" + object.getNameType().toString());
-		logger.info("Update URI: " + ClientUtil.getServer() + ClientUtil.getAccountManagerApp() + resourceUri + "/" + object.getNameType().toString());
+		logger.debug("Update URI: " + ClientUtil.getServer() + ClientUtil.getAccountManagerApp() + resourceUri + "/" + object.getNameType().toString());
 		// logger.info(JSONUtil.exportObject(context));
 		return postEntity(context, cls,webResource,object);
 	}
@@ -114,7 +126,7 @@ public class AM6Util {
 	}
 	public static <T> T getObjectByName(ClientContext context, Class<T> cls, NameEnumType nameType, String objectId, String name, boolean useObjectParent){
 		WebTarget webResource = ClientUtil.getResource(ClientUtil.getServer() + ClientUtil.getAccountManagerApp() + resourceUri + "/" + nameType.toString() + (useObjectParent  ? "/parent" : "") + "/" +  objectId + "/" + name.replace(" ", "%20"));
-		logger.info("Get Resource: " + webResource.getUri());
+		logger.debug("Get Resource: " + webResource.getUri());
 		return getEntity(context, cls,webResource);
 	}
 	public static <T> T getEntity(ClientContext context, Class<T> cls, WebTarget resource){
@@ -135,23 +147,7 @@ public class AM6Util {
 				.get(Response.class)
 		;
 		
-		ArrayList<T> out_obj = null;
-		if(response.getStatus() == successStatus){
-			try {
-				ObjectMapper mapper = new ObjectMapper();
-				CollectionType listType =  mapper.getTypeFactory().constructCollectionType(ArrayList.class, cls);
-				String json = response.readEntity(String.class);
-				out_obj = mapper.readValue(json, listType);
-			}
-			catch(Exception e) {
-				logger.warn(e.getMessage());
-				e.printStackTrace();
-			}
-		}
-		else {
-			logger.warn("Received response: " + response.getStatus() + " for " + resource.getUri());
-		}
-		return out_obj;
+		return decodeList(response, cls, successStatus);
 	}
 	
 	public static <T> T getEntity(ClientContext context, Class<T> cls, WebTarget resource, MediaType responseType, int successStatus){
@@ -174,7 +170,6 @@ public class AM6Util {
 				/// currently passing nulls back as a 200 status since, so the response shows success but the entity is null
 				/// at the moment, sinking the error
 				logger.warn(e.getMessage());
-				e.printStackTrace();
 			}
 		}
 		else {
@@ -183,7 +178,32 @@ public class AM6Util {
 		if(out_obj == null && cls.equals(Boolean.class)) out_obj = (T)Boolean.FALSE;
 		return out_obj;
 	}
+	public static <T,U> List<T> postEntityList(ClientContext context, Class<T> cls, WebTarget resource, Object object){
+		return postEntityList(context, cls, resource, object, MediaType.APPLICATION_JSON_TYPE, 200);
+	}
 	
+	private static <T> List<T> decodeList(Response response, Class<T> cls, int successStatus){
+		ArrayList<T> out_obj = null;
+		if(response.getStatus() == successStatus){
+			try {
+				ObjectMapper mapper = new ObjectMapper();
+				CollectionType listType =  mapper.getTypeFactory().constructCollectionType(ArrayList.class, cls);
+				String json = response.readEntity(String.class);
+				out_obj = mapper.readValue(json, listType);
+			}
+			catch(Exception e) {
+				logger.warn(e.getMessage());
+			}
+		}
+		else {
+			logger.warn("Received response: " + response.getStatus());
+		}
+		return out_obj;
+	}
+	public static <T> List<T> postEntityList(ClientContext context, Class<T> cls, WebTarget resource, Object object, MediaType responseType, int successStatus){
+		Response response = ClientUtil.getRequestBuilder(context, resource).accept(responseType).post(Entity.entity(object, MediaType.APPLICATION_JSON_TYPE));
+		return decodeList(response, cls, successStatus);
+	}
 	public static <T,U> T postEntity(ClientContext context, Class<T> cls, WebTarget resource, Object object){
 		return postEntity(context, cls, resource, object, MediaType.APPLICATION_JSON_TYPE, 200);
 	}
