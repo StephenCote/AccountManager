@@ -30,8 +30,15 @@
 		<attribute name="organizationId" type="long" default="0"></attribute>
 		<attribute name="fullRecord" type="boolean" default="false">
 			<annotation>
-				<documentation>Used primarily for DataType to specify whether or not a list of data returns the blob data along with the meta information.</documentation>
-			</annotation></attribute>
+				<documentation>
+					Used primarily for DataType to specify whether or
+					not a list of data returns the blob data along with
+					the meta information.
+				</documentation>
+			</annotation>
+		</attribute>
+		<attribute name="contextActorId" type="string"></attribute>
+		<attribute name="contextActorType" type="Q1:NameEnumType" default="UNKNOWN"></attribute>
 	</complexType>
 
 	<complexType name="ObjectSearchRequestType">
