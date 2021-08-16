@@ -9,7 +9,7 @@
 		//
 		template_init : function(){
 			this.getProperties().iconView = 1;
-			this.initGrid("Data",(this.getProperties().defaultPath ? this.getProperties().defaultPath : uwm.getPathForType("Data","~/Data")),0,0,0,0,0,1);
+			this.initGrid("Data",(this.getProperties().defaultPath ? this.getProperties().defaultPath : uwm.getPathForType("Data","~/Data")));
 		},
 
 		preparePathChange : function(oObj, sFilt){

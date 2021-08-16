@@ -197,8 +197,14 @@
 			if(e.keyCode == 13){
 				var sP = this.getElementByRID("path").value;
 				if(!sP.length) sP = this.getElementByRID("path").placeholder;
-				if(this.getProperties().noGroup) this.getObjects().parentRef = AM6Client.find(this.getProperties().typeName.toUpperCase(),"UNKNOWN",sP);
-				this.refreshList();
+				if(sP.length && sP.match(/^[~\.\/]/) == null){
+					if(this.search) this.search(sP);
+					else this.defaultSearch(sP);
+				}
+				else{
+					if(this.getProperties().noGroup) this.getObjects().parentRef = AM6Client.find(this.getProperties().typeName.toUpperCase(),"UNKNOWN",sP);
+					this.refreshList();
+				}
 			}
 		},
 		closeToFocus : function(){
@@ -230,7 +236,6 @@
 					ctl.setTotalCount(v.json.length);
 					for(var i = 0; i < v.json.length; i++){
 						var sn = (ctl.decorateListItemName ? ctl.decorateListItemName(v.json[i]) : v.json[i].name);
-						console.log(sn);
 						oL.addItem(sn, v.json[i]);
 					}
 				}
