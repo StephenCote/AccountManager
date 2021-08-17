@@ -23,7 +23,6 @@
  *******************************************************************************/
 package org.cote.accountmanager.util;
 import java.io.File;
-//import java.util.Vector;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -80,18 +79,18 @@ public class DirectoryUtil{
 	}
 
 	public List<File> dir(String filter,boolean recurse){
-		List<File> dirList=new ArrayList<File>();
+		List<File> dirList=new ArrayList<>();
 		dirCount=0;
 		fileCount=0;
-		_getrecursive(directory,dirList,filter,recurse);
+		getrecursive(directory,dirList,filter,recurse);
 		return dirList;
 	}
 
 	public List<File> dirs(String filter,boolean recurse){
-		List<File> dirsList=new ArrayList<File>();
+		List<File> dirsList=new ArrayList<>();
 		dirCount=0;
 		fileCount=0;
-		_getrecursive(directory,null,dirsList,filter,recurse);
+		getrecursive(directory,null,dirsList,filter,recurse);
 		return dirsList;
 	}
 
@@ -99,13 +98,13 @@ public class DirectoryUtil{
 		dirCount=0;
 		fileCount=0;
 		long size=getSizeOf(directory);
-		dirKByteSize=new Long(size/1000).intValue();
+		dirKByteSize=(int)(size/1000);
 		return size;
 	}
-	private void _getrecursive(File f,List<File> dirs,String filter,boolean recurse){
-		_getrecursive(f, dirs, null, filter, recurse);
+	private void getrecursive(File f,List<File> dirs,String filter,boolean recurse){
+		getrecursive(f, dirs, null, filter, recurse);
 	}
-	private void _getrecursive(File f,List<File> dirs, List<File> dirlist, String filter,boolean recurse){
+	private void getrecursive(File f,List<File> dirs, List<File> dirlist, String filter,boolean recurse){
 
 		if(f.isDirectory()){
 			dirCount++;
@@ -113,14 +112,13 @@ public class DirectoryUtil{
 			File[] list=f.listFiles();
 			for(int i=0;i<list.length;i++){
 				if(list[i].isDirectory() && recurse){
-					_getrecursive(list[i],dirs,dirlist,filter,recurse);
+					getrecursive(list[i],dirs,dirlist,filter,recurse);
 				}
-				else if(dirs != null){
-					if(filter == null || list[i].getName().matches(filter)){
-						fileCount++;
-						dirs.add(list[i]);
-					}
+				else if(dirs != null && (filter == null || list[i].getName().matches(filter))){
+					fileCount++;
+					dirs.add(list[i]);
 				}
+				
 			}
 		}
 

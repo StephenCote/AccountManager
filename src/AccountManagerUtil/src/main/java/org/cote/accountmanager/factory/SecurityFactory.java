@@ -71,9 +71,7 @@ public class SecurityFactory {
 	public static SecurityFactory getSecurityFactory(){
 		if(securityFactory != null)
 				return securityFactory;
-		long start = System.currentTimeMillis();
 		securityFactory = new SecurityFactory();
-		logger.debug("Initialized provider: " + (System.currentTimeMillis() - start) + "ms");
 		return securityFactory;
 	}
 
@@ -87,7 +85,7 @@ public class SecurityFactory {
 		byte[] key = bean.getCipherKey();
 		byte[] iv = bean.getCipherIV();
 		if(key != null && key.length > 0 && iv != null && iv.length > 0){
-			if(bean.getEncryptCipherKey()){
+			if(bean.getEncryptCipherKey().booleanValue()){
 				key = bean.getEncryptedCipherKey();
 				iv = bean.getEncryptedCipherIV();
 			}
@@ -135,10 +133,8 @@ public class SecurityFactory {
 	/// TODO: Remove hard coded algorithm reference
 	///
 	public void setPassKey(SecurityBean bean, String passKey, byte[] salt, boolean encryptedPassKey){
-		long start = System.currentTimeMillis();
+
 		try{
-			// PBKDF2WithHmacSHA512
-			// PBKDF2WithHmacSHA1
 			SecretKeyFactory factory = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA512");
 
 			KeySpec spec = new javax.crypto.spec.PBEKeySpec(passKey.toCharArray(),salt, 65536, 256);
@@ -154,7 +150,6 @@ public class SecurityFactory {
 			logger.error(e.getMessage());
 			logger.error(e);
 		}  
-		logger.debug("Generate Pass Key: " + (System.currentTimeMillis() - start) + "ms");
 	}
 	public void setSecretKey(SecurityBean bean, byte[] key, byte[] iv, boolean encryptedCipher){
 		byte[] decKey = key;
@@ -194,7 +189,7 @@ public class SecurityFactory {
 			privKey = kFact.generatePrivate(privKeySpec);		
 		}
 		catch(Exception e){
-			logger.error("DSAKeyUtil:: decodeX509PrivateKey: " + e.toString());
+			logger.error(e.toString());
 			logger.error(e);
 		}
 		bean.setPrivateKey(privKey);
@@ -220,7 +215,7 @@ public class SecurityFactory {
 	public void setRSAXMLPublicKey(SecurityBean bean, byte[] rsaKey){
 		bean.setPublicKeyBytes(rsaKey);
 		
-		Document xml = XmlUtil.GetDocumentFromBytes(rsaKey);
+		Document xml = XmlUtil.getDocumentFromBytes(rsaKey);
 		
 		byte[] modBytes = BinaryUtil.fromBase64(XmlUtil.GetElementText(xml.getDocumentElement(), "Modulus").getBytes());
 		byte[] expBytes = BinaryUtil.fromBase64(XmlUtil.GetElementText(xml.getDocumentElement(), "Exponent").getBytes());
@@ -230,7 +225,7 @@ public class SecurityFactory {
 	}
 	public void setRSAXMLPrivateKey(SecurityBean bean, byte[] rsaKey){
 		bean.setPrivateKeyBytes(rsaKey);
-		Document xml = XmlUtil.GetDocumentFromBytes(rsaKey);
+		Document xml = XmlUtil.getDocumentFromBytes(rsaKey);
 		byte[] modBytes = BinaryUtil.fromBase64(XmlUtil.GetElementText(xml.getDocumentElement(), "Modulus").getBytes());
 		byte[] dBytes = BinaryUtil.fromBase64(XmlUtil.GetElementText(xml.getDocumentElement(), "D").getBytes());
 		setPrivateKey(bean, modBytes, dBytes);
@@ -257,7 +252,7 @@ public class SecurityFactory {
 		return bean;
 	}
 	public void importSecurityBean(SecurityBean bean, byte[] keys, boolean encryptedCipher){
-		Document d = XmlUtil.GetDocumentFromBytes(keys);
+		Document d = XmlUtil.getDocumentFromBytes(keys);
 		if(d == null)
 			return;
 
@@ -311,9 +306,12 @@ public class SecurityFactory {
 	}
 	public boolean generateSecretKey(SecurityBean bean){
 		boolean ret = false;
-		if(bean.getEncryptCipherKey() && bean.getPublicKey() == null){
-			/// Cannot generate encrypted cipher if PKI is not initialized
-			logger.error("Cannot encrypt secret key with missing PKI data");
+		if(bean == null) {
+			logger.error("SecurityBean is null");
+			return ret;
+		}
+		if(bean.getEncryptCipherKey().booleanValue() && bean.getPublicKey() == null){
+			logger.error("Cannot encrypt secret key with missing PKI data.  Verify PKI is initialized.");
 			return false;
 		}
 		KeyGenerator kgen;
@@ -326,8 +324,12 @@ public class SecurityFactory {
 			bean.setSecretKey(secretKey);
 			bean.setCipherKey(secretKey.getEncoded());
 			Cipher cipher = getCipherKey(bean, false);
+			if(cipher == null) {
+				logger.error("Cipher is null");
+				return ret;
+			}
 			bean.setCipherIV(cipher.getIV());
-			if(bean.getEncryptCipherKey()){
+			if(bean.getEncryptCipherKey().booleanValue()){
 				bean.setEncryptedCipherKey(SecurityUtil.encrypt(bean, bean.getCipherKey()));
 				bean.setEncryptedCipherIV(SecurityUtil.encrypt(bean, bean.getCipherIV()));
 			}

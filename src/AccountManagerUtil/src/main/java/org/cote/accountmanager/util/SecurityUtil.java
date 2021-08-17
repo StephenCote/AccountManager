@@ -52,7 +52,7 @@ public class SecurityUtil {
 	private static Random random = null;
 	public static final boolean USE_SECURE_RANDOM = true;
 	
-	private static MessageDigest hash_algorithm = null;
+	private static MessageDigest hashAlgorithm = null;
 	
 	/// TODO: For CredentialType update, this will go away
 	///
@@ -61,6 +61,10 @@ public class SecurityUtil {
 	/// TODO: For CredentialType update, this will go away
 	///
 	private static String HASH_SALT = "aostnh234stnh;qk234;2354!@#$%10";
+	
+	private SecurityUtil() {
+		
+	}
 	private static byte[] nextRandom(int length){
 		byte[] outByte = new byte[length];
 		if(USE_SECURE_RANDOM){
@@ -86,29 +90,23 @@ public class SecurityUtil {
 		return outByte;
 	}
 	public static byte[] getRandomSalt(){
-		/*
-		byte[] salt = new byte [SALT_LENGTH];
-	    random.nextBytes (salt);
-	    return salt;
-	    */
 		return nextRandom(SALT_LENGTH);
 	}
 	
 
 	/// TODO: For CredentialType update, this will go away
 	///
-	public static String getSaltedDigest(String in_value)
+	public static String getSaltedDigest(String inValue)
 	{
-		if (in_value == null || in_value.length() == 0) return null;
-		return getDigestAsString(in_value + HASH_SALT);
+		if (inValue == null || inValue.length() == 0) return null;
+		return getDigestAsString(inValue + HASH_SALT);
 		
 	}
 	private static MessageDigest getMessageDigest(){
 		return getMessageDigest(false);
 	}
-	private static MessageDigest getMessageDigest(boolean use_singleton){
-		///Security.addProvider(new org.bouncycastle.jce.provider.BouncyCastleProvider());
-		if(use_singleton && hash_algorithm != null) return hash_algorithm;
+	private static MessageDigest getMessageDigest(boolean useSingleton){
+		if(useSingleton && hashAlgorithm != null) return hashAlgorithm;
 		MessageDigest digest = null;
 		try{
 			digest = MessageDigest.getInstance(HASH_PROVIDER);
@@ -116,36 +114,42 @@ public class SecurityUtil {
 		catch(NoSuchAlgorithmException e){
 			logger.error(FactoryException.TRACE_EXCEPTION,e);
 		}
-		if(use_singleton && digest != null) hash_algorithm = digest;
+		if(useSingleton && digest != null) hashAlgorithm = digest;
 		return digest;
 	}
-	public static String getDigestAsString(byte[] in_bytes, byte[] salt){
-		return new String(BinaryUtil.toBase64(getDigest(in_bytes,salt)));
+	public static String getDigestAsString(byte[] inBytes, byte[] salt){
+		return new String(BinaryUtil.toBase64(getDigest(inBytes,salt)));
 	}
-	public static byte[] getDigest(byte[] in_bytes, byte[] salt){
+	public static byte[] getDigest(byte[] inBytes, byte[] salt){
 		MessageDigest digest = getMessageDigest();
+		if(digest == null) {
+			logger.error("Null digest");
+			return new byte[0];
+		}
 		/// 2015/06/23 - Changed for CredentialType updated
 		///
 		digest.reset();
-		//if(salt.length > 0){
-			digest.update(salt);
-		//}
-		digest.digest(in_bytes);
-		digest.update(in_bytes,0,in_bytes.length);
+		digest.update(salt);
+		digest.digest(inBytes);
+		digest.update(inBytes,0,inBytes.length);
 		return digest.digest();
 	}
-	public static byte[] getDigestOLDOLD(byte[] in_bytes, byte[] salt){
+	public static byte[] getDigestOLDOLD(byte[] inBytes, byte[] salt){
 		MessageDigest digest = getMessageDigest();
+		if(digest == null) {
+			logger.error("Null digest");
+			return new byte[0];
+		}
 		logger.debug("Refactor this method - it uses the old salt method");
-		digest.update(in_bytes,0,in_bytes.length);
+		digest.update(inBytes,0, inBytes.length);
 		return digest.digest();
 
 	}
-	public static String getDigestAsString(byte[] in_bytes){
-		return new String(BinaryUtil.toBase64(getDigestOLDOLD(in_bytes,new byte[0])));
+	public static String getDigestAsString(byte[] inBytes){
+		return new String(BinaryUtil.toBase64(getDigestOLDOLD(inBytes,new byte[0])));
 	}
-	public static String getDigestAsString(String in_str){
-		byte[] digest = getDigestOLDOLD(in_str.getBytes(),new byte[0]);
+	public static String getDigestAsString(String inStr){
+		byte[] digest = getDigestOLDOLD(inStr.getBytes(),new byte[0]);
 		return new String(BinaryUtil.toBase64(digest));
 	}
 	public static SecurityBean getPasswordBean(String password, byte[] salt){
@@ -160,29 +164,25 @@ public class SecurityUtil {
 		return decipher(getPasswordBean(password, salt),data);
 	}
 	public static byte[] decipher(SecurityBean bean, byte[] data){
-		long start_enc = System.currentTimeMillis();
+
 		byte[] ret = new byte[0];
-		Cipher cipher = SecurityFactory.getSecurityFactory().getDecryptCipherKey(bean);;
-		SecretKey secret_key = bean.getSecretKey();
-		if(cipher == null || secret_key == null ){
+		Cipher cipher = SecurityFactory.getSecurityFactory().getDecryptCipherKey(bean);
+		SecretKey secretKey = bean.getSecretKey();
+		if(cipher == null || secretKey == null ){
 			logger.error("Secret key is null");
 			return ret;
 		}
 		try {
 			ret = cipher.doFinal(data);
 		}
-		catch (IllegalBlockSizeException e) {
-			logger.error(FactoryException.TRACE_EXCEPTION,e);
-			logger.error(e.getMessage());
-		} catch (BadPaddingException e) {
+		catch (IllegalBlockSizeException | BadPaddingException e) {
 			logger.error(FactoryException.TRACE_EXCEPTION,e);
 			logger.error(e.getMessage());
 		}
-		logger.debug("Deciphered in " + (System.currentTimeMillis() - start_enc) + "ms");
+
 		return ret;
 	}
 	public static byte[] encipher(SecurityBean bean, byte[] data){
-		long start_enc = System.currentTimeMillis();
 		byte[] ret = new byte[0];
 		Cipher cipher = SecurityFactory.getSecurityFactory().getEncryptCipherKey(bean);;
 		if(cipher == null || bean.getSecretKey() == null )
@@ -190,14 +190,10 @@ public class SecurityUtil {
 		try {
 			ret = cipher.doFinal(data);
 		}
-		catch (IllegalBlockSizeException e) {
-			logger.error(e.getMessage());
-			logger.error(FactoryException.TRACE_EXCEPTION,e);
-		} catch (BadPaddingException e) {
+		catch (IllegalBlockSizeException | BadPaddingException e) {
 			logger.error(e.getMessage());
 			logger.error(FactoryException.TRACE_EXCEPTION,e);
 		} 
-		logger.debug("Enciphered in " + (System.currentTimeMillis() - start_enc) + "ms");
 		return ret;
 	}
 	public static byte[] encrypt(SecurityBean bean, byte[] data){
@@ -246,17 +242,17 @@ public class SecurityUtil {
 		
 		return ret;
 	}
-	public static String serializeToXml(SecurityBean bean, boolean include_private_key, boolean include_public_key, boolean include_cipher){
+	public static String serializeToXml(SecurityBean bean, boolean includePrivateKey, boolean includePublicKey, boolean includeCipher){
 		StringBuilder buff = new StringBuilder();
 		SecurityFactory sf = SecurityFactory.getSecurityFactory();
 		buff.append("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n<SecurityManager>");
-		if(include_public_key){
+		if(includePublicKey){
 			buff.append("<public><key>" + BinaryUtil.toBase64Str(sf.serializePublicKeyToRSAXml(bean)) + "</key></public>");
 		}
-		if(include_private_key){
+		if(includePrivateKey){
 			buff.append("<private><key>" + BinaryUtil.toBase64Str(sf.serializePrivateKeyToRSAXml(bean)) + "</key></private>");
 		}
-		if(include_cipher){
+		if(includeCipher){
 			buff.append("<cipher>" + (new String(sf.serializeCipher(bean))) + "</cipher>");
 		}
 		buff.append("</SecurityManager>\r\n");

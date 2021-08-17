@@ -78,7 +78,7 @@ public class TestKeyStoreUtil {
 		Certificate cert = null;
 		KeyStore store = KeyStoreUtil.getKeyStore(path, password);
 		if(store == null) return cert;
-		return KeyStoreUtil.getCertificate(store, password,alias);
+		return KeyStoreUtil.getCertificate(store, alias);
 	}
 	/*
 	@Test
@@ -168,7 +168,7 @@ public class TestKeyStoreUtil {
 	public void TestLoadP12Store(){
 		KeyStore store = KeyStoreUtil.getKeyStore(trustStorePath, trustStorePass.toCharArray());
 		assertNotNull("Store is null",store);
-		Certificate cert = KeyStoreUtil.getCertificate(store, trustStorePass.toCharArray(),"bob");
+		Certificate cert = KeyStoreUtil.getCertificate(store, "bob");
 		assertNotNull("Cert is null",cert);
 		Key key = KeyStoreUtil.getKey(store,trustStorePass.toCharArray(),"bob.key","password1".toCharArray());
 		assertNotNull("Key is null",key);

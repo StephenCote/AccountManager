@@ -35,8 +35,6 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.StringWriter;
-
-/// import javax.xml.XMLConstants;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -65,11 +63,12 @@ import org.xml.sax.SAXException;
 public class XmlUtil {
 	public static final Logger logger = LogManager.getLogger(XmlUtil.class);
 	private static TransformerFactory transFactory = null;
+	private XmlUtil() {
+		
+	}
 	private static TransformerFactory getTransformerFactory(){
 		if(transFactory == null){
 			transFactory = TransformerFactory.newInstance();
-			/// transFactory.setAttribute(XMLConstants.ACCESS_EXTERNAL_DTD, "");
-			/// transFactory.setAttribute(XMLConstants.ACCESS_EXTERNAL_STYLESHEET, "");
 		}
 		return transFactory;
 		
@@ -169,7 +168,7 @@ public class XmlUtil {
 	/// TODO: Cleanup all these legacy cross-conversation names
 	///
 
-	public static String GetStringFromDoc(Document d)    {
+	public static String getStringFromDoc(Document d)    {
 	    StringWriter output = new StringWriter();
 
 	    
@@ -186,17 +185,15 @@ public class XmlUtil {
 	    return output.toString();
 	}
 	
-	public static Document GetDocumentFromBytes(byte[] data){
+	public static Document getDocumentFromBytes(byte[] data){
 
 		DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-
-		/// dbf.setAttribute(XMLConstants.ACCESS_EXTERNAL_DTD, "");
-		/// dbf.setAttribute(XMLConstants.ACCESS_EXTERNAL_SCHEMA, "");
-		
 		DocumentBuilder db = null;
 		Document doc = null;
 		ByteArrayInputStream bais = new ByteArrayInputStream(data);
 		try {
+			dbf.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
+			dbf.setFeature("http://xml.org/sax/features/external-general-entities", false);
 			db = dbf.newDocumentBuilder();
 
 			doc = db.parse(bais);

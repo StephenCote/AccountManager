@@ -42,6 +42,9 @@ public class CalendarUtil {
 	private static String legacyDateFormat = "yyyy/MM/dd HH:mm:ss";
 	private static String dateFormat = "yyyy-MM-dd:hh:mm:ss Z";
 	public static final Logger logger = LogManager.getLogger(CalendarUtil.class);
+	private CalendarUtil() {
+		
+	}
 	public static Date importDateFromLegacyString(String s){
 		return importDateFromString(s, legacyDateFormat);
 	}
@@ -95,6 +98,7 @@ public class CalendarUtil {
 	public static XMLGregorianCalendar getXmlGregorianCalendar(Date date){
 		GregorianCalendar c = new GregorianCalendar();
 		c.setTime(date);
-		return getDatatypeFactory().newXMLGregorianCalendar(c);
+		DatatypeFactory dtf = getDatatypeFactory();
+		return (dtf != null ? dtf.newXMLGregorianCalendar(c) : null);
 	}
 }

@@ -85,7 +85,7 @@ public class KeyStoreUtil {
 
 	      KeyStore store = null;
 	      try {
-	    	store =  KeyStore.getInstance(PREFERRED_KEYSTORE_PROVIDER);
+	    	store =  KeyStore.getInstance(provider);
 			store.load(new ByteArrayInputStream(keystoreBytes), password);
 		} catch (NoSuchAlgorithmException | CertificateException | IOException | KeyStoreException e) {
 			logger.error(e.getMessage());
@@ -134,7 +134,7 @@ public class KeyStoreUtil {
 		try{
 			Enumeration<String> aliases = pkstore.aliases();
 		    while (aliases.hasMoreElements()) {
-		      String storeAlias = (String)aliases.nextElement();
+		      String storeAlias = aliases.nextElement();
 		         if (pkstore.isKeyEntry(storeAlias)) {
 
 		            Key key = pkstore.getKey(storeAlias, password);
@@ -158,13 +158,10 @@ public class KeyStoreUtil {
 	    return outBool;
 
 	}
-	/*
-	 * 
-	 * 
-	 */
+
 	public static KeyStore getCreateKeyStore(String path, char[] password){
 		File check = new File(path);
-		if(check.exists() == false){
+		if(!check.exists()){
 			KeyStore newStore=null;
 			try {
 				newStore = KeyStore.getInstance(PREFERRED_KEYSTORE_PROVIDER);
@@ -197,7 +194,7 @@ public class KeyStoreUtil {
 	
 	public static KeyStore getKeyStore(String path, char[] password){
 		File check = new File(path);
-		if(check.exists() == false){
+		if(!check.exists()){
 			logger.error("Key store does not exist at " + path);
 			return null;
 		}
@@ -225,10 +222,11 @@ public class KeyStoreUtil {
 	}
 	public static Certificate getCertificate(String path, char[] password, String keyAlias){
 			KeyStore store = getKeyStore(path,password);
-			return getCertificate(store, password, keyAlias);
+			if(store == null) return null;
+			return getCertificate(store, keyAlias);
 	}
 
-	public static Certificate getCertificate(KeyStore store, char[] password, String keyAlias){
+	public static Certificate getCertificate(KeyStore store, String keyAlias){
 			Certificate cert = null;
 
 		    try {

@@ -135,7 +135,7 @@ public class TestOpenSSLUtil {
 		KeyStore trustStore = KeyStoreUtil.getCreateKeyStore(trustStorePath,trustStorePass);
 		imported = KeyStoreUtil.importCertificate(trustStore, certfile, serverKey);
 		KeyStoreUtil.saveKeyStore(trustStore, trustStorePath, trustStorePass);
-		Certificate cert = KeyStoreUtil.getCertificate(trustStore, trustStorePass,serverKey);
+		Certificate cert = KeyStoreUtil.getCertificate(trustStore, serverKey);
 		assertNotNull("Cert is null",cert);
 		Key key = KeyStoreUtil.getKey(keyStore,keyStorePass,serverKey + ".key",serverKeyPassword);
 		assertNotNull("Key is null",key);
