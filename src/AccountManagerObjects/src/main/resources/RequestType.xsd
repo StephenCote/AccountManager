@@ -53,7 +53,10 @@
 
 
 				<attribute name="objectType" type="Q1:NameEnumType"></attribute>
-				<attribute name="includeThumbnail" type="boolean" default="true"></attribute>
+				<attribute name="includeThumbnail" type="boolean"
+					default="true">
+				</attribute>
+				<attribute name="groupScope" type="string"></attribute>
 			</extension>
 		</complexContent>
 	</complexType>
