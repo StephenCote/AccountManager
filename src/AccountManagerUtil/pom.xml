@@ -14,15 +14,6 @@
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 	</properties>
-<!-- 
-  <repositories>
-    <repository>
-      <id>www.dcm4che.org</id>
-      <name>dcm4che Repository</name>
-      <url>http://www.dcm4che.org/maven2</url>
-    </repository>
-    </repositories>
--->
 
 	<build>
 	  <pluginManagement>
@@ -30,7 +21,7 @@
       <plugin>
         <groupId>org.sonarsource.scanner.maven</groupId>
         <artifactId>sonar-maven-plugin</artifactId>
-		<version>3.7.0.1746</version>
+		<version>3.9</version>
       </plugin>
     </plugins>
   </pluginManagement>
@@ -67,29 +58,18 @@
 					</includes>
 					<excludes>
 						<!-- NOTE: Most of these tests depend on external data that needs to be staged.  These need to be refactored -->
-						<!-- 
-							<exclude>**/TestSecurityFactory.java</exclude>
-						 -->
 						<exclude>**/TestJSON.java</exclude>
-
-						<exclude>**/TestMediaConverter.java</exclude>
-
-
-						
-						<exclude>**/TestOpenSSLUtil.java</exclude>
+						<exclude>**/TestGraphics.java</exclude>
 						<exclude>**/TestKeyStoreUtil.java</exclude>
-						
+						<exclude>**/TestOpenSSLUtil.java</exclude>
+						<!-- 
+						<exclude>**/TestSecurityFactory.java</exclude>
 						<exclude>**/TestDataUtil.java</exclude>
-						
 						<exclude>**/TestAMCode.java</exclude>
-
 						<exclude>**/TestText.java</exclude>
 						<exclude>**/TestWTPAType.java</exclude>
-						
 						<exclude>**/TestDataType.java</exclude>
-						
-						<exclude>**/TestGraphics.java</exclude>
-
+						-->
 
 					</excludes>
 					<systemPropertyVariables>
