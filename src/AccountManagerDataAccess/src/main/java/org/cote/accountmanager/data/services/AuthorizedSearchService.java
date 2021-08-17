@@ -24,6 +24,7 @@ import org.cote.accountmanager.data.query.QueryField;
 import org.cote.accountmanager.exceptions.ArgumentException;
 import org.cote.accountmanager.exceptions.FactoryException;
 import org.cote.accountmanager.factory.FieldMap;
+import org.cote.accountmanager.objects.BaseGroupType;
 import org.cote.accountmanager.objects.BasePermissionType;
 import org.cote.accountmanager.objects.EntitlementType;
 import org.cote.accountmanager.objects.FieldMatch;
@@ -241,6 +242,21 @@ public class AuthorizedSearchService {
 		QueryField[] fields = getQueryFieldsFromRequest(request).toArray(new QueryField[0] );
 		String queryClause = FactoryBase.getQueryClause(pi, fields, token);
 		
+		boolean groupScope = false;
+		long groupScopeId = 0L;
+		if(request.getGroupScope() != null) {
+			BaseGroupType group = null;
+			try {
+				group = ((NameIdFactory)Factories.getFactory(FactoryEnumType.GROUP)).getByObjectId(request.getGroupScope(), member.getOrganizationId());
+			} catch (FactoryException | ArgumentException e) {
+				logger.error(e);
+			}
+			if(group != null) {
+				groupScopeId = group.getId();
+				groupScope = true;
+			}
+			
+		}
 		String sqlBaseQuery =
 		String.format(
 		"SELECT participationid as id, affectid, affecttype, DM.referenceid, referencetype FROM ("
@@ -316,6 +332,7 @@ public class AuthorizedSearchService {
 		/// 26 = token 26 referenceid
 		+ ") DM "
 		+ "\n INNER JOIN " + tblType + " on " + tblType + ".id = DM.participationid " 
+		+ (groupScope ? "\n INNER JOIN groups_from_branch(" + groupScopeId + ") GB on GB.groupid = " + tblType + ".groupid" : "")
 		+ "\n WHERE (%s = '' OR referencetype = %s) AND (%s = 0 OR DM.referenceid =%s) AND affectid <> 0"
 		,tblType,token,tblType,token,token,token,token,lowType,token,token,token,token,token,token,lowType
 		,token,token,token,token,token,token,lowType
@@ -368,7 +385,7 @@ public class AuthorizedSearchService {
 			statement.setLong(27, referenceId);	
 	
 			DBFactory.setStatementParameters(fields, 28, statement);
-			
+
 			rset = statement.executeQuery();
 			while(rset.next()){
 				EntitlementType ent = new EntitlementType();
