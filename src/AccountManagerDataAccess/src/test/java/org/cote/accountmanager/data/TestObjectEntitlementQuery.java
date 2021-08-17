@@ -103,6 +103,7 @@ public class TestObjectEntitlementQuery extends BaseDataAccessTest {
 		search.setStartRecord(0L);
 		search.setRecordCount(10);
 		search.setIncludeThumbnail(false);
+		/// search.setGroupScope(dDir.getObjectId());
 		FieldMatch m = new FieldMatch();
 		m.setDataType(SqlDataEnumType.TEXT);
 		m.setComparator(ComparatorEnumType.LIKE);
