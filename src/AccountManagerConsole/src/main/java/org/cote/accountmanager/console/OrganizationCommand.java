@@ -155,7 +155,7 @@ public class OrganizationCommand {
 				logger.error("Failed to extract private key");
 				return false;
 			}
-			Certificate cert = KeyStoreUtil.getCertificate(store, p12pass, alias);
+			Certificate cert = KeyStoreUtil.getCertificate(store, alias);
 			if(cert == null){
 				logger.error("Failed to extract certificate for alias '" + alias + "'");
 				return false;
