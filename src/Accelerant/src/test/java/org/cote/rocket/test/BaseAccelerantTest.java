@@ -1243,7 +1243,7 @@ public class BaseAccelerantTest{
 			newOrg = ((OrganizationFactory)Factories.getFactory(FactoryEnumType.ORGANIZATION)).getOrganizationByName(newOrgName, testOrganization);
 			if(newOrg == null){
 				newOrg = ((OrganizationFactory)Factories.getFactory(FactoryEnumType.ORGANIZATION)).addOrganization(newOrgName, OrganizationEnumType.DEVELOPMENT, testOrganization);
-				FactoryDefaults.setupOrganization(newOrg, SecurityUtil.getSaltedDigest(adminPassword));
+				FactoryDefaults.setupOrganization(newOrg, adminPassword);
 			}
 		} catch (FactoryException | ArgumentException | DataAccessException e) {
 			
