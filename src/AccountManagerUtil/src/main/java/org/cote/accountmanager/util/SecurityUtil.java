@@ -117,6 +117,9 @@ public class SecurityUtil {
 		if(useSingleton && digest != null) hashAlgorithm = digest;
 		return digest;
 	}
+	public static String getDigestAsString(String inStr) {
+		return getDigestAsString(inStr.getBytes(), new byte[0]);
+	}
 	public static String getDigestAsString(byte[] inBytes, byte[] salt){
 		return new String(BinaryUtil.toBase64(getDigest(inBytes,salt)));
 	}

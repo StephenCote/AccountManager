@@ -27,6 +27,7 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBElement;
@@ -41,6 +42,10 @@ import org.cote.accountmanager.exceptions.FactoryException;
 
 public class JAXBUtil {
 	public static final Logger logger = LogManager.getLogger(JAXBUtil.class);
+	
+	private JAXBUtil() {
+		
+	}
 	public static <U,T> T clone(Class<T> tClass, U map){
 		return clone(tClass,map,new QName("http://www.cote.org/accountmanager/objects"));
 	}
@@ -82,9 +87,9 @@ public class JAXBUtil {
 	    JAXBContext context;
 		try {
 			context = JAXBContext.newInstance(tClass);
-		    ByteArrayInputStream bais =new ByteArrayInputStream(input.getBytes("UTF-8"));
+		    ByteArrayInputStream bais =new ByteArrayInputStream(input.getBytes(StandardCharsets.UTF_8));
 		    obj = (T) context.createUnmarshaller().unmarshal(bais);
-		} catch (JAXBException | UnsupportedEncodingException e) {
+		} catch (JAXBException e) {
 			logger.error(e.getMessage());
 			logger.error(FactoryException.TRACE_EXCEPTION,e);
 		}
@@ -100,7 +105,7 @@ public class JAXBUtil {
 		    ByteArrayOutputStream baos = new ByteArrayOutputStream();
 		    context.createMarshaller().marshal(obj, baos);
 		    baos.flush();
-		    output = new String(baos.toByteArray(),"UTF-8");
+		    output = new String(baos.toByteArray(),StandardCharsets.UTF_8);
 		    baos.close();
 		} catch (JAXBException | IOException e) {
 			logger.error(e.getMessage());

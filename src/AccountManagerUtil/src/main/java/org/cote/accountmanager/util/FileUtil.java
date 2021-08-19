@@ -31,6 +31,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -46,15 +48,7 @@ public class FileUtil {
 		
 	}
 	public static String getFileAsString(File f){		
-		String outStr = null;
-		byte[] data = getFile(f);
-		try {
-			outStr = new String(data,"UTF-8");
-		} catch (UnsupportedEncodingException e) {
-			logger.error(e.getMessage());
-			logger.error(e);
-		}
-		return outStr;
+		return new String(getFile(f), StandardCharsets.UTF_8);
 	}
 	public static byte[] getFile(String path){
 		return getFile(new File(path));
@@ -98,21 +92,10 @@ public class FileUtil {
 	}
 	public static boolean emitFile(String path, String contents)
 	{
-		return emitFile(path, contents, "UTF-8");
+		return emitFile(path, contents, StandardCharsets.UTF_8);
 	}
-	public static boolean emitFile(String path, String contents, String encoding){
-		byte[] cont = new byte[0];
-		boolean outBool = false;
-		try {
-			cont = contents.getBytes(encoding);
-			outBool = emitFile(path, cont);
-		} catch (UnsupportedEncodingException e) {
-			logger.error(e.getMessage());
-			logger.error(e);
-		}
-		
-		return outBool;
-		
+	public static boolean emitFile(String path, String contents, Charset encoding){
+		return emitFile(path, contents.getBytes(encoding));
 	}
 	public static boolean makePath(String path){
 		boolean outBool = false;

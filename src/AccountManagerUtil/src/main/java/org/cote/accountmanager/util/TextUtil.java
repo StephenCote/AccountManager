@@ -24,6 +24,7 @@
 package org.cote.accountmanager.util;
 
 import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
 import java.util.regex.Pattern;
 
 import org.apache.logging.log4j.LogManager;
@@ -35,6 +36,10 @@ public class TextUtil {
 	private static Pattern regLessThan = Pattern.compile("<");
 	private static Pattern regGreaterThan = Pattern.compile(">");
 	private static Pattern regAsciiCharactersOnly = Pattern.compile("[^\\x20-\\x7E]");
+	
+	private TextUtil() {
+		
+	}
 	public static String toAsciiCharactersOnly(String inStr){
 		if(inStr == null)
 			return null;
@@ -44,15 +49,9 @@ public class TextUtil {
 	public static String toUTF8(String inStr){
 		if(inStr == null)
 			return null;
-		String outStr = null;
-		try {
-			outStr = new String(inStr.getBytes(),"UTF-8");
-		} catch (UnsupportedEncodingException e) {
-			logger.error(e.getMessage());
-			logger.error(FactoryException.TRACE_EXCEPTION,e);
-		}
-		return outStr;
+		return new String(inStr.getBytes(),StandardCharsets.UTF_8);
 	}
+	
 	public static String encodeForHTML(String possibleHTML){
 		if(possibleHTML == null)
 			return null;

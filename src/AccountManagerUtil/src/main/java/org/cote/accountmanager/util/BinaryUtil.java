@@ -23,54 +23,34 @@
  *******************************************************************************/
 package org.cote.accountmanager.util;
 
-import java.io.UnsupportedEncodingException;
-
+import java.nio.charset.StandardCharsets;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.cote.accountmanager.exceptions.FactoryException;
+
 
 public class BinaryUtil {
 	public static final Logger logger = LogManager.getLogger(BinaryUtil.class);
-	public static String fromBase64Str(String in_base64){
-		return fromBase64Str(in_base64.getBytes());
+	private BinaryUtil() {
+		
 	}
-	public static String fromBase64Str(byte[] in_base64){
-		String out_str = null;
-		try {
-			out_str = (new String(fromBase64(in_base64),"UTF-8"));
-		} catch (UnsupportedEncodingException e) {
-			logger.error(e.getMessage());
-			logger.error(FactoryException.TRACE_EXCEPTION,e);
-		}
-		return out_str;
-
+	public static String fromBase64Str(String inBase64){
+		return fromBase64Str(inBase64.getBytes());
 	}
-	public static byte[] fromBase64(byte[] in_base64){
-		return Base64.decodeBase64(in_base64);
+	public static String fromBase64Str(byte[] inBase64){
+		return (new String(fromBase64(inBase64),StandardCharsets.UTF_8));
 	}
-	public static String toBase64Str(String in_str){
-		byte[] b = new byte[0];
-		try {
-			b = in_str.getBytes("UTF-8");
-		} catch (UnsupportedEncodingException e) {
-			logger.error(e.getMessage());
-			logger.error(FactoryException.TRACE_EXCEPTION,e);
-		}
-		return toBase64Str(b);
+	public static byte[] fromBase64(byte[] inBase64){
+		return Base64.decodeBase64(inBase64);
 	}
-	public static String toBase64Str(byte[] in_str){
-		String out_str = null;
-		try {
-			out_str = new String(toBase64(in_str),"UTF-8");
-		} catch (UnsupportedEncodingException e) {
-			logger.error(e.getMessage());
-			logger.error(FactoryException.TRACE_EXCEPTION,e);
-		}
-		return out_str;
+	public static String toBase64Str(String inStr){
+		return toBase64Str(inStr.getBytes(StandardCharsets.UTF_8));
 	}
-	public static byte[] toBase64(byte[] in_str){
-		return Base64.encodeBase64(in_str);
+	public static String toBase64Str(byte[] inStr){
+		return new String(toBase64(inStr),StandardCharsets.UTF_8);
+	}
+	public static byte[] toBase64(byte[] inStr){
+		return Base64.encodeBase64(inStr);
 		
 	}
 }
