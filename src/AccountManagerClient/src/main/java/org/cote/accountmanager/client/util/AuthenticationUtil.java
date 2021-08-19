@@ -1,6 +1,7 @@
 package org.cote.accountmanager.client.util;
 
 import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
 
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.WebTarget;
@@ -75,86 +76,81 @@ public class AuthenticationUtil {
 		*/
 		String path = ClientUtil.getServer() + ClientUtil.getAccountManagerApp() + "/token/jwt";
 //		String resourcePath = ClientUtil.getServer() + ClientUtil.getAccountManagerApp() + "/resource";
-		try{
-			
-			AuthenticationRequestType req = new AuthenticationRequestType();
-			
-			if(token != null){
-				req.setCredentialType(CredentialEnumType.TOKEN);
-				req.setCredential(token.getCredential());
-				path += "/validate";
-			}
-			else{
-				req.setCredentialType(CredentialEnumType.HASHED_PASSWORD);
-				req.setOrganizationPath(orgPath);
-				req.setSubject(name);
-				req.setCredential(password.getBytes("UTF-8"));
-				path += "/authenticate";
-			}
-			WebTarget webResource = ClientUtil.getResource(path);
-			/// logger.info("Authentication Url: " + path + "\n" + JSONUtil.exportObject(req));
-			
-			Response response = webResource.request().accept(MediaType.APPLICATION_JSON_TYPE).post(Entity.entity(req, MediaType.APPLICATION_JSON_TYPE),Response.class);
-	
-			if (response.getStatus() == 200) {
-				//ClientUtil.setCookies(response.getCookies());
-				authResp = response.readEntity(AuthenticationResponseType.class);
-				if(authResp != null){
-					// logger.info("Authentication Response: " + JSONUtil.exportObject(authResp));
-					if(authResp.getResponse().equals(AuthenticationResponseEnumType.AUTHENTICATED)){
-						/// Note: The token will be stored in the default context, not the user context
-						///
-						if(token == null && authResp.getMessage() != null){
-							logger.info("Caching token");
-							token = new CredentialType();
-							token.setCredential(authResp.getMessage().getBytes());
-							token.setCredentialType(CredentialEnumType.TOKEN);
-							CacheUtil.cache(context, cacheKey, token);
-						}
-						
-						context.setAuthenticationCredential(token);
-						context.setAuthenticationStatus(authResp.getResponse());
-						context.setApiConfiguration(api);
-						UserType user = CacheUtil.readCache(context, userKey, UserType.class);
-						if(user == null){
-							user = AM6Util.getPrincipal(context);
-							if(user == null){
-								logger.error("Authenticated user object with key '" + userKey + "' is null");
-							}
-						}
-						else {
-							logger.debug("Reading principle from cache for " + userKey);
-						}
-						context.applyContext(user);
-						authResp.setUser(user);
-						// logger.info("User - " + (user == null ? "No" : "Yes"));
-						/*
 
-						*/
-						//sessionMap.put(name, authResp.getSessionId());
-						//ClientContext.applyContext(authResp.getUser());
+		AuthenticationRequestType req = new AuthenticationRequestType();
+		
+		if(token != null){
+			req.setCredentialType(CredentialEnumType.TOKEN);
+			req.setCredential(token.getCredential());
+			path += "/validate";
+		}
+		else{
+			req.setCredentialType(CredentialEnumType.HASHED_PASSWORD);
+			req.setOrganizationPath(orgPath);
+			req.setSubject(name);
+			req.setCredential(password.getBytes(StandardCharsets.UTF_8));
+			path += "/authenticate";
+		}
+		WebTarget webResource = ClientUtil.getResource(path);
+		/// logger.info("Authentication Url: " + path + "\n" + JSONUtil.exportObject(req));
+		
+		Response response = webResource.request().accept(MediaType.APPLICATION_JSON_TYPE).post(Entity.entity(req, MediaType.APPLICATION_JSON_TYPE),Response.class);
+
+		if (response.getStatus() == 200) {
+			//ClientUtil.setCookies(response.getCookies());
+			authResp = response.readEntity(AuthenticationResponseType.class);
+			if(authResp != null){
+				// logger.info("Authentication Response: " + JSONUtil.exportObject(authResp));
+				if(authResp.getResponse().equals(AuthenticationResponseEnumType.AUTHENTICATED)){
+					/// Note: The token will be stored in the default context, not the user context
+					///
+					if(token == null && authResp.getMessage() != null){
+						logger.info("Caching token");
+						token = new CredentialType();
+						token.setCredential(authResp.getMessage().getBytes());
+						token.setCredentialType(CredentialEnumType.TOKEN);
+						CacheUtil.cache(context, cacheKey, token);
 					}
-					else{
-						logger.warn("Not authenticated");
+					
+					context.setAuthenticationCredential(token);
+					context.setAuthenticationStatus(authResp.getResponse());
+					context.setApiConfiguration(api);
+					UserType user = CacheUtil.readCache(context, userKey, UserType.class);
+					if(user == null){
+						user = AM6Util.getPrincipal(context);
+						if(user == null){
+							logger.error("Authenticated user object with key '" + userKey + "' is null");
+						}
 					}
+					else {
+						logger.debug("Reading principle from cache for " + userKey);
+					}
+					context.applyContext(user);
+					authResp.setUser(user);
+					// logger.info("User - " + (user == null ? "No" : "Yes"));
+					/*
+
+					*/
+					//sessionMap.put(name, authResp.getSessionId());
+					//ClientContext.applyContext(authResp.getUser());
 				}
 				else{
-					logger.error("Authentication response was unexpected");
+					logger.warn("Not authenticated");
 				}
-				//cookies.clear();
-				//cookies.addAll(response.getCookies());
-
-				//response.get
-				//logger.info(response.getType());
 			}
 			else{
-				logger.error("Authentication response is " + response.getStatus());
+				logger.error("Authentication response was unexpected");
 			}
+			//cookies.clear();
+			//cookies.addAll(response.getCookies());
+
+			//response.get
+			//logger.info(response.getType());
 		}
-		catch (UnsupportedEncodingException e) {
-			
-			logger.error("Authentication Error",e);
+		else{
+			logger.error("Authentication response is " + response.getStatus());
 		}
+
 		return authResp;
 	}
 }

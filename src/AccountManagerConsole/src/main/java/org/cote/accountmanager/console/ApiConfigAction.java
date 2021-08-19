@@ -24,6 +24,7 @@
 package org.cote.accountmanager.console;
 
 import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -69,8 +70,8 @@ public class ApiConfigAction {
 				return;
 			}
 			
-			byte[] idb = identity.getBytes("UTF-8");
-			byte[] credb = credential.getBytes("UTF-8");
+			byte[] idb = identity.getBytes(StandardCharsets.UTF_8);
+			byte[] credb = credential.getBytes(StandardCharsets.UTF_8);
 			
 			ApiClientConfigurationBean apiConfig = ApiConnectionConfigurationService.getApiClientConfiguration(chkConfig.getServiceType(), chkConfig.getName(), org.getId());
 			if(apiConfig == null){
@@ -99,9 +100,6 @@ public class ApiConfigAction {
 		} catch (ArgumentException e) {
 			
 			logger.error(e.getMessage());
-			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
-		} catch (UnsupportedEncodingException e) {
-			
 			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
 

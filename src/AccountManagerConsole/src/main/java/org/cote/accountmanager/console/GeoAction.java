@@ -27,6 +27,7 @@ import java.io.BufferedReader;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -139,7 +140,7 @@ public class GeoAction {
 
 		logger.info("Buffering postal values ...");
 		geoIdToPost.clear();
-		BufferedReader bir = new BufferedReader(new InputStreamReader(new FileInputStream(path),"UTF-8"));
+		BufferedReader bir = new BufferedReader(new InputStreamReader(new FileInputStream(path),StandardCharsets.UTF_8));
 		CSVParser csvFileParser = new CSVParser(bir, csvFileFormat);
 
 		int counter = 0;
@@ -188,7 +189,7 @@ public class GeoAction {
 	
 	private static void importTraits(UserType owner, CSVFormat csvFileFormat, DirectoryGroupType dir, String path) throws ArgumentException, FactoryException, DataAccessException, IOException{
 		logger.info("Reading traits ...");
-		BufferedReader bir = new BufferedReader(new InputStreamReader(new FileInputStream(path),"UTF-8"));
+		BufferedReader bir = new BufferedReader(new InputStreamReader(new FileInputStream(path),StandardCharsets.UTF_8));
 
 		CSVParser csvFileParser = new CSVParser(bir, csvFileFormat);
 
@@ -209,7 +210,7 @@ public class GeoAction {
 	
 	private static void importCountries(UserType owner, CSVFormat csvFileFormat, DirectoryGroupType dir, String path) throws ArgumentException, FactoryException, DataAccessException, IOException{
 		logger.info("Reading countries ...");
-		BufferedReader bir = new BufferedReader(new InputStreamReader(new FileInputStream(path),"UTF-8"));
+		BufferedReader bir = new BufferedReader(new InputStreamReader(new FileInputStream(path),StandardCharsets.UTF_8));
 		CSVParser csvFileParser = new CSVParser(bir, csvFileFormat);
 
 		String sessionId = BulkFactories.getBulkFactory().newBulkSession();
@@ -240,7 +241,7 @@ public class GeoAction {
 	private static void importAdmin1Codes(UserType owner, CSVFormat csvFileFormat, DirectoryGroupType dir, String path) throws ArgumentException, FactoryException, DataAccessException, IOException{
 
 		logger.info("Reading Admin 1 Codes");
-		BufferedReader bir = new BufferedReader(new InputStreamReader(new FileInputStream(path),"UTF-8"));
+		BufferedReader bir = new BufferedReader(new InputStreamReader(new FileInputStream(path),StandardCharsets.UTF_8));
 		CSVParser csvFileParser = new CSVParser(bir, csvFileFormat);
 
 		((LocationFactory)Factories.getFactory(FactoryEnumType.LOCATION)).clearCache();
@@ -287,7 +288,7 @@ public class GeoAction {
 	
 	private static void importAdmin2Codes(UserType owner, CSVFormat csvFileFormat, DirectoryGroupType dir, String path) throws ArgumentException, FactoryException, DataAccessException, IOException{
 		logger.info("Reading Admin 2 Codes");
-		BufferedReader bir = new BufferedReader(new InputStreamReader(new FileInputStream(path),"UTF-8"));
+		BufferedReader bir = new BufferedReader(new InputStreamReader(new FileInputStream(path),StandardCharsets.UTF_8));
 		CSVParser csvFileParser = new CSVParser(bir, csvFileFormat);
 
 		String sessionId = BulkFactories.getBulkFactory().newBulkSession();
@@ -374,7 +375,7 @@ public class GeoAction {
 				logger.error("Failed to find parent country for " + countryList[c]);
 				continue;
 			}
-			bir = new BufferedReader(new InputStreamReader(new FileInputStream(path),"UTF-8"));
+			bir = new BufferedReader(new InputStreamReader(new FileInputStream(path),StandardCharsets.UTF_8));
 			csvFileParser = new CSVParser(bir, csvFileFormat);
  
 			sessionId = BulkFactories.getBulkFactory().newBulkSession();
