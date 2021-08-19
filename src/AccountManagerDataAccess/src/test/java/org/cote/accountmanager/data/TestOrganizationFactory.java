@@ -27,28 +27,42 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
+import java.io.UnsupportedEncodingException;
+import java.util.UUID;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.bouncycastle.util.Arrays;
 import org.cote.accountmanager.beans.SecurityBean;
+import org.cote.accountmanager.data.factory.FactoryDefaults;
 import org.cote.accountmanager.data.factory.OrganizationFactory;
+import org.cote.accountmanager.data.security.CredentialService;
 import org.cote.accountmanager.data.security.KeyService;
+import org.cote.accountmanager.data.services.SessionSecurity;
 import org.cote.accountmanager.exceptions.ArgumentException;
 import org.cote.accountmanager.exceptions.FactoryException;
+import org.cote.accountmanager.objects.CredentialEnumType;
+import org.cote.accountmanager.objects.CredentialType;
 import org.cote.accountmanager.objects.OrganizationType;
+import org.cote.accountmanager.objects.UserType;
 import org.cote.accountmanager.objects.types.FactoryEnumType;
 import org.cote.accountmanager.objects.types.NameEnumType;
 import org.cote.accountmanager.objects.types.OrganizationEnumType;
+import org.cote.accountmanager.util.JSONUtil;
 import org.cote.accountmanager.util.SecurityUtil;
 import org.junit.Test;
 public class TestOrganizationFactory extends BaseDataAccessTest{
 	private static String testOrgName = null;
 	public static final Logger logger = LogManager.getLogger(TestOrganizationFactory.class);
-
-
+	private static String testOrgPassword = null;
+	private static String sessionId = null;
+	
 	@Test
 	public void runTests(){
 		testAddOrganization();
 		testGetOrganization();
+		testSetupOrganization();
+		testCredentialSalted();
 		testOrganizationCipher();
 		testUpdateOrganization();
 		testAddOrphanOrganization();
@@ -60,33 +74,28 @@ public class TestOrganizationFactory extends BaseDataAccessTest{
 	
 		assertFalse("An error occurred", error);
 		testOrgName = "Example " + System.currentTimeMillis();
-		OrganizationType new_org = new OrganizationType();
-		new_org.setName(testOrgName);
-		new_org.setNameType(NameEnumType.ORGANIZATION);
-		new_org.setOrganizationType(OrganizationEnumType.DEVELOPMENT);
+		OrganizationType newOrg = new OrganizationType();
+		newOrg.setName(testOrgName);
+		newOrg.setNameType(NameEnumType.ORGANIZATION);
+		newOrg.setOrganizationType(OrganizationEnumType.DEVELOPMENT);
 		
-		logger.info("Id: " + new_org.getId());
-		logger.info("Ref Id: " + new_org.getReferenceId());
+		logger.info("Id: " + newOrg.getId());
+		logger.info("Ref Id: " + newOrg.getReferenceId());
 		try {
 			OrganizationFactory org_factory = ((OrganizationFactory)Factories.getFactory(FactoryEnumType.ORGANIZATION));
 			OrganizationType devOrg = Factories.getDevelopmentOrganization();
-			new_org.setParentId(devOrg.getId());
+			newOrg.setParentId(devOrg.getId());
 
-			if(org_factory.add(new_org)){
-				new_org = org_factory.getByNameInParent(testOrgName,devOrg.getId(), 0L);
-				KeyService.newOrganizationAsymmetricKey(new_org.getId(), true);
-				KeyService.newOrganizationSymmetricKey(new_org.getId(), true);
+			if(org_factory.add(newOrg)){
+				newOrg = org_factory.getByNameInParent(testOrgName,devOrg.getId(), 0L);
+				KeyService.newOrganizationAsymmetricKey(newOrg.getId(), true);
+				KeyService.newOrganizationSymmetricKey(newOrg.getId(), true);
 			}
-		} catch (FactoryException e2) {
-			
-			logger.error(FactoryException.LOGICAL_EXCEPTION,e2);
-			logger.error(e2.getMessage());
+		} catch (FactoryException | ArgumentException e) {
 			error = true;
-		} catch (ArgumentException e) {
-			
 			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		} 
-		logger.info("Added " + testOrgName + " as " + new_org.getId());
+		logger.info("Added " + testOrgName + " as " + newOrg.getId());
 		assertFalse("An error occurred", error);
 	}
 	
@@ -94,10 +103,10 @@ public class TestOrganizationFactory extends BaseDataAccessTest{
 		boolean error = false;
 
 		String orgName = "Example " + System.currentTimeMillis();
-		OrganizationType new_org = new OrganizationType();
-		new_org.setName(orgName);
-		new_org.setNameType(NameEnumType.ORGANIZATION);
-		new_org.setOrganizationType(OrganizationEnumType.DEVELOPMENT);
+		OrganizationType newOrg = new OrganizationType();
+		newOrg.setName(orgName);
+		newOrg.setNameType(NameEnumType.ORGANIZATION);
+		newOrg.setOrganizationType(OrganizationEnumType.DEVELOPMENT);
 
 		OrganizationType parentOrg = null;
 		
@@ -108,57 +117,101 @@ public class TestOrganizationFactory extends BaseDataAccessTest{
 
 			parentOrg = org_factory.getByNameInParent(testOrgName, devOrg.getId(),0L);
 			assertNotNull("Test organization " + testOrgName + " is null in " + devOrg.getUrn(),parentOrg);
-			new_org.setParentId(parentOrg.getId());
+			newOrg.setParentId(parentOrg.getId());
 
-			if(org_factory.add(new_org)){
-				new_org = org_factory.getByNameInParent(orgName, parentOrg.getId(), 0L);
-				assertNotNull("New organization is null",new_org);
+			if(org_factory.add(newOrg)){
+				newOrg = org_factory.getByNameInParent(orgName, parentOrg.getId(), 0L);
+				assertNotNull("New organization is null",newOrg);
 			}
 			else{
 				logger.error("Failed to add new organization " + testOrgName);
-				new_org = null;
+				newOrg = null;
 			}
-		} catch (FactoryException e2) {
-			
-			logger.error(FactoryException.LOGICAL_EXCEPTION,e2);
-			logger.error(e2.getMessage());
+		} catch (FactoryException | ArgumentException e) {
 			error = true;
-		} catch (ArgumentException e) {
-			
 			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		} 
-		logger.info("Added " + testOrgName + " as " + new_org.getId());
+		logger.info("Added " + testOrgName + " as " + newOrg.getId());
 		assertFalse("An error occurred", error);
 	}
 	
 	public void testGetOrganization(){
 		boolean error = false;
 		
-		OrganizationType new_org = null;
+		OrganizationType newOrg = null;
 		try{
 			logger.info("Read clean: " + testOrgName + " in " + Factories.getDevelopmentOrganization().getId());
-			new_org = ((OrganizationFactory)Factories.getFactory(FactoryEnumType.ORGANIZATION)).getByNameInParent(testOrgName, Factories.getDevelopmentOrganization().getId(),0L);
-			assertNotNull("Get organization " + testOrgName + "->" + Factories.getDevelopmentOrganization().getId() + " by name was null", new_org);
-			logger.info("Read from cache by id: " + new_org.getId());
-			new_org = ((OrganizationFactory)Factories.getFactory(FactoryEnumType.ORGANIZATION)).getOrganizationById(new_org.getId());
-			assertNotNull("Get organization from cache by id was null", new_org);
+			newOrg = ((OrganizationFactory)Factories.getFactory(FactoryEnumType.ORGANIZATION)).getByNameInParent(testOrgName, Factories.getDevelopmentOrganization().getId(),0L);
+			assertNotNull("Get organization " + testOrgName + "->" + Factories.getDevelopmentOrganization().getId() + " by name was null", newOrg);
+			logger.info("Read from cache by id: " + newOrg.getId());
+			newOrg = ((OrganizationFactory)Factories.getFactory(FactoryEnumType.ORGANIZATION)).getOrganizationById(newOrg.getId());
+			assertNotNull("Get organization from cache by id was null", newOrg);
 			logger.info("Read from cache by name and parent");
-			new_org = ((OrganizationFactory)Factories.getFactory(FactoryEnumType.ORGANIZATION)).getByNameInParent(testOrgName, Factories.getDevelopmentOrganization().getId(),0L);
-			assertNotNull("Get oranization from cache by name was null null", new_org);
+			newOrg = ((OrganizationFactory)Factories.getFactory(FactoryEnumType.ORGANIZATION)).getByNameInParent(testOrgName, Factories.getDevelopmentOrganization().getId(),0L);
+			assertNotNull("Get oranization from cache by name was null null", newOrg);
 		}
-		catch(FactoryException fe){
-			logger.error(fe.getMessage());
+		catch(FactoryException | ArgumentException e) {
 			error = true;
-		} catch (ArgumentException e) {
-			
 			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
 		assertFalse(FactoryException.LOGICAL_EXCEPTION,error);
 
 		
-		logger.info("Id: " + new_org.getId());
-		logger.info("Ref Id: " + new_org.getReferenceId());
+		logger.info("Id: " + newOrg.getId());
+		logger.info("Ref Id: " + newOrg.getReferenceId());
 		
+	}
+	
+	public void testSetupOrganization(){
+		boolean error = false;
+		testOrgPassword = "Password - " + UUID.randomUUID().toString();
+		OrganizationType newOrg = null;
+		try{
+			newOrg = ((OrganizationFactory)Factories.getFactory(FactoryEnumType.ORGANIZATION)).getByNameInParent(testOrgName, Factories.getDevelopmentOrganization().getId(),0L);
+			assertNotNull("Get organization " + testOrgName + "->" + Factories.getDevelopmentOrganization().getId() + " by name was null", newOrg);
+			assertTrue("Failed to setup new organization", FactoryDefaults.setupOrganization(newOrg, testOrgPassword));
+		}
+		catch(FactoryException | ArgumentException | DataAccessException e) {
+			
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
+		}
+		assertFalse(FactoryException.LOGICAL_EXCEPTION,error);
+	}
+	
+	public void testCredentialSalted(){
+		boolean error = false;
+		OrganizationType newOrg = null;
+		sessionId = UUID.randomUUID().toString();
+		try{
+			newOrg = ((OrganizationFactory)Factories.getFactory(FactoryEnumType.ORGANIZATION)).getByNameInParent(testOrgName, Factories.getDevelopmentOrganization().getId(),0L);
+			assertNotNull("Get organization " + testOrgName + "->" + Factories.getDevelopmentOrganization().getId() + " by name was null", newOrg);
+			UserType adminUser = SessionSecurity.login(sessionId, "Admin", CredentialEnumType.HASHED_PASSWORD,testOrgPassword, newOrg.getId());
+			assertNotNull("Failed to authenticate as admin user", adminUser);
+			CredentialType cred = CredentialService.getPrimaryCredential(adminUser);
+			assertNotNull("Failed to retrieve credential object for admin user");
+			logger.info(JSONUtil.exportObject(cred));
+			
+			
+			assertTrue("Expected the password to validate against the credential", CredentialService.validatePasswordCredential(adminUser, cred, testOrgPassword));
+			/// This is effectively the same as the Auth
+			SecurityBean bean = KeyService.getAsymmetricKeyByObjectId(cred.getKeyId(), cred.getOrganizationId());
+			assertNotNull("Cipher is null", bean);
+			byte[] credBytes = SecurityUtil.decrypt(bean, cred.getCredential());
+			byte[] pwdBytes = SecurityUtil.getDigest(testOrgPassword.getBytes("UTF-8"), cred.getSalt());
+			String digest = new String(pwdBytes,"UTF-8");
+			assertTrue("Password bytes don't match",Arrays.areEqual(credBytes, pwdBytes));
+			logger.info("Comparing from bytes: " + (new String(credBytes,"UTF-8") + " == " + new String(pwdBytes,"UTF-8")));
+			logger.info("Comparing " + digest + " == " + (new String(credBytes,"UTF-8")));
+			assertTrue("Expected the salted hashed password to match: " + digest + " == " + (new String(credBytes,"UTF-8")), digest.equals(new String(credBytes,"UTF-8")));
+			
+			SessionSecurity.logout(adminUser);
+
+		}
+		catch(FactoryException | ArgumentException | UnsupportedEncodingException e) {
+			
+			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
+		}
+		assertFalse(FactoryException.LOGICAL_EXCEPTION,error);
 	}
 	
 	
@@ -166,10 +219,10 @@ public class TestOrganizationFactory extends BaseDataAccessTest{
 		boolean error = false;
 
 		
-		OrganizationType new_org = null;
+		OrganizationType newOrg = null;
 		try{
 			logger.info("Read clean");
-			new_org = ((OrganizationFactory)Factories.getFactory(FactoryEnumType.ORGANIZATION)).getByNameInParent(testOrgName, Factories.getDevelopmentOrganization().getId(),0L);
+			newOrg = ((OrganizationFactory)Factories.getFactory(FactoryEnumType.ORGANIZATION)).getByNameInParent(testOrgName, Factories.getDevelopmentOrganization().getId(),0L);
 		}
 		catch(FactoryException fe){
 			logger.error(fe.getMessage());
@@ -179,28 +232,25 @@ public class TestOrganizationFactory extends BaseDataAccessTest{
 			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
 		assertFalse(FactoryException.LOGICAL_EXCEPTION,error);
-		assertNotNull("Org is null", new_org);
+		assertNotNull("Org is null", newOrg);
 		
 
-		SecurityBean bean = KeyService.getPrimarySymmetricKey(new_org.getId()); 
-				//OrganizationSecurity.getSecurityBean(new_org);
+		SecurityBean bean = KeyService.getPrimarySymmetricKey(newOrg.getId()); 
+
 		String test_data = "This is some test data.";
 		byte[] enc = SecurityUtil.encipher(bean, test_data.getBytes());
 		assertTrue("Enciphered data is empty or null",enc != null && enc.length > 0);
 		try{
 			((OrganizationFactory)Factories.getFactory(FactoryEnumType.ORGANIZATION)).clearCache();
 
-			new_org = ((OrganizationFactory)Factories.getFactory(FactoryEnumType.ORGANIZATION)).getByNameInParent(testOrgName, Factories.getDevelopmentOrganization().getId(),0L);
+			newOrg = ((OrganizationFactory)Factories.getFactory(FactoryEnumType.ORGANIZATION)).getByNameInParent(testOrgName, Factories.getDevelopmentOrganization().getId(),0L);
 		}
-		catch(FactoryException fe){
-			logger.error(fe.getMessage());
+		catch(FactoryException | ArgumentException e) {
 			error = true;
-		} catch (ArgumentException e) {
-			
 			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
-		bean = KeyService.getPrimaryAsymmetricKey(new_org.getId());
-				//OrganizationSecurity.getSecurityBean(new_org);
+		bean = KeyService.getPrimaryAsymmetricKey(newOrg.getId());
+
 		byte[] dec = SecurityUtil.decipher(bean, enc);
 		logger.info("Decrypted: " + (new String(dec)));
 		logger.info("Bean: " + (bean == null ? "Null":"Retrieved"));
@@ -221,12 +271,8 @@ public class TestOrganizationFactory extends BaseDataAccessTest{
 			}
 
 		}
-		catch(FactoryException fe){
-			logger.error(FactoryException.LOGICAL_EXCEPTION,fe);
-			logger.error(fe.getMessage());
+		catch(FactoryException | ArgumentException e) {
 			error = true;
-		} catch (ArgumentException e) {
-			
 			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
 		assertFalse("An error occurred", error);
