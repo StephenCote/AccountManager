@@ -99,7 +99,7 @@ public abstract class FactoryBase {
 		return factoryType;
 	}
 	protected void addBulkId(String sessionId, long id){
-		if(!bulkMap.containsKey(sessionId)) bulkMap.put(sessionId, new ArrayList<Long>());
+		if(!bulkMap.containsKey(sessionId)) bulkMap.put(sessionId, new ArrayList<>());
 		bulkMap.get(sessionId).add(id);
 	}
 	public Map<String,List<Long>> getBulkMap(){
@@ -121,7 +121,7 @@ public abstract class FactoryBase {
 	protected boolean insertRow(DataRow row){
 		boolean outBool = false;
 
-		if(!row.getTable().getBulkInsert()){
+		if(!row.getTable().getBulkInsert().booleanValue()){
 			try {
 				outBool = BulkInsertUtil.insert(row);
 			} catch (FactoryException e) {
@@ -177,10 +177,10 @@ public abstract class FactoryBase {
 	public boolean isScopeToOrganization() {
 		return scopeToOrganization;
 	}
-	protected String getSelectIdTemplate(DataTable table, ProcessingInstructionType instruction){
+	protected String getSelectIdTemplate(DataTable table){
 		return table.getSelectIdTemplate();
 	}
-	protected String getSelectNameTemplate(DataTable table, ProcessingInstructionType instruction){
+	protected String getSelectNameTemplate(DataTable table){
 		return table.getSelectNameTemplate();
 	}
 
@@ -288,7 +288,7 @@ public abstract class FactoryBase {
 
 		DataTable table = this.dataTables.get(0);
 		
-		String selectString = getSelectNameTemplate(table, null);
+		String selectString = getSelectNameTemplate(table);
 		String sqlQuery = assembleQueryString(selectString, fields, connectionType, null, organizationId);
 		PreparedStatement statement = null;
 		ResultSet rset = null;
@@ -338,7 +338,7 @@ public abstract class FactoryBase {
 		Connection connection = ConnectionFactory.getInstance().getConnection();
 		DataTable table = this.dataTables.get(0);
 		
-		String selectString = getSelectIdTemplate(table, null);
+		String selectString = getSelectIdTemplate(table);
 		String sqlQuery = assembleQueryString(selectString, fields, connectionType, null, organizationId);
 		ResultSet rset = null;
 		PreparedStatement statement = null;
@@ -552,7 +552,6 @@ public abstract class FactoryBase {
 				// It is parameterized so the value is properly encoded 
 				//
 				matchBuff.append(String.format("%s LIKE %s", fieldName, paramToken));
-				continue;
 			}
 			else if (fieldComp == ComparatorEnumType.IN || fieldComp == ComparatorEnumType.NOT_IN)
 			{
@@ -561,7 +560,6 @@ public abstract class FactoryBase {
 				//
 				String notStr = (fieldComp == ComparatorEnumType.NOT_IN ? " NOT " : "");
 				matchBuff.append(String.format("%s %s IN (%s)",fieldName, notStr, (String)fields[i].getValue()));
-				continue;
 			}
 			else if (fieldComp == ComparatorEnumType.GREATER_THAN || fieldComp == ComparatorEnumType.GREATER_THAN_OR_EQUALS)
 			{

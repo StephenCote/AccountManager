@@ -207,6 +207,7 @@ public class ConnectionFactory {
 		Connection connection = null;
 		if(ds == null) {
 			if(!tryDriver(driverClassName)){
+				logger.error("DataSource failed driver check.");
 				return null;
 			}
 
@@ -222,13 +223,8 @@ public class ConnectionFactory {
 	        ds = bds;
 
 		}
-		if(ds == null){
-			logger.error("DataSource is null.  Check that the database server is started and accessible.");
-			return null;
-		}
 		try{
 			connection = ds.getConnection();
-
 		}
 		catch(SQLException sqe){
 			logger.error(FactoryException.LOGICAL_EXCEPTION,sqe);
