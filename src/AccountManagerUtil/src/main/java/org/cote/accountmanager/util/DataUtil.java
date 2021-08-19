@@ -24,6 +24,7 @@
 package org.cote.accountmanager.util;
 
 import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -55,7 +56,7 @@ public class DataUtil {
 		}
 		else{
 			SecurityBean useBean =  bean;
-			if(bean.getEncryptCipherKey()){
+			if(bean.getEncryptCipherKey().booleanValue()){
 				useBean = new SecurityBean();
 				SecurityFactory.getSecurityFactory().setSecretKey(useBean, bean.getCipherKey(), bean.getCipherIV(), false);
 			}
@@ -90,13 +91,7 @@ public class DataUtil {
 	{
 		if (value != null && value.length() > 255)
 		{
-			
-			try {
-				setValue(d, value.getBytes("UTF-8"));
-			} catch (UnsupportedEncodingException e) {
-				logger.error(e.getMessage());
-				logger.error(FactoryException.TRACE_EXCEPTION,e);
-			}
+			setValue(d, value.getBytes(StandardCharsets.UTF_8));
 			d.setShortData(null);
 			if(d.getMimeType() == null || d.getMimeType().length() == 0){
 				d.setMimeType("text/plain");
@@ -110,14 +105,9 @@ public class DataUtil {
 	
 	public static String getValueString(DataType d) throws DataException
 	{
-		if (d.getBlob())
+		if (d.getBlob().booleanValue())
 		{
-			try {
-				return (new String(getValue(d),"UTF-8"));
-			} catch (UnsupportedEncodingException e) {
-				logger.error(e.getMessage());
-				logger.error(FactoryException.TRACE_EXCEPTION,e);
-			}
+			return (new String(getValue(d),StandardCharsets.UTF_8));
 		}
 		return d.getShortData();
 		
@@ -129,7 +119,7 @@ public class DataUtil {
 		d.setDataBytesStore(new byte[0]);
 		d.setReadDataBytes(false);
 		d.setShortData(null);
-		if(d.getVaulted() == false){
+		if(!d.getVaulted().booleanValue()){
 			d.setDataHash(SecurityUtil.getDigestAsString(value, new byte[0]));
 			// don't override compression setting for vaulted data
 			//
@@ -138,13 +128,13 @@ public class DataUtil {
 		d.setCompressionType(CompressionEnumType.NONE);
 		d.setBlob(true);
 
-		if (d.getVaulted() == false && value.length > 512 && tryCompress(d))
+		if (!d.getVaulted().booleanValue() && value.length > 512 && tryCompress(d))
 		{
 			value = ZipUtil.gzipBytes(value);
 			d.setCompressed(true);
 			d.setCompressionType(CompressionEnumType.GZIP);
 		}
-		if (d.getPasswordProtect())
+		if (d.getPasswordProtect().booleanValue())
 		{
 			if (d.getPassKey() == null || d.getPassKey().length == 0)
 			{
@@ -166,7 +156,7 @@ public class DataUtil {
 			}
 		}
 
-		if (d.getEncipher())
+		if (d.getEncipher().booleanValue())
 		{
 
 			if(d.getCipherKey() == null || d.getCipherKey().length == 0){
@@ -190,15 +180,15 @@ public class DataUtil {
 
 	public static byte[] getValue(DataType d) throws DataException
 	{
-		if(d.getDetailsOnly()){
+		if(d.getDetailsOnly().booleanValue()){
 			throw new DataException("Cannot access data with a meta data object.");
 		}
-		if (!d.getBlob())
+		if (!d.getBlob().booleanValue())
 		{
 			byte[] ret = new byte[0];
 			if (d.getShortData() != null)
 			{
-				if (d.getPointer())
+				if (d.getPointer().booleanValue())
 				{
 					ret = FileUtil.getFile(d.getShortData());
 				}
@@ -209,12 +199,12 @@ public class DataUtil {
 			}
 			return ret;
 		}
-		else if (d.getReadDataBytes() == false && d.getDataBytesStore().length > 0)
+		else if (!d.getReadDataBytes().booleanValue() && d.getDataBytesStore().length > 0)
 		{
 			try
 			{
 				byte[] ret = d.getDataBytesStore();
-				if (d.getEnciphered())
+				if (d.getEnciphered().booleanValue())
 				{
 					if(d.getCipherKey() == null || d.getCipherKey().length == 0){
 						throw new DataException("Cipher key was not specified for enciphered data.");
@@ -226,7 +216,7 @@ public class DataUtil {
 					d.setCipherKey(null);
 				}
 
-				if (d.getPasswordProtected())
+				if (d.getPasswordProtected().booleanValue())
 				{
 					if(d.getPassKey() == null || d.getPassKey().length == 0){
 						throw new DataException("Pass key was not specified for password-protected data.");
@@ -237,22 +227,21 @@ public class DataUtil {
 					/// Zero out the pass key - it's a risk to keep it after this
 					d.setPassKey(null);
 				}
-				if (d.getVaulted() == false && d.getCompressed() && ret.length > 0)
+				if (!d.getVaulted().booleanValue() && d.getCompressed().booleanValue() && ret.length > 0)
 				{
 					ret = ZipUtil.gunzipBytes(ret);
 				}
 				d.setDataBytesStore(ret);
 				d.setReadDataBytes(true);
-				ret = new byte[0];
 			}
 			catch (Exception e)
 			{
 				throw new DataException(e);
 			}
 		}
-		if (d.getReadDataBytes())
+		if (d.getReadDataBytes().booleanValue())
 		{
-			if (d.getPointer() && d.getVaulted() == false)
+			if (d.getPointer().booleanValue() && !d.getVaulted().booleanValue())
 			{
 				return FileUtil.getFile(new String(d.getDataBytesStore()));
 			}
@@ -265,7 +254,7 @@ public class DataUtil {
 	public static boolean tryCompress(DataType d)
 	{
 		String mimeType = d.getMimeType();
-		if (
+		return (
 			mimeType == null
 			||
 			(
@@ -278,11 +267,7 @@ public class DataUtil {
 				&&
 				mimeType.startsWith("audio/") == false
 			)
-		)
-		{
-			return true;
-		}
-		return false;
+		);
 
 	}
 
