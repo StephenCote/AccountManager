@@ -263,6 +263,7 @@ public class AuthorizedSearchService {
 		/// 1 - objtype
 		+ "\nSELECT D.id as participationid,  -1 as affectid, 'UNKNOWN' as affecttype, D.ownerId as referenceid, 'USER' as referencetype from %s D"
 		/// 2  = token 1 ownerid
+		+ (groupScope ? "\n INNER JOIN groups_from_branch(" + groupScopeId + ") GB on GB.groupid = D.groupid" : "")
 		+ (objectType.equals(NameEnumType.DATA) && !request.getIncludeThumbnail() ? " INNER JOIN groups G on G.id = D.groupId AND NOT G.name = '.thumbnail'" : "")
 		+ " WHERE D.ownerId = %s"
 		+ "\n UNION ALL"
@@ -270,6 +271,7 @@ public class AuthorizedSearchService {
 		+ " SELECT D.id, GP.affectid,GP.affecttype,GP.participantid as referenceid, GP.participanttype as referencetype"
 		/// 3 = objtype
 		+ " FROM %s D"
+		+ (groupScope ? "\n INNER JOIN groups_from_branch(" + groupScopeId + ") GB on GB.groupid = D.groupid" : "")
 		+ " INNER JOIN groups G on G.id = " + (objectType.equals(NameEnumType.GROUP) ? "D.parentId" : "D.groupid")
 		/// 4 = token 2 referencetype
 		/// 4.5 = token 2.5 referenceid
@@ -402,7 +404,7 @@ public class AuthorizedSearchService {
 			long stopQuery = System.currentTimeMillis();
 			long diff = (stopQuery - startQuery);
 
-			logger.debug("*** QUERY TIME: " + diff + "ms");
+			logger.info("*** QUERY TIME: " + diff + "ms");
 		}
 		catch(SQLException | FactoryException sqe){
 			logger.error(sqe.getMessage());
