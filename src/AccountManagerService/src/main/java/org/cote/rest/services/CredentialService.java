@@ -24,6 +24,7 @@
 package org.cote.rest.services;
 
 import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Consumes;
@@ -123,7 +124,7 @@ public class CredentialService {
 						return outBool;
 					}
 
-					if(org.cote.accountmanager.data.security.CredentialService.validatePasswordCredential(updateUser, currentCred, new String(authReq.getCheckCredential(),"UTF-8").trim())==false){
+					if(org.cote.accountmanager.data.security.CredentialService.validatePasswordCredential(updateUser, currentCred, new String(authReq.getCheckCredential(),StandardCharsets.UTF_8).trim())==false){
 						AuditService.denyResult(audit, "Failed to validate current credential");
 						return outBool;
 					}
@@ -153,7 +154,7 @@ public class CredentialService {
 						AuditService.denyResult(audit, "The current credential is required to create a new one.");
 						return outBool;
 					}
-					if(org.cote.accountmanager.data.security.CredentialService.validatePasswordCredential(updateGroup, currentCred, new String(authReq.getCheckCredential(),"UTF-8").trim())==false){
+					if(org.cote.accountmanager.data.security.CredentialService.validatePasswordCredential(updateGroup, currentCred, new String(authReq.getCheckCredential(),StandardCharsets.UTF_8).trim())==false){
 						AuditService.denyResult(audit, "Failed to validate current credential");
 						return outBool;
 					}
@@ -166,10 +167,10 @@ public class CredentialService {
 				return outBool;
 			}
 			/// Create a new primary credential for target user
-			byte[] credByte = (new String(authReq.getCredential())).trim().getBytes("UTF-8");
+			byte[] credByte = (new String(authReq.getCredential())).trim().getBytes(StandardCharsets.UTF_8);
 			newCred = org.cote.accountmanager.data.security.CredentialService.newCredential(authReq.getCredentialType(), null, owner, targetObject, credByte, true, true);
 		}
-		catch(FactoryException | ArgumentException | UnsupportedEncodingException e) {
+		catch(FactoryException | ArgumentException e) {
 			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		} 
 		if(newCred != null){

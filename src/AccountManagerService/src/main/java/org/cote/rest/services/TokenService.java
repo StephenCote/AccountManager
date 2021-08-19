@@ -24,6 +24,7 @@
 package org.cote.rest.services;
 
 import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -432,13 +433,13 @@ public class TokenService {
 				try {
 					SecuritySpoolType sst = org.cote.accountmanager.data.security.TokenService.newJWTToken(user, obj, expiryMinutes);
 					if(sst != null) {
-						outToken = new String(sst.getData(),"UTF-8");
+						outToken = new String(sst.getData(),StandardCharsets.UTF_8);
 					}
 					else {
 						logger.error("Token object was null");
 					}
 				}
-				catch(ArgumentException | UnsupportedEncodingException | FactoryException e) {
+				catch(ArgumentException | FactoryException e) {
 					logger.error(e);
 				}
 			}

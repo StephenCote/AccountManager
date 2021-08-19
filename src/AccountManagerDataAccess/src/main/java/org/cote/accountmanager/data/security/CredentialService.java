@@ -24,6 +24,7 @@
 package org.cote.accountmanager.data.security;
 
 import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -188,19 +189,15 @@ public class CredentialService {
 			return outBool;
 		}
 
-		try {
-			byte[] pwdBytes = password.getBytes("UTF-8");
-			if(credential.getCredentialType() == CredentialEnumType.HASHED_PASSWORD){
-				byte[] matchHash = SecurityUtil.getDigest(pwdBytes, credential.getSalt());
-				outBool = Arrays.areEqual(cred, matchHash);
-			}
-			else if(credential.getCredentialType() == CredentialEnumType.ENCRYPTED_PASSWORD || credential.getCredentialType() == CredentialEnumType.TOKEN){
-				outBool = Arrays.areEqual(cred, pwdBytes);
-			}
-		} catch (UnsupportedEncodingException e) {
-			
-			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
+		byte[] pwdBytes = password.getBytes(StandardCharsets.UTF_8);
+		if(credential.getCredentialType() == CredentialEnumType.HASHED_PASSWORD){
+			byte[] matchHash = SecurityUtil.getDigest(pwdBytes, credential.getSalt());
+			outBool = Arrays.areEqual(cred, matchHash);
 		}
+		else if(credential.getCredentialType() == CredentialEnumType.ENCRYPTED_PASSWORD || credential.getCredentialType() == CredentialEnumType.TOKEN){
+			outBool = Arrays.areEqual(cred, pwdBytes);
+		}
+
 		return outBool;
 	}
 	public static CredentialType newHashedPasswordCredential(UserType owner, NameIdType targetObject, String password, boolean primary){
@@ -212,29 +209,14 @@ public class CredentialService {
 	}
 	public static CredentialType newHashedPasswordCredential(String bulkSessionId, UserType owner, NameIdType targetObject, String password, boolean primary, String vaultId){
 
-		byte[] pwdBytes = new byte[0];
-		try {
-			pwdBytes = password.getBytes("UTF-8");
-		} catch (UnsupportedEncodingException e) {
-			
-			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
-		}
-		return newCredential(CredentialEnumType.HASHED_PASSWORD, bulkSessionId, owner, targetObject, pwdBytes, primary, true, vaultId);
+		return newCredential(CredentialEnumType.HASHED_PASSWORD, bulkSessionId, owner, targetObject, password.getBytes(StandardCharsets.UTF_8), primary, true, vaultId);
 	}
 	
 	public static CredentialType newTokenCredential(UserType owner, NameIdType targetObject, String token, boolean primary){
 		return newTokenCredential(null,owner,targetObject,token,primary);
 	}
 	public static CredentialType newTokenCredential(String bulkSessionId, UserType owner, NameIdType targetObject, String token, boolean primary){
-
-		byte[] pwdBytes = new byte[0];
-		try {
-			pwdBytes = token.getBytes("UTF-8");
-		} catch (UnsupportedEncodingException e) {
-			
-			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
-		}
-		return newCredential(CredentialEnumType.TOKEN, bulkSessionId, owner, targetObject, pwdBytes, primary, true, null);
+		return newCredential(CredentialEnumType.TOKEN, bulkSessionId, owner, targetObject, token.getBytes(StandardCharsets.UTF_8), primary, true, null);
 	}
 	
 	/// TODO: At the moment, a bulk credential requires a synchronous key insertion

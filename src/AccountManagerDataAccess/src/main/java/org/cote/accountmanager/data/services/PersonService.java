@@ -24,6 +24,7 @@
 package org.cote.accountmanager.data.services;
 
 import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -114,7 +115,7 @@ public class PersonService {
 			/// I intentionally left the credential operation decoupled from object creation
 			///
 			if(password != null){
-				CredentialService.newCredential(CredentialEnumType.HASHED_PASSWORD,sessionId,newUser, newUser, password.getBytes("UTF-8"), true,true);
+				CredentialService.newCredential(CredentialEnumType.HASHED_PASSWORD,sessionId,newUser, newUser, password.getBytes(StandardCharsets.UTF_8), true,true);
 			}
 
 			PersonType newPerson = ((PersonFactory)Factories.getFactory(FactoryEnumType.PERSON)).newPerson(newUser,pDir.getId());
@@ -147,7 +148,7 @@ public class PersonService {
 			outBool = true;
 			AuditService.permitResult(audit, "Created user '" + userName + "' (#" + newUser.getId() + ")");
 		}
-		catch(ArgumentException | UnsupportedEncodingException | FactoryException | DataAccessException e) {
+		catch(ArgumentException | FactoryException | DataAccessException e) {
 			
 			AuditService.denyResult(audit, "Failed to add user: " + e.getMessage());
 			logger.error("Error creating user " + userName + ": " + e.getMessage());

@@ -28,6 +28,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.UUID;
@@ -153,7 +154,7 @@ public class MediaFormServlet extends HttpServlet {
 			    		if(fileSize > BaseService.getAutoDataPointersThreshold()) {
 			    			logger.info("AUTO DATA POINTER: CACHE UPLOAD TO DISK: " + fileSize + " > " + BaseService.getAutoDataPointersThreshold());
 			    			useAutoPointer = true;
-			    			data = fileName.getBytes("UTF-8");
+			    			data = fileName.getBytes(StandardCharsets.UTF_8);
 			    		}
 			    		else {
 			    			File f = new File(fileName);

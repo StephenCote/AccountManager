@@ -32,6 +32,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.Properties;
 import java.util.UUID;
@@ -223,12 +224,12 @@ public class BaseDataAccessTest{
 			data = ((DataFactory)Factories.getFactory(FactoryEnumType.DATA)).newData(owner, dir.getId());
 			data.setName(name);
 			data.setMimeType("text/plain");
-			DataUtil.setValue(data, value.getBytes("UTF-8"));
+			DataUtil.setValue(data, value.getBytes(StandardCharsets.UTF_8));
 			((DataFactory)Factories.getFactory(FactoryEnumType.DATA)).add(data);
 			data = ((DataFactory)Factories.getFactory(FactoryEnumType.DATA)).getDataByName(name, dir);
 			((DataFactory)Factories.getFactory(FactoryEnumType.DATA)).denormalize(data);
 		}
-		catch(FactoryException | ArgumentException | DataException | UnsupportedEncodingException e) {
+		catch(FactoryException | ArgumentException | DataException e) {
 			
 			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}

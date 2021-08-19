@@ -28,6 +28,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
 import java.util.UUID;
 
 import org.apache.logging.log4j.LogManager;
@@ -197,17 +198,17 @@ public class TestOrganizationFactory extends BaseDataAccessTest{
 			SecurityBean bean = KeyService.getAsymmetricKeyByObjectId(cred.getKeyId(), cred.getOrganizationId());
 			assertNotNull("Cipher is null", bean);
 			byte[] credBytes = SecurityUtil.decrypt(bean, cred.getCredential());
-			byte[] pwdBytes = SecurityUtil.getDigest(testOrgPassword.getBytes("UTF-8"), cred.getSalt());
-			String digest = new String(pwdBytes,"UTF-8");
+			byte[] pwdBytes = SecurityUtil.getDigest(testOrgPassword.getBytes(StandardCharsets.UTF_8), cred.getSalt());
+			String digest = new String(pwdBytes,StandardCharsets.UTF_8);
 			assertTrue("Password bytes don't match",Arrays.areEqual(credBytes, pwdBytes));
-			logger.info("Comparing from bytes: " + (new String(credBytes,"UTF-8") + " == " + new String(pwdBytes,"UTF-8")));
-			logger.info("Comparing " + digest + " == " + (new String(credBytes,"UTF-8")));
-			assertTrue("Expected the salted hashed password to match: " + digest + " == " + (new String(credBytes,"UTF-8")), digest.equals(new String(credBytes,"UTF-8")));
+			logger.info("Comparing from bytes: " + (new String(credBytes,StandardCharsets.UTF_8) + " == " + new String(pwdBytes,StandardCharsets.UTF_8)));
+			logger.info("Comparing " + digest + " == " + (new String(credBytes,StandardCharsets.UTF_8)));
+			assertTrue("Expected the salted hashed password to match: " + digest + " == " + (new String(credBytes,StandardCharsets.UTF_8)), digest.equals(new String(credBytes,StandardCharsets.UTF_8)));
 			
 			SessionSecurity.logout(adminUser);
 
 		}
-		catch(FactoryException | ArgumentException | UnsupportedEncodingException e) {
+		catch(FactoryException | ArgumentException e) {
 			
 			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}

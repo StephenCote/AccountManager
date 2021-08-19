@@ -24,6 +24,7 @@
 package org.cote.accountmanager.data.security;
 
 import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -63,12 +64,15 @@ public class ApiConnectionConfigurationService {
 	
 	/// Api User holds the encrypted credentials and connection settings for making API calls
 	/// 
-	//private static UserType apiUser = null;
 	private static Map<Long,UserType> apiUsers = new HashMap<>();
 	private static String apiEmailConfigName = "System Email";
 	private static String apiRestConfigName = "System Rest";
 	private static String apiUserName = "ApiUser";
 	private static String apiDirectoryName = ".api";
+	
+	private ApiConnectionConfigurationService() {
+		
+	}
 	public static String getApiEmailConfigName() {
 		return apiEmailConfigName;
 	}
@@ -94,7 +98,7 @@ public class ApiConnectionConfigurationService {
 			chkUser = Factories.getNameIdFactory(FactoryEnumType.USER).getByName(apiUserName, organizationId);
 		}
 		if(chkUser != null) apiUsers.put(organizationId, chkUser);
-		//apiUser = chkUser;
+
 		return chkUser;
 	}
 	
@@ -122,10 +126,7 @@ public class ApiConnectionConfigurationService {
 		try {
 			dir = ((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getCreateDirectory(user, apiDirectoryName, ((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getUserDirectory(user),user.getOrganizationId());
 			((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).denormalize(dir);
-		} catch (FactoryException e) {
-			logger.error(e.getMessage());
-			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
-		} catch (ArgumentException e) {
+		} catch (FactoryException | ArgumentException e) {
 			logger.error(e.getMessage());
 			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
@@ -146,21 +147,10 @@ public class ApiConnectionConfigurationService {
 				return null;
 			}
 			SecurityBean cipher = KeyService.getSymmetricKeyByObjectId(data.getKeyId(), data.getOrganizationId());
-					//KeyService.getPrimarySymmetricKey(owner);
 			DataUtil.setCipher(data,cipher);
-			outConfig = JAXBUtil.importObject(ApiClientConfigurationBean.class, new String(DataUtil.getValue(data),"UTF-8"));
+			outConfig = JAXBUtil.importObject(ApiClientConfigurationBean.class, new String(DataUtil.getValue(data),StandardCharsets.UTF_8));
 			
-		} catch (FactoryException e) {
-			
-			logger.error(e.getMessage());
-			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
-		} catch (ArgumentException e) {
-			
-			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
-		} catch (UnsupportedEncodingException e) {
-			
-			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
-		} catch (DataException e) {
+		} catch (FactoryException | ArgumentException | DataException e) {
 			
 			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
@@ -189,7 +179,6 @@ public class ApiConnectionConfigurationService {
 			newData = ((DataFactory)Factories.getFactory(FactoryEnumType.DATA)).newData(owner, dir.getId());
 			newData.setName(dataName);
 			newData.setKeyId(cipher.getObjectId());
-			//newData.setSecurityType(cipher);
 			DataUtil.setCipher(newData,KeyService.promote(cipher));
 			newData.setEncipher(true);
 			newData.setMimeType("application/accountManagerApiConfiguration");
@@ -199,7 +188,7 @@ public class ApiConnectionConfigurationService {
 			apiConfig.setServiceUrl(serviceUrl);
 			apiConfig.setDataUrn(UrnUtil.getUrn(newData));
 			apiConfig.getAttributes().addAll(attributes);
-			byte[] conf = JAXBUtil.exportObject(ApiClientConfigurationBean.class, apiConfig).getBytes("UTF-8");
+			byte[] conf = JAXBUtil.exportObject(ApiClientConfigurationBean.class, apiConfig).getBytes(StandardCharsets.UTF_8);
 			
 			DataUtil.setValue(newData, conf);
 			if(((DataFactory)Factories.getFactory(FactoryEnumType.DATA)).add(newData)){
@@ -216,18 +205,7 @@ public class ApiConnectionConfigurationService {
 
 				}
 			}
-		} catch (FactoryException e) {
-			
-			logger.error(e.getMessage());
-			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
-		} catch (ArgumentException e) {
-			
-			logger.error(e.getMessage());
-			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
-		} catch (UnsupportedEncodingException e) {
-			
-			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
-		} catch (DataException e) {
+		} catch (FactoryException | ArgumentException | DataException e) {
 			
 			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}

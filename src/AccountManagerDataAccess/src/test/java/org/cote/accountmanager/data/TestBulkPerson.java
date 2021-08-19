@@ -27,6 +27,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
 import java.util.UUID;
 
 import org.cote.accountmanager.data.factory.AddressFactory;
@@ -96,7 +97,7 @@ public class TestBulkPerson extends BaseDataAccessTest{
 			
 			success = true;
 		}
-		catch(FactoryException | ArgumentException | DataAccessException | UnsupportedEncodingException e){
+		catch(FactoryException | ArgumentException | DataAccessException e){
 			logger.error("Unknown Exception: " + e.getMessage());
 			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
@@ -146,7 +147,7 @@ public class TestBulkPerson extends BaseDataAccessTest{
 			
 			success = true;
 		}
-		catch(FactoryException | ArgumentException | DataAccessException | UnsupportedEncodingException e){
+		catch(FactoryException | ArgumentException | DataAccessException e){
 			logger.error("Unknown Exception: " + e.getMessage());
 			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
@@ -186,7 +187,7 @@ public class TestBulkPerson extends BaseDataAccessTest{
 	}
 	
 	
-	private void addressPerson(UserType owner, DirectoryGroupType pDir, PersonType person, String sessionId) throws FactoryException, ArgumentException, UnsupportedEncodingException {
+	private void addressPerson(UserType owner, DirectoryGroupType pDir, PersonType person, String sessionId) throws FactoryException, ArgumentException {
 		ContactInformationType cit = ((ContactInformationFactory)Factories.getFactory(FactoryEnumType.CONTACTINFORMATION)).newContactInformation(person);
 		cit.setOwnerId(owner.getId());
 
@@ -216,7 +217,7 @@ public class TestBulkPerson extends BaseDataAccessTest{
 		
 		UserType user = ((UserFactory)Factories.getNameIdFactory(FactoryEnumType.USER)).newUser(person.getName(), UserEnumType.DEVELOPMENT, UserStatusEnumType.RESTRICTED, person.getOrganizationId());
 		BulkFactories.getBulkFactory().createBulkEntry(sessionId, FactoryEnumType.USER, user);
-		CredentialService.newCredential(CredentialEnumType.HASHED_PASSWORD,sessionId, user, user, "password1".getBytes("UTF-8"), true,true);
+		CredentialService.newCredential(CredentialEnumType.HASHED_PASSWORD,sessionId, user, user, "password1".getBytes(StandardCharsets.UTF_8), true,true);
 
 	}
 	

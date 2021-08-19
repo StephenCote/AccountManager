@@ -27,6 +27,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
 import java.util.UUID;
 
 import org.apache.logging.log4j.LogManager;
@@ -57,7 +58,7 @@ public class TestBulkUser extends BaseDataAccessTest{
 			BulkFactories.getBulkFactory().createBulkEntry(sessionId, FactoryEnumType.USER, new_user);
 			//SecurityType asymKey = KeyService.newPersonalAsymmetricKey(sessionId,null,new_user,false);
 			//SecurityType symKey = KeyService.newPersonalSymmetricKey(sessionId,null,new_user,false);
-			CredentialService.newCredential(CredentialEnumType.HASHED_PASSWORD,sessionId,new_user, new_user, "password1".getBytes("UTF-8"), true, true);
+			CredentialService.newCredential(CredentialEnumType.HASHED_PASSWORD,sessionId,new_user, new_user, "password1".getBytes(StandardCharsets.UTF_8), true, true);
 
 			logger.info("Retrieving Bulk User");
 			UserType check = Factories.getNameIdFactory(FactoryEnumType.USER).getByName("BulkUser-" + guid, new_user.getOrganizationId());
@@ -74,21 +75,11 @@ public class TestBulkUser extends BaseDataAccessTest{
 			BulkFactories.getBulkFactory().close(sessionId);
 			success = true;
 		}
-		catch(FactoryException fe){
-			logger.error(fe.getMessage());
-			logger.error(FactoryException.LOGICAL_EXCEPTION,fe);
-		}  catch (ArgumentException e) {
+		catch(FactoryException | ArgumentException | DataAccessException e) {
 			
 			logger.error(e.getMessage());
 			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
-		} catch (DataAccessException e) {
-			
-			logger.error(e.getMessage());
-			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
-		} catch (UnsupportedEncodingException e) {
-			
-			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
-		}
+		} 
 		assertTrue("Success bit is false",success);
 		// Now try to authenticate as the new bulk loaded user
 		UserType chkUser = null;

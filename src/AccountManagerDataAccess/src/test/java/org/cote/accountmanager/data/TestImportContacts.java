@@ -24,6 +24,7 @@
 package org.cote.accountmanager.data;
 
 import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -105,7 +106,7 @@ public class TestImportContacts extends BaseDataAccessTest{
 					BulkFactories.getBulkFactory().createBulkEntry(sessionId, FactoryEnumType.PERSON, person);
 					user = ((UserFactory)Factories.getNameIdFactory(FactoryEnumType.USER)).newUser(name, UserEnumType.NORMAL, UserStatusEnumType.NORMAL, testUser.getOrganizationId());
 					BulkFactories.getBulkFactory().createBulkEntry(sessionId, FactoryEnumType.USER, user);
-					CredentialService.newCredential(CredentialEnumType.HASHED_PASSWORD, sessionId, user, user, "password".getBytes("UTF-8"), true, true);
+					CredentialService.newCredential(CredentialEnumType.HASHED_PASSWORD, sessionId, user, user, "password".getBytes(StandardCharsets.UTF_8), true, true);
 
 					person.getUsers().add(user);
 				}
@@ -144,19 +145,10 @@ public class TestImportContacts extends BaseDataAccessTest{
 			BulkFactories.getBulkFactory().write(sessionId);
 			BulkFactories.getBulkFactory().close(sessionId);			
 			
-		} catch (FactoryException e) {
+		} catch (FactoryException | ArgumentException | DataAccessException e) {
 			
 			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
-		} catch (ArgumentException e) {
-			
-			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
-		} catch (DataAccessException e) {
-			
-			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
-		} catch (UnsupportedEncodingException e) {
-			
-			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
-		}
+		} 
 	}
 	private void importPersonRow(String sessionId,DirectoryGroupType pDir, RowType row){
 		

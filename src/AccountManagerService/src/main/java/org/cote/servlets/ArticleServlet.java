@@ -1,6 +1,7 @@
 package org.cote.servlets;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.Date;
 
 import javax.servlet.ServletException;
@@ -25,7 +26,7 @@ public class ArticleServlet extends HttpServlet {
 		long expiry = new Date().getTime() + (defCacheSeconds*1000);
 		response.setHeader("Cache-Control", "public,max-age="+ defCacheSeconds);
 		response.setDateHeader("Expires", expiry);
-		response.setCharacterEncoding("UTF-8");
+		response.setCharacterEncoding(StandardCharsets.UTF_8.toString());
 		MediaOptions options = new MediaOptions();
 		options.setUseTemplate(true);
 		options.setMediaBase("Articles");

@@ -1,6 +1,7 @@
 package org.cote.servlets;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.Date;
 
 import javax.servlet.ServletException;
@@ -27,7 +28,7 @@ public class DWACServlet extends HttpServlet {
 		
 		response.setHeader("Cache-Control", "public,max-age="+ defCacheSeconds);
 		response.setDateHeader("Expires", expiry);
-		response.setCharacterEncoding("UTF-8");
+		response.setCharacterEncoding(StandardCharsets.UTF_8.toString());
 	    
 		MediaOptions options = new MediaOptions();
 		options.setUseTemplate(true);

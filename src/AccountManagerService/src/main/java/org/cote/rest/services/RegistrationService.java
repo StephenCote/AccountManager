@@ -1,6 +1,7 @@
 package org.cote.rest.services;
 
 import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
 
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
@@ -77,14 +78,7 @@ public class RegistrationService {
 		String id = authRequest.getSubject();
 		String regId = authRequest.getTokens().get(0);
 		
-		boolean registered = false;
-		try {
-			registered = RegistrationUtil.confirmUserRegistration(id,  regId, new String(authRequest.getCredential(),"UTF-8"),request.getRemoteAddr(), sessionId);
-		} catch (UnsupportedEncodingException e) {
-			
-			logger.error("Error",e);
-		}
-		return registered;
+		return RegistrationUtil.confirmUserRegistration(id,  regId, new String(authRequest.getCredential(),StandardCharsets.UTF_8),request.getRemoteAddr(), sessionId);
 		
 	}
 	

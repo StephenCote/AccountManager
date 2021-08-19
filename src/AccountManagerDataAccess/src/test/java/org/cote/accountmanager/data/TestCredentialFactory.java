@@ -28,6 +28,7 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -60,7 +61,7 @@ public class TestCredentialFactory extends BaseDataAccessTest{
 		/*
 		CredentialType cred = null;
 		try {
-			cred = CredentialService.newCredential(CredentialEnumType.TOKEN, null, testUser, dir, apiTokenValue.getBytes("UTF-8"), true, false);
+			cred = CredentialService.newCredential(CredentialEnumType.TOKEN, null, testUser, dir, apiTokenValue.getBytes(StandardCharsets.UTF_8), true, false);
 		} catch (UnsupportedEncodingException e) {
 			
 			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
@@ -96,9 +97,9 @@ public class TestCredentialFactory extends BaseDataAccessTest{
 		String identity = null;
 		String credential = null;
 		try {
-			identity = new String(ApiConnectionConfigurationService.getApiClientCredential(apiConfig, CredentialEnumType.ENCRYPTED_IDENTITY),"UTF-8");
-			credential = new String(ApiConnectionConfigurationService.getApiClientCredential(apiConfig, CredentialEnumType.ENCRYPTED_PASSWORD),"UTF-8");
-		} catch (UnsupportedEncodingException | FactoryException e) {
+			identity = new String(ApiConnectionConfigurationService.getApiClientCredential(apiConfig, CredentialEnumType.ENCRYPTED_IDENTITY),StandardCharsets.UTF_8);
+			credential = new String(ApiConnectionConfigurationService.getApiClientCredential(apiConfig, CredentialEnumType.ENCRYPTED_PASSWORD),StandardCharsets.UTF_8);
+		} catch (FactoryException e) {
 			
 			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}

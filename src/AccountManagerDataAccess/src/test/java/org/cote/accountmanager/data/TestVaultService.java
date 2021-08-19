@@ -181,7 +181,7 @@ public class TestVaultService extends BaseDataAccessTest{
 			String dataWasEnc = new String(dec);
 			logger.info("Was encrypted: " + dataWasEnc);
 			
-		} catch (ArgumentException | FactoryException | UnsupportedEncodingException | DataException e) {
+		} catch (ArgumentException | FactoryException | DataException e) {
 			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
 	}

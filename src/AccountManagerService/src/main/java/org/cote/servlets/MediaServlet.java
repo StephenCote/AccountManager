@@ -24,6 +24,7 @@
 package org.cote.servlets;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.Date;
 
 import javax.servlet.Servlet;
@@ -71,7 +72,7 @@ public class MediaServlet extends HttpServlet {
 		response.addHeader("Cache-Control", "must-revalidate");//optional
 		response.setDateHeader("Last-Modified", now);
 	    response.setDateHeader("Expires", expiry);
-	    response.setCharacterEncoding("UTF-8");
+	    response.setCharacterEncoding(StandardCharsets.UTF_8.toString());
 		MediaUtil.writeBinaryContent(request, response);
 	}
 	public long getLastModified(HttpServletRequest req) {

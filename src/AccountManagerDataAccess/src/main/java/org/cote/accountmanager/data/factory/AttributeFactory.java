@@ -24,6 +24,7 @@
 package org.cote.accountmanager.data.factory;
 
 import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -70,19 +71,19 @@ public class AttributeFactory extends NameIdFactory{
 		this.tableNames.add(primaryTableName);
 		this.bulkMode = false;
 	}
-	public String[] getEncipheredValues(AttributeType attr) throws ArgumentException, FactoryException, UnsupportedEncodingException {
-		if(attr.getEnciphered() == false || attr.getKeyId() == null) throw new ArgumentException("Attribute is not enciphered or is missing a key id");
+	public String[] getEncipheredValues(AttributeType attr) throws ArgumentException, FactoryException {
+		if(!attr.getEnciphered().booleanValue() || attr.getKeyId() == null) throw new ArgumentException("Attribute is not enciphered or is missing a key id");
 		SecurityBean bean = KeyService.getSymmetricKeyByObjectId(attr.getKeyId(), attr.getOrganizationId());
 		return getEncipheredValues(attr, bean);
 	}
-	public String[] getEncipheredValues(AttributeType attr, SecurityBean bean) throws ArgumentException, FactoryException, UnsupportedEncodingException {
+	public String[] getEncipheredValues(AttributeType attr, SecurityBean bean) throws ArgumentException, FactoryException {
 		List<String> vals = new ArrayList<>();
 		if(bean == null) throw new FactoryException("Failed to retrieve symmetric key with id " + attr.getKeyId());
 		for(String val : attr.getValues()) {
 			vals.add(
 				new String(
-						SecurityUtil.decipher(bean, BinaryUtil.fromBase64(val.getBytes("UTF-8")))
-				,"UTF-8")
+						SecurityUtil.decipher(bean, BinaryUtil.fromBase64(val.getBytes(StandardCharsets.UTF_8)))
+				,StandardCharsets.UTF_8)
 			);
 		}
 		return vals.toArray(new String[0]);
@@ -111,16 +112,10 @@ public class AttributeFactory extends NameIdFactory{
 	}
 	public boolean setEncipheredAttributeValues(AttributeType attr, SecurityBean cipher, String[] values) {
 		attr.getValues().clear();
-		boolean outBool = false;
-		try {
-			for(String val : values) {
-				attr.getValues().add(BinaryUtil.toBase64Str(SecurityUtil.encipher(cipher, val.getBytes("UTF-8"))));
-			}
-			outBool = true;
-		} catch (UnsupportedEncodingException e) {
-			logger.error(e);
+		for(String val : values) {
+			attr.getValues().add(BinaryUtil.toBase64Str(SecurityUtil.encipher(cipher, val.getBytes(StandardCharsets.UTF_8))));
 		}
-		return outBool;
+		return true;
 	}
 	
 	public AttributeType newAttribute(NameIdType obj, String name, String val){
@@ -146,7 +141,7 @@ public class AttributeFactory extends NameIdFactory{
 		populateAttributes(obj);
 	}
 	public void populateAttributes(NameIdType obj){
-		if(obj.getAttributesPopulated())
+		if(obj.getAttributesPopulated().booleanValue())
 			return;
 		try {
 			if(!obj.getAttributes().isEmpty()){
@@ -190,7 +185,7 @@ public class AttributeFactory extends NameIdFactory{
 			String[] vals = new String[0];
 			try {
 				vals = getEncipheredValues(attr);
-			} catch (UnsupportedEncodingException | ArgumentException | FactoryException e) {
+			} catch (ArgumentException | FactoryException e) {
 				logger.error(e);
 			}
 			if(vals.length > 0) return vals[0];
@@ -206,7 +201,7 @@ public class AttributeFactory extends NameIdFactory{
 		AttributeType attr = getAttributeByName(attrs, name);
 		if(attr == null || attr.getValues().isEmpty())
 			return null;
-		if(!attr.getVaulted()) return null;
+		if(!attr.getVaulted().booleanValue()) return null;
 		
 		String[] vals = new String[0];
 		try {
@@ -434,17 +429,15 @@ public class AttributeFactory extends NameIdFactory{
 		if(ids.length == 0) return true;
 		NameEnumType ntype = NameEnumType.UNKNOWN;
 		NameIdType nobj = null;
-		long organizationId = 0L;
 
 		for(int i = 0; i < ids.length;i++){
 			nobj = (NameIdType)objects[i];
 			if(i==0){
 				ntype = nobj.getNameType();
-				organizationId = nobj.getOrganizationId();
 			}
 			ids[i] = nobj.getId();
 		}
-		return (deleteByReferenceId(ids, ntype, organizationId) > 0);
+		return (deleteByReferenceId(ids, ntype) > 0);
 	}	
 
 	public boolean deleteAttribute(AttributeType attribute){
@@ -462,7 +455,7 @@ public class AttributeFactory extends NameIdFactory{
 		}
 		return outBool;
 	}
-	protected int deleteByReferenceId(long[] ids, NameEnumType nType, long organizationId)
+	protected int deleteByReferenceId(long[] ids, NameEnumType nType)
 	{
 		if (ids.length == 0)
 			return 0;

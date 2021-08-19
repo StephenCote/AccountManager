@@ -24,6 +24,7 @@
 package org.cote.accountmanager.data.services;
 
 import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
 import java.util.Date;
 import java.util.Properties;
 import java.util.regex.Pattern;
@@ -75,11 +76,11 @@ public class EmailService {
 		String identity = null;
 		String credential = null;
 		try {
-			identity = new String(ApiConnectionConfigurationService.getApiClientCredential(apiConfig, CredentialEnumType.ENCRYPTED_IDENTITY),"UTF-8");
-			credential = new String(ApiConnectionConfigurationService.getApiClientCredential(apiConfig, CredentialEnumType.ENCRYPTED_PASSWORD),"UTF-8");
+			identity = new String(ApiConnectionConfigurationService.getApiClientCredential(apiConfig, CredentialEnumType.ENCRYPTED_IDENTITY),StandardCharsets.UTF_8);
+			credential = new String(ApiConnectionConfigurationService.getApiClientCredential(apiConfig, CredentialEnumType.ENCRYPTED_PASSWORD),StandardCharsets.UTF_8);
 			logger.info("Email Server Id: " + identity);
 			logger.info("Email Server Cred: " + credential);
-		} catch (UnsupportedEncodingException | FactoryException e) {
+		} catch (FactoryException e) {
 			
 			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}

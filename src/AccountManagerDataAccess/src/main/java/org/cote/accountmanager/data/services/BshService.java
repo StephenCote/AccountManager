@@ -28,6 +28,7 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
 import java.util.Iterator;
 import java.util.Map;
 
@@ -83,14 +84,7 @@ public class BshService {
 		return runWithParams(user,params,value,false);
 	}
 	public static Object run(UserType user,Map<String,Object> params,String script,boolean parseOnly){
-		byte[]  bytes = new byte[0];
-		try {
-			bytes = script.getBytes("UTF-8");
-		} catch (UnsupportedEncodingException e) {
-			
-			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
-		}
-		return runWithParams(user,params,bytes,parseOnly);
+		return runWithParams(user,params,script.getBytes(StandardCharsets.UTF_8),parseOnly);
 	}
 	public static Object runWithParams(UserType contextUser,Map<String,Object> params,byte[] script,boolean parseOnly){
 		Object out_obj = null;
@@ -164,19 +158,14 @@ public class BshService {
 	}
 	
 	private static byte[] getAM5Import(){
-		byte[] outb = new byte[0];
+
 		StringBuilder buff = new StringBuilder();
 		buff.append("import org.cote.accountmanager.objects.*;\n");
 		buff.append("import org.cote.accountmanager.objects.types.*;\n");
 		buff.append("import org.cote.accountmanager.data.*;\n");
 		buff.append("import org.apache.logging.log4j.LogManager;\nimport org.apache.logging.log4j.Logger;\n");
 		buff.append("Logger logger = LogManager.getLogger(\"BeanShell\");\n");
-		try {
-			outb = buff.toString().getBytes("UTF-8");
-		} catch (UnsupportedEncodingException e) {
-			
-			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
-		}
-		return outb;
+
+		return buff.toString().getBytes(StandardCharsets.UTF_8);
 	}
 }

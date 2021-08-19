@@ -24,6 +24,7 @@
 package org.cote.accountmanager.data.security;
 
 import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -121,17 +122,17 @@ public class TokenService {
 		return c;
 	}
 
-	public static SecuritySpoolType newJWTToken(UserType contextUser, NameIdType persona) throws UnsupportedEncodingException, FactoryException, ArgumentException{
+	public static SecuritySpoolType newJWTToken(UserType contextUser, NameIdType persona) throws FactoryException, ArgumentException{
 		return newJWTToken(contextUser, persona, SecurityTokenFactory.TOKEN_EXPIRY_10_MINUTES);
 	}
-	public static SecuritySpoolType newJWTToken(UserType contextUser, NameIdType persona, int expiryMinutes) throws UnsupportedEncodingException, FactoryException, ArgumentException{
+	public static SecuritySpoolType newJWTToken(UserType contextUser, NameIdType persona, int expiryMinutes) throws  FactoryException, ArgumentException{
 		String tokenId = UUID.randomUUID().toString();
 		String token = createJWTToken(contextUser, persona, tokenId, expiryMinutes);
 		if(token == null) {
 			logger.error("Failed to create JWT token");
 			return null;
 		}
-		return newToken(contextUser, SpoolNameEnumType.AUTHORIZATION, tokenId + " " + TokenUtil.DEFAULT_REFERENCE_SUFFIX, token.getBytes("UTF-8"), (expiryMinutes * 60));
+		return newToken(contextUser, SpoolNameEnumType.AUTHORIZATION, tokenId + " " + TokenUtil.DEFAULT_REFERENCE_SUFFIX, token.getBytes(StandardCharsets.UTF_8), (expiryMinutes * 60));
 	}
 	
 	/// This is still (hopefully obvious) very loose per the spec and likely very wrong
@@ -233,10 +234,10 @@ public class TokenService {
 		
 		SecuritySpoolType tokenType = null;
 		try{
-			byte[] authZExp = JSONUtil.exportObject(authZ).getBytes("UTF-8");
+			byte[] authZExp = JSONUtil.exportObject(authZ).getBytes(StandardCharsets.UTF_8);
 			tokenType = newToken(owner, SpoolNameEnumType.AUTHORIZATION, object.getUrn() + " Authorization Claim",authZExp, expirySeconds);
 		}
-		catch(FactoryException | UnsupportedEncodingException | ArgumentException e){
+		catch(FactoryException | ArgumentException e){
 			logger.error(e.getMessage());
 			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}

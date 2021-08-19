@@ -192,7 +192,6 @@ public class VaultService {
 	public Response createVault(@PathParam("name") String vaultName, @Context HttpServletRequest request){
 
 		UserType user = ServiceUtil.getUserFromSession(request);
-		VaultType vaultObj = null;
 		
 		BaseService.populate(AuditEnumType.USER, user);
 		VaultBean vault = new VaultBean();
