@@ -23,14 +23,12 @@
  *******************************************************************************/
 package org.cote.accountmanager.util;
 
-import java.io.UnsupportedEncodingException;
 import java.nio.charset.StandardCharsets;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cote.accountmanager.beans.SecurityBean;
 import org.cote.accountmanager.exceptions.DataException;
-import org.cote.accountmanager.exceptions.FactoryException;
 import org.cote.accountmanager.factory.SecurityFactory;
 import org.cote.accountmanager.objects.DataType;
 import org.cote.accountmanager.objects.types.CompressionEnumType;

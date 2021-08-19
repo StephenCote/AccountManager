@@ -23,16 +23,6 @@
  *******************************************************************************/
 package org.cote.rest.config;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.lang.reflect.InvocationTargetException;
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import javax.servlet.ServletContext;
 import javax.ws.rs.core.Context;
 
@@ -43,8 +33,6 @@ import org.cote.accountmanager.client.util.AuthenticationUtil;
 import org.cote.accountmanager.client.util.CacheUtil;
 import org.cote.accountmanager.client.util.ClientUtil;
 import org.cote.accountmanager.objects.ApiClientConfigurationType;
-import org.cote.accountmanager.util.JSONUtil;
-import org.cote.accountmanager.util.StreamUtil;
 import org.glassfish.jersey.server.ResourceConfig;
 import org.glassfish.jersey.server.filter.RolesAllowedDynamicFeature;
 import org.glassfish.jersey.server.spi.AbstractContainerLifecycleListener;

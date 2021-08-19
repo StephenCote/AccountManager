@@ -23,7 +23,6 @@
  *******************************************************************************/
 package org.cote.rocket.factory;
 
-import java.io.UnsupportedEncodingException;
 import java.nio.charset.StandardCharsets;
 import java.sql.ResultSet;
 import java.sql.SQLException;

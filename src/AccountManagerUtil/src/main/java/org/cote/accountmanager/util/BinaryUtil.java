@@ -24,6 +24,7 @@
 package org.cote.accountmanager.util;
 
 import java.nio.charset.StandardCharsets;
+
 import org.apache.commons.codec.binary.Base64;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;

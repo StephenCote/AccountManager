@@ -26,7 +26,6 @@ package org.cote.accountmanager.util;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.nio.charset.StandardCharsets;
 
 import javax.xml.bind.JAXBContext;

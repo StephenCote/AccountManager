@@ -23,13 +23,11 @@
  *******************************************************************************/
 package org.cote.rocket.query;
 
-import java.io.UnsupportedEncodingException;
 import java.nio.charset.StandardCharsets;
 
 import javax.xml.datatype.XMLGregorianCalendar;
 
 import org.cote.accountmanager.data.query.QueryField;
-import org.cote.accountmanager.exceptions.FactoryException;
 import org.cote.propellant.objects.CostType;
 import org.cote.propellant.objects.TimeType;
 import org.cote.propellant.objects.types.AlignmentEnumType;

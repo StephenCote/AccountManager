@@ -23,7 +23,6 @@
  *******************************************************************************/
 package org.cote.accountmanager.data.security;
 
-import java.io.UnsupportedEncodingException;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.List;

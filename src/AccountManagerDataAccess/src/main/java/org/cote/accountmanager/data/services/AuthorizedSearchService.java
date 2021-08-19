@@ -12,12 +12,11 @@ import java.util.Set;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-
 import org.cote.accountmanager.data.BulkFactories;
 import org.cote.accountmanager.data.ConnectionFactory;
 import org.cote.accountmanager.data.DBFactory;
-import org.cote.accountmanager.data.Factories;
 import org.cote.accountmanager.data.DBFactory.CONNECTION_TYPE;
+import org.cote.accountmanager.data.Factories;
 import org.cote.accountmanager.data.factory.FactoryBase;
 import org.cote.accountmanager.data.factory.NameIdFactory;
 import org.cote.accountmanager.data.query.QueryField;

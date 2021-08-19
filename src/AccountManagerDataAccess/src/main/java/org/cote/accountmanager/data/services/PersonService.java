@@ -23,7 +23,6 @@
  *******************************************************************************/
 package org.cote.accountmanager.data.services;
 
-import java.io.UnsupportedEncodingException;
 import java.nio.charset.StandardCharsets;
 
 import org.apache.logging.log4j.LogManager;

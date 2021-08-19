@@ -23,13 +23,11 @@
  *******************************************************************************/
 package org.cote.accountmanager.util;
 
-import java.io.UnsupportedEncodingException;
 import java.nio.charset.StandardCharsets;
 import java.util.regex.Pattern;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.cote.accountmanager.exceptions.FactoryException;
 
 public class TextUtil {
 	public static final Logger logger = LogManager.getLogger(TextUtil.class);
