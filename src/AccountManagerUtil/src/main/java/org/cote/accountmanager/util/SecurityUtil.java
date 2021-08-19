@@ -45,41 +45,34 @@ import org.cote.accountmanager.factory.SecurityFactory;
 public class SecurityUtil {
 
 	public static final Logger logger = LogManager.getLogger(SecurityUtil.class);
-	/// TODO: 2015/06/23 - Need to refactor salt references to use a CredentialType
-	///
-	private static int SALT_LENGTH = 16;
-	private static SecureRandom secure_random = null;
+
+	private static int saltLength = 16;
+	private static SecureRandom secureRandom = null;
 	private static Random random = null;
-	public static final boolean USE_SECURE_RANDOM = true;
+	public static final boolean USESECURERANDOM = true;
 	
 	private static MessageDigest hashAlgorithm = null;
 	
-	/// TODO: For CredentialType update, this will go away
+	/// Left in place for global static hash operations
 	///
-	private static String HASH_PROVIDER = "SHA-512";
-	
-	/// TODO: For CredentialType update, this will go away
-	///
-	private static String HASH_SALT = "aostnh234stnh;qk234;2354!@#$%10";
+	private static String hashProvider = "SHA-512";
 	
 	private SecurityUtil() {
 		
 	}
 	private static byte[] nextRandom(int length){
 		byte[] outByte = new byte[length];
-		if(USE_SECURE_RANDOM){
-			if(secure_random == null){
+		if(USESECURERANDOM){
+			if(secureRandom == null){
 				try{
-					long start = System.currentTimeMillis();
-					secure_random = SecureRandom.getInstance("SHA1PRNG");
-					logger.debug("Secure Random: " + (System.currentTimeMillis() - start) + "ms");
+					secureRandom = SecureRandom.getInstance("SHA1PRNG");
 				}
 				catch(NoSuchAlgorithmException e){
 					logger.error(e.getMessage());
 				}
 			}
-			if(secure_random == null) return new byte[0];
-			else secure_random.nextBytes(outByte);
+			if(secureRandom == null) return new byte[0];
+			else secureRandom.nextBytes(outByte);
 		}
 		else{
 			if(random == null){
@@ -90,17 +83,24 @@ public class SecurityUtil {
 		return outByte;
 	}
 	public static byte[] getRandomSalt(){
-		return nextRandom(SALT_LENGTH);
+		return nextRandom(saltLength);
 	}
+
 	
 
-	/// TODO: For CredentialType update, this will go away
-	///
-	public static String getSaltedDigest(String inValue)
-	{
-		if (inValue == null || inValue.length() == 0) return null;
-		return getDigestAsString(inValue + HASH_SALT);
-		
+	public static int getSaltLength() {
+		return saltLength;
+	}
+	public static void setSaltLength(int saltLength) {
+		SecurityUtil.saltLength = saltLength;
+	}
+	
+	
+	public static MessageDigest getHashAlgorithm() {
+		return hashAlgorithm;
+	}
+	public static void setHashAlgorithm(MessageDigest hashAlgorithm) {
+		SecurityUtil.hashAlgorithm = hashAlgorithm;
 	}
 	private static MessageDigest getMessageDigest(){
 		return getMessageDigest(false);
@@ -109,7 +109,7 @@ public class SecurityUtil {
 		if(useSingleton && hashAlgorithm != null) return hashAlgorithm;
 		MessageDigest digest = null;
 		try{
-			digest = MessageDigest.getInstance(HASH_PROVIDER);
+			digest = MessageDigest.getInstance(hashProvider);
 		}
 		catch(NoSuchAlgorithmException e){
 			logger.error(FactoryException.TRACE_EXCEPTION,e);
@@ -134,24 +134,7 @@ public class SecurityUtil {
 		digest.update(inBytes,0,inBytes.length);
 		return digest.digest();
 	}
-	public static byte[] getDigestOLDOLD(byte[] inBytes, byte[] salt){
-		MessageDigest digest = getMessageDigest();
-		if(digest == null) {
-			logger.error("Null digest");
-			return new byte[0];
-		}
-		logger.debug("Refactor this method - it uses the old salt method");
-		digest.update(inBytes,0, inBytes.length);
-		return digest.digest();
 
-	}
-	public static String getDigestAsString(byte[] inBytes){
-		return new String(BinaryUtil.toBase64(getDigestOLDOLD(inBytes,new byte[0])));
-	}
-	public static String getDigestAsString(String inStr){
-		byte[] digest = getDigestOLDOLD(inStr.getBytes(),new byte[0]);
-		return new String(BinaryUtil.toBase64(digest));
-	}
 	public static SecurityBean getPasswordBean(String password, byte[] salt){
 		SecurityBean bean = new SecurityBean();
 		SecurityFactory.getSecurityFactory().setPassKey(bean, password, salt,false);
@@ -184,7 +167,7 @@ public class SecurityUtil {
 	}
 	public static byte[] encipher(SecurityBean bean, byte[] data){
 		byte[] ret = new byte[0];
-		Cipher cipher = SecurityFactory.getSecurityFactory().getEncryptCipherKey(bean);;
+		Cipher cipher = SecurityFactory.getSecurityFactory().getEncryptCipherKey(bean);
 		if(cipher == null || bean.getSecretKey() == null )
 			return ret;
 		try {
@@ -201,7 +184,8 @@ public class SecurityUtil {
 
 		byte[] ret = new byte[0];
 		if(key == null || data.length == 0){
-			logger.error("Invalid parameter - " + (key == null ? " Null key" : "Null data"));
+			String reason = (key == null ? " Null key" : "Null data");
+			logger.error(String.format("Invalid parameter: %s",reason));
 			return ret;
 		}
 		try{
