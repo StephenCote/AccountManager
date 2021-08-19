@@ -65,9 +65,11 @@
 					<excludes>
 						<!-- 
 						
-						 <exclude>**/TestObjectEntitlementQuery.java</exclude>
+						
 						 
 						 -->
+						  <exclude>**/TestObjectEntitlementQuery.java</exclude>
+						  <exclude>**/TestOrganizationFactory.java</exclude>
 						 <exclude>**/TestEffectiveAuthorization.java</exclude>
 						 
 						  <exclude>**/TestPolicyService.java</exclude>
@@ -92,8 +94,6 @@
 						
 						<exclude>**/TestGroupAuthorization.java</exclude>
 						
-						
-						<exclude>**/TestOrganizationFactory.java</exclude>
 						<exclude>**/TestFunctionFactPolicy.java</exclude>
 						<exclude>**/TestFunctionFactory.java</exclude>
 						<exclude>**/TestFactoryInterfaces.java</exclude>

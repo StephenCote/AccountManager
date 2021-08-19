@@ -100,7 +100,6 @@ public class CredentialService {
 			boolean dataAdmin = RoleService.isFactoryAdministrator(user, ((DataFactory)Factories.getFactory(FactoryEnumType.DATA)));
 			if(type == AuditEnumType.USER){
 				UserType updateUser = BaseService.readByObjectId(AuditEnumType.valueOf(objectType), objectId, request);
-				//UserType updateUser = Factories.getNameIdFactory(FactoryEnumType.USER).getByName(authReq.getSubject(), user.getOrganizationId());
 				if(updateUser == null){
 					AuditService.denyResult(audit, "Target user " + authReq.getSubject() + " does not exist");
 					return outBool;

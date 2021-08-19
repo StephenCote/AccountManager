@@ -51,15 +51,15 @@ public class TestKnowledgeBasedVerification extends BaseDataAccessTest{
 	private RuleType getCreateKBVRule(UserType user, String question, String answer){
 
 		
-		String questionHash = SecurityUtil.getDigestAsString(question.getBytes());
+		String questionHash = SecurityUtil.getDigestAsString(question.getBytes(), new byte[0]);
 		String name = "Question - " + questionHash;
 		String answerName = "Answer - " + questionHash;
-		DataType questionData = this.getCreateProtectedData(user, name, question.getBytes(), this.getCreatePath(user, "~/Data"));
-		DataType answerData = this.getCreateProtectedData(user, answerName, answer.getBytes(), this.getCreatePath(user, "~/Data"));
+		DataType questionData = getCreateProtectedData(user, name, question.getBytes(), getCreatePath(user, "~/Data"));
+		DataType answerData = getCreateProtectedData(user, answerName, answer.getBytes(), getCreatePath(user, "~/Data"));
 		RuleType rule = null;
 		try{
 		
-			FactType questionFact = this.getCreateParameterFact(user, name, this.getCreatePath(user, "~/Facts"));
+			FactType questionFact = this.getCreateParameterFact(user, name, getCreatePath(user, "~/Facts"));
 			questionFact.setFactoryType(FactoryEnumType.DATA);
 			//questionFact.setFactReference(questionData);
 			questionFact.setSourceUrn(questionData.getUrn());

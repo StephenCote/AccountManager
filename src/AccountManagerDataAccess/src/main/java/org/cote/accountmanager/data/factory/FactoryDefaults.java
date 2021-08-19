@@ -140,7 +140,7 @@ public class FactoryDefaults {
 		return true;
 	}
 
-	public static boolean setupOrganization(OrganizationType organization, String admin_password) throws ArgumentException, DataAccessException, FactoryException
+	public static boolean setupOrganization(OrganizationType organization, String adminPassword) throws ArgumentException, DataAccessException, FactoryException
 	{
 
 		if(organization == null){
@@ -173,7 +173,7 @@ public class FactoryDefaults {
 		/// 2015/06/23 - New Credential System
 		/// I intentionally left the credential operation decoupled from object creation
 		///
-		CredentialType cred = CredentialService.newHashedPasswordCredential(adminUser, adminUser, admin_password, true);
+		CredentialType cred = CredentialService.newHashedPasswordCredential(adminUser, adminUser, adminPassword, true);
 		if(cred == null) throw new FactoryException("Failed to persist credential");
 
 		// Create the document control user
