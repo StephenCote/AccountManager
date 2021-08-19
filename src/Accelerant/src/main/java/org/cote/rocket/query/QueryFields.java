@@ -24,6 +24,7 @@
 package org.cote.rocket.query;
 
 import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
 
 import javax.xml.datatype.XMLGregorianCalendar;
 
@@ -279,15 +280,6 @@ public class QueryFields extends org.cote.accountmanager.data.query.QueryFields 
 		return getStringField("requirementid",val);
 	}
 	public static QueryField getFieldText(String s){
-		QueryField out_f = null;
-		
-		try {
-			out_f = getBytesField("text",s.getBytes("UTF-8"));
-		} catch (UnsupportedEncodingException e) {
-			
-			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
-		}
-		return out_f;
-		
+		return getBytesField("text",s.getBytes(StandardCharsets.UTF_8));
 	}
 }

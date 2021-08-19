@@ -3,7 +3,7 @@ package org.cote.rocket.test;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
-import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -61,8 +61,8 @@ public class TestCommunityAccessToken extends BaseAccelerantTest {
 		try {
 			sst = TokenService.newJWTToken(testUser, testUser);
 			assertNotNull("User token is null", sst);
-			tokenStr = new String(sst.getData(), "UTF-8");
-		} catch (UnsupportedEncodingException | FactoryException | ArgumentException e) {
+			tokenStr = new String(sst.getData(), StandardCharsets.UTF_8);
+		} catch (FactoryException | ArgumentException e) {
 			logger.error(e);
 		}
 		

@@ -33,6 +33,7 @@ import java.io.BufferedReader;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -217,7 +218,7 @@ public class RocketCommunity implements ICommunityProvider {
 			String path = locationPath + featuresFileName;
 			logger.info("Loading traits from " + path + " into " + locDir.getUrn());
 
-			BufferedReader bir = new BufferedReader(new InputStreamReader(new FileInputStream(path),"UTF-8"));
+			BufferedReader bir = new BufferedReader(new InputStreamReader(new FileInputStream(path),StandardCharsets.UTF_8));
 			CSVParser csvFileParser = new CSVParser(bir, csvFileFormat);
 			String sessionId = BulkFactories.getBulkFactory().newBulkSession();
 
@@ -275,7 +276,7 @@ public class RocketCommunity implements ICommunityProvider {
 			String path = locationPath + featuresFileName;
 			logger.info("Loading traits from " + path + " into " + locDir.getUrn());
 
-			BufferedReader bir = new BufferedReader(new InputStreamReader(new FileInputStream(path),"UTF-8"));
+			BufferedReader bir = new BufferedReader(new InputStreamReader(new FileInputStream(path),StandardCharsets.UTF_8));
 			CSVParser csvFileParser = new CSVParser(bir, csvFileFormat);
 
 			String sessionId = BulkFactories.getBulkFactory().newBulkSession();
@@ -343,7 +344,7 @@ public class RocketCommunity implements ICommunityProvider {
 			String path = locationPath + featuresFileName;
 			logger.info("Loading Admin1Codes from " + path + " into " + locDir.getUrn());
 			logger.info("Reading Admin 1 Codes");
-			BufferedReader bir = new BufferedReader(new InputStreamReader(new FileInputStream(path),"UTF-8"));
+			BufferedReader bir = new BufferedReader(new InputStreamReader(new FileInputStream(path),StandardCharsets.UTF_8));
 			CSVParser csvFileParser = new CSVParser(bir, csvFileFormat);
 
 			String sessionId = BulkFactories.getBulkFactory().newBulkSession();
@@ -423,7 +424,7 @@ public class RocketCommunity implements ICommunityProvider {
 			String path = locationPath + featuresFileName;
 			logger.info("Loading Admin2Codes from " + path + " into " + locDir.getUrn());
 			logger.info("Reading Admin 2 Codes");
-			BufferedReader bir = new BufferedReader(new InputStreamReader(new FileInputStream(path),"UTF-8"));
+			BufferedReader bir = new BufferedReader(new InputStreamReader(new FileInputStream(path),StandardCharsets.UTF_8));
 			CSVParser csvFileParser = new CSVParser(bir, csvFileFormat);
 
 			String sessionId = BulkFactories.getBulkFactory().newBulkSession();
@@ -544,7 +545,7 @@ public class RocketCommunity implements ICommunityProvider {
 					logger.error("Failed to find parent country for " + countryCode);
 					continue;
 				}
-				bir = new BufferedReader(new InputStreamReader(new FileInputStream(path),"UTF-8"));
+				bir = new BufferedReader(new InputStreamReader(new FileInputStream(path),StandardCharsets.UTF_8));
 				csvFileParser = new CSVParser(bir, csvFileFormat);
 	 
 				sessionId = BulkFactories.getBulkFactory().newBulkSession();
@@ -628,7 +629,7 @@ public class RocketCommunity implements ICommunityProvider {
 		}
 		logger.info("Buffering postal values ...");
 		geoIdToPost.clear();
-		BufferedReader bir = new BufferedReader(new InputStreamReader(new FileInputStream(path),"UTF-8"));
+		BufferedReader bir = new BufferedReader(new InputStreamReader(new FileInputStream(path),StandardCharsets.UTF_8));
 		CSVParser csvFileParser = new CSVParser(bir, csvFileFormat);
 
 		for(CSVRecord record : csvFileParser){

@@ -30,6 +30,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
 import java.util.Properties;
 import java.util.UUID;
 
@@ -1205,8 +1206,8 @@ public class BaseAccelerantTest{
 
 			user = ((UserFactory)Factories.getNameIdFactory(FactoryEnumType.USER)).newUser(userName, UserEnumType.NORMAL, UserStatusEnumType.NORMAL,testOrganization.getId());
 			BulkFactories.getBulkFactory().createBulkEntry(sessionId, FactoryEnumType.USER, user);
-			CredentialService.newCredential(CredentialEnumType.HASHED_PASSWORD, sessionId, user, user, password.getBytes("UTF-8"), true,true);
-		} catch (ArgumentException | UnsupportedEncodingException | FactoryException e) {
+			CredentialService.newCredential(CredentialEnumType.HASHED_PASSWORD, sessionId, user, user, password.getBytes(StandardCharsets.UTF_8), true,true);
+		} catch (ArgumentException | FactoryException e) {
 			
 			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}

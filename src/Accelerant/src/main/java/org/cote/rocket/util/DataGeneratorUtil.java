@@ -27,6 +27,7 @@ import java.io.BufferedReader;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -1371,7 +1372,7 @@ public class DataGeneratorUtil {
 		CSVParser  csvFileParser = null;
 		BufferedReader bir = null;
 		try{
-			bir = new BufferedReader(new InputStreamReader(new FileInputStream(path),"UTF-8"));
+			bir = new BufferedReader(new InputStreamReader(new FileInputStream(path),StandardCharsets.UTF_8));
 			csvFileParser = new CSVParser(bir, csvFileFormat);
 
 			for(CSVRecord record : csvFileParser){

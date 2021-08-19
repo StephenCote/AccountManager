@@ -27,6 +27,7 @@ import java.io.BufferedReader;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -168,7 +169,7 @@ modification date : date of last modification in yyyy-MM-dd format
 	
 	private void importTraits(CSVFormat csvFileFormat, DirectoryGroupType dir, String path) throws ArgumentException, FactoryException, DataAccessException, IOException{
 		logger.info("Reading traits ...");
-		BufferedReader bir = new BufferedReader(new InputStreamReader(new FileInputStream(path),"UTF-8"));
+		BufferedReader bir = new BufferedReader(new InputStreamReader(new FileInputStream(path),StandardCharsets.UTF_8));
 
 		CSVParser csvFileParser = new CSVParser(bir, csvFileFormat);
 
@@ -187,7 +188,7 @@ modification date : date of last modification in yyyy-MM-dd format
 	}
 	private void importCountries(CSVFormat csvFileFormat, DirectoryGroupType dir, String path) throws ArgumentException, FactoryException, DataAccessException, IOException{
 		logger.info("Reading countries ...");
-		BufferedReader bir = new BufferedReader(new InputStreamReader(new FileInputStream(path),"UTF-8"));
+		BufferedReader bir = new BufferedReader(new InputStreamReader(new FileInputStream(path),StandardCharsets.UTF_8));
 		CSVParser csvFileParser = new CSVParser(bir, csvFileFormat);
 
 		//Map<String,String> isoToName = new HashMap<>();
@@ -223,7 +224,7 @@ modification date : date of last modification in yyyy-MM-dd format
 	private void importAdmin1Codes(CSVFormat csvFileFormat, DirectoryGroupType dir, String path) throws ArgumentException, FactoryException, DataAccessException, IOException{
 
 		logger.info("Reading Admin 1 Codes");
-		BufferedReader bir = new BufferedReader(new InputStreamReader(new FileInputStream(path),"UTF-8"));
+		BufferedReader bir = new BufferedReader(new InputStreamReader(new FileInputStream(path),StandardCharsets.UTF_8));
 		CSVParser csvFileParser = new CSVParser(bir, csvFileFormat);
 
 		((LocationFactory)Factories.getFactory(FactoryEnumType.LOCATION)).clearCache();
@@ -279,7 +280,7 @@ modification date : date of last modification in yyyy-MM-dd format
 	}
 	private void importAdmin2Codes(CSVFormat csvFileFormat, DirectoryGroupType dir, String path) throws ArgumentException, FactoryException, DataAccessException, IOException{
 		logger.info("Reading Admin 2 Codes");
-		BufferedReader bir = new BufferedReader(new InputStreamReader(new FileInputStream(path),"UTF-8"));
+		BufferedReader bir = new BufferedReader(new InputStreamReader(new FileInputStream(path),StandardCharsets.UTF_8));
 		CSVParser csvFileParser = new CSVParser(bir, csvFileFormat);
 
 		String sessionId = BulkFactories.getBulkFactory().newBulkSession();
@@ -363,7 +364,7 @@ modification date : date of last modification in yyyy-MM-dd format
 
 		logger.info("Buffering postal values ...");
 		geoIdToPost.clear();
-		BufferedReader bir = new BufferedReader(new InputStreamReader(new FileInputStream(path),"UTF-8"));
+		BufferedReader bir = new BufferedReader(new InputStreamReader(new FileInputStream(path),StandardCharsets.UTF_8));
 		CSVParser csvFileParser = new CSVParser(bir, csvFileFormat);
 
 		int counter = 0;
@@ -397,7 +398,7 @@ modification date : date of last modification in yyyy-MM-dd format
 				logger.error("Failed to find parent country for " + countryList[c]);
 				continue;
 			}
-			bir = new BufferedReader(new InputStreamReader(new FileInputStream(path),"UTF-8"));
+			bir = new BufferedReader(new InputStreamReader(new FileInputStream(path),StandardCharsets.UTF_8));
 			csvFileParser = new CSVParser(bir, csvFileFormat);
 			//csvRecords = csvFileParser.getRecords(); 
 			sessionId = BulkFactories.getBulkFactory().newBulkSession();

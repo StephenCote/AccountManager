@@ -24,6 +24,7 @@
 package org.cote.rocket.factory;
 
 import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -53,7 +54,6 @@ import org.cote.rocket.query.QueryFields;
 
 public class NoteFactory extends NameIdGroupFactory {
 	
-	/// static{ org.cote.accountmanager.data.Factories.registerClass(FactoryEnumType.NOTE, NoteFactory.class); }
 	public NoteFactory(){
 		super();
 		this.hasParentId=true;
@@ -121,7 +121,7 @@ public class NoteFactory extends NameIdGroupFactory {
 
 		DataRow row = prepareAdd(obj, "note");
 		try{
-			row.setCellValue("text", obj.getText().getBytes("UTF-8"));
+			row.setCellValue("text", obj.getText().getBytes(StandardCharsets.UTF_8));
 			row.setCellValue("createddate",obj.getCreatedDate());
 			row.setCellValue("modifieddate",obj.getModifiedDate());
 			row.setCellValue("groupid", obj.getGroupId());
@@ -129,10 +129,7 @@ public class NoteFactory extends NameIdGroupFactory {
 		}
 		catch(DataAccessException dae){
 			throw new FactoryException(dae.getMessage());
-		} catch (UnsupportedEncodingException e) {
-			
-			throw new FactoryException(e.getMessage());
-		}
+		} 
 		return false;
 	}
 	
@@ -146,12 +143,7 @@ public class NoteFactory extends NameIdGroupFactory {
 		newObj.setNameType(NameEnumType.NOTE);
 		super.read(rset, newObj);
 		readGroup(rset, newObj);
-		try {
-			newObj.setText(new String(rset.getBytes("text"),"UTF-8"));
-		} catch (UnsupportedEncodingException e) {
-			
-			throw new FactoryException(e.getMessage());
-		}
+		newObj.setText(new String(rset.getBytes("text"),StandardCharsets.UTF_8));
 		newObj.setCreatedDate(CalendarUtil.getXmlGregorianCalendar(rset.getTimestamp("createddate")));
 		newObj.setModifiedDate(CalendarUtil.getXmlGregorianCalendar(rset.getTimestamp("modifieddate")));
 		return newObj;
