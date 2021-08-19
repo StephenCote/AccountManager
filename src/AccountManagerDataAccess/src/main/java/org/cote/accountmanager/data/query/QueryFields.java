@@ -33,6 +33,7 @@ import javax.xml.datatype.XMLGregorianCalendar;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cote.accountmanager.data.factory.FactoryBase;
+import org.cote.accountmanager.factory.FieldMap;
 import org.cote.accountmanager.objects.ApprovalEnumType;
 import org.cote.accountmanager.objects.ApprovalResponseEnumType;
 import org.cote.accountmanager.objects.ApproverEnumType;
@@ -55,6 +56,7 @@ import org.cote.accountmanager.objects.types.AccountStatusEnumType;
 import org.cote.accountmanager.objects.types.ActionEnumType;
 import org.cote.accountmanager.objects.types.AffectEnumType;
 import org.cote.accountmanager.objects.types.AuditEnumType;
+import org.cote.accountmanager.objects.types.ColumnEnumType;
 import org.cote.accountmanager.objects.types.ComparatorEnumType;
 import org.cote.accountmanager.objects.types.CompressionEnumType;
 import org.cote.accountmanager.objects.types.ContactEnumType;
@@ -128,15 +130,15 @@ public class QueryFields {
 	}
 	public static QueryField getFieldFactoryType(FactoryEnumType type)
 	{
-		return getStringField("factorytype", type.toString());
+		return getStringField(FieldMap.Columns.get(ColumnEnumType.FACTORYTYPE), type.toString());
 	}
 	public static QueryField getFieldFactType(FactEnumType type)
 	{
-		return getStringField("facttype", type.toString());
+		return getStringField(FieldMap.Columns.get(ColumnEnumType.FACTTYPE), type.toString());
 	}
 	public static QueryField getFieldRuleType(RuleEnumType type)
 	{
-		return getStringField("ruletype", type.toString());
+		return getStringField(FieldMap.Columns.get(ColumnEnumType.RULETYPE), type.toString());
 	}
 	public static QueryField getFieldUrn(NameIdType obj)
 	{
@@ -144,296 +146,291 @@ public class QueryFields {
 	}
 	public static QueryField getFieldUrn(String urn)
 	{
-		return getStringField("urn", urn);
+		return getStringField(FieldMap.Columns.get(ColumnEnumType.URN), urn);
 	}
 	public static QueryField getFieldScore(int score)
 	{
-		return getIntField("score", score);
+		return getIntField(FieldMap.Columns.get(ColumnEnumType.SCORE), score);
 	}
 
 	public static QueryField getFieldFactData(String factData)
 	{
-		return getStringField("factdata", factData);
+		return getStringField(FieldMap.Columns.get(ColumnEnumType.FACTDATA), factData);
 	}
 
 	public static QueryField getFieldFunctionUrn(String urn)
 	{
-		return getStringField("functionurn", urn);
+		return getStringField(FieldMap.Columns.get(ColumnEnumType.FUNCTIONURN), urn);
 	}
 	public static QueryField getFieldFunctionType(FunctionEnumType type)
 	{
-		return getStringField("functiontype", type.toString());
+		return getStringField(FieldMap.Columns.get(ColumnEnumType.FUNCTIONTYPE), type.toString());
 	}
 
 	public static QueryField getFieldOperation(String op)
 	{
-		return getStringField("operation", op);
+		return getStringField(FieldMap.Columns.get(ColumnEnumType.OPERATION), op);
 	}
 	public static QueryField getFieldOperationType(OperationEnumType op)
 	{
-		return getStringField("operationtype", op.toString());
+		return getStringField(FieldMap.Columns.get(ColumnEnumType.OPERATIONTYPE), op.toString());
 	}
 	public static QueryField getFieldPatternType(PatternEnumType op)
 	{
-		return getStringField("patterntype", op.toString());
+		return getStringField(FieldMap.Columns.get(ColumnEnumType.PATTERNTYPE), op.toString());
 	}
 	public static QueryField getFieldComparatorType(ComparatorEnumType op)
 	{
-		return getStringField("comparator", op.toString());
+		return getStringField(FieldMap.Columns.get(ColumnEnumType.COMPARATOR), op.toString());
 	}
 	public static QueryField getFieldCondition(ConditionEnumType op)
 	{
-		return getStringField("condition", op.toString());
+		return getStringField(FieldMap.Columns.get(ColumnEnumType.CONDITION), op.toString());
 	}
 
 	public static QueryField getFieldMatchUrn(String urn)
 	{
-		return getStringField("matchurn", urn);
+		return getStringField(FieldMap.Columns.get(ColumnEnumType.MATCHURN), urn);
 	}
 	public static QueryField getFieldOperationUrn(String urn)
 	{
-		return getStringField("operationurn", urn);
+		return getStringField(FieldMap.Columns.get(ColumnEnumType.OPERATIONURN), urn);
 	}
 
 	public static QueryField getFieldFactUrn(String urn)
 	{
-		return getStringField("facturn", urn);
+		return getStringField(FieldMap.Columns.get(ColumnEnumType.FACTURN), urn);
 	}
 	public static QueryField getFieldSourceUrn(String urn)
 	{
-		return getStringField("sourceurn", urn);
+		return getStringField(FieldMap.Columns.get(ColumnEnumType.SOURCEURN), urn);
 	}
 	public static QueryField getFieldSourceUrl(String url)
 	{
-		return getStringField("sourceurl", url);
+		return getStringField(FieldMap.Columns.get(ColumnEnumType.SOURCEURL), url);
 	}
 	public static QueryField getFieldSourceType(String type)
 	{
-		return getStringField("sourcetype", type);
+		return getStringField(FieldMap.Columns.get(ColumnEnumType.SOURCETYPE), type);
 	}
 
 	public static QueryField getFieldSourceDataType(SqlDataEnumType dataType)
 	{
-		return getStringField("sourcedatatype", dataType.toString());
+		return getStringField(FieldMap.Columns.get(ColumnEnumType.SOURCEDATATYPE), dataType.toString());
 	}
 
 	public static QueryField getFieldPreferred(boolean val)
 	{
-		return getBooleanField("preferred", val);
+		return getBooleanField(FieldMap.Columns.get(ColumnEnumType.PREFERRED), val);
 	}
 
 	public static QueryField getFieldIsVaulted(boolean val)
 	{
-		return getBooleanField("isvaulted", val);
+		return getBooleanField(FieldMap.Columns.get(ColumnEnumType.ISVAULTED), val);
 	}
 	public static QueryField getFieldVaultId(String val)
 	{
-		return getStringField("vaultid", val);
+		return getStringField(FieldMap.Columns.get(ColumnEnumType.VAULTID), val);
 	}
 	public static QueryField getFieldKeyId(String val)
 	{
-		return getStringField("keyid", val);
+		return getStringField(FieldMap.Columns.get(ColumnEnumType.KEYID), val);
 	}
 	public static QueryField getFieldMimeType(String val)
 	{
-		return getStringField("mimetype", val);
+		return getStringField(FieldMap.Columns.get(ColumnEnumType.MIMETYPE), val);
 	}
 	public static QueryField getFieldEnabled(boolean enabled)
 	{
-		return getBooleanField("enabled", enabled);
+		return getBooleanField(FieldMap.Columns.get(ColumnEnumType.ENABLED), enabled);
 	}
 
 	public static QueryField getFieldGroup(long id)
 	{
-		return getBigIntField("groupid", id);
+		return getBigIntField(FieldMap.Columns.get(ColumnEnumType.GROUPID), id);
 	}
 	public static QueryField getFieldDataBlob(byte[] val)
 	{
-		return getBytesField("datablob", val);
+		return getBytesField(FieldMap.Columns.get(ColumnEnumType.DATABLOB), val);
 	}
 	public static QueryField getFieldDataString(String val)
 	{
-		return getStringField("datastring", val);
+		return getStringField(FieldMap.Columns.get(ColumnEnumType.DATASTRING), val);
 	}
 	public static QueryField getFieldDimensions(String val)
 	{
-		return getStringField("dimensions", val);
+		return getStringField(FieldMap.Columns.get(ColumnEnumType.DIMENSIONS), val);
 	}
 	public static QueryField getFieldCompressionType(CompressionEnumType ctype) {
-		return getStringField("compressiontype",ctype.toString());
+		return getStringField(FieldMap.Columns.get(ColumnEnumType.COMPRESSIONTYPE),ctype.toString());
 	}
 	public static QueryField getFieldCompressed(boolean val)
 	{
-		return getBooleanField("iscompressed", val);
+		return getBooleanField(FieldMap.Columns.get(ColumnEnumType.ISCOMPRESSED), val);
 	}
 	public static QueryField getFieldBlob(boolean val)
 	{
-		return getBooleanField("isblob", val);
+		return getBooleanField(FieldMap.Columns.get(ColumnEnumType.ISBLOB), val);
 	}
 	public static QueryField getFieldEnciphered(boolean val)
 	{
-		return getBooleanField("isenciphered", val);
+		return getBooleanField(FieldMap.Columns.get(ColumnEnumType.ISENCIPHERED), val);
 	}
 	public static QueryField getFieldPasswordProtected(boolean val)
 	{
-		return getBooleanField("ispasswordprotected", val);
+		return getBooleanField(FieldMap.Columns.get(ColumnEnumType.ISPASSWORDPROTECTED), val);
 	}
 
 	public static QueryField getFieldVaulted(boolean val)
 	{
-		return getBooleanField("isvaulted", val);
+		return getBooleanField(FieldMap.Columns.get(ColumnEnumType.ISVAULTED), val);
 	}
 	public static QueryField getFieldPointer(boolean val)
 	{
-		return getBooleanField("ispointer", val);
+		return getBooleanField(FieldMap.Columns.get(ColumnEnumType.ISPOINTER), val);
 	}
 	public static QueryField getFieldSize(int val)
 	{
-		return getIntField("size", val);
+		return getIntField(FieldMap.Columns.get(ColumnEnumType.SIZE), val);
 	}
 	public static QueryField getFieldRating(double val)
 	{
-		return getDoubleField("rating", val);
+		return getDoubleField(FieldMap.Columns.get(ColumnEnumType.RATING), val);
 	}
 	public static QueryField getFieldDataHash(String val)
 	{
-		return getStringField("hash", val);
+		return getStringField(FieldMap.Columns.get(ColumnEnumType.HASH), val);
 	}
 	public static QueryField getFieldHashProvider(String hash)
 	{
-		return getStringField("hashprovider",hash);
+		return getStringField(FieldMap.Columns.get(ColumnEnumType.HASHPROVIDER),hash);
 	}
 	public static QueryField getFieldCreatedDate(XMLGregorianCalendar val)
 	{
-		return getTimestampField("createddate", val);
+		return getTimestampField(FieldMap.Columns.get(ColumnEnumType.CREATEDDATE), val);
 	}
 	public static QueryField getFieldStartDate(XMLGregorianCalendar val)
 	{
-		return getTimestampField("startdate", val);
+		return getTimestampField(FieldMap.Columns.get(ColumnEnumType.STARTDATE), val);
 	}
 
 	public static QueryField getFieldModifiedDate(XMLGregorianCalendar val)
 	{
-		return getTimestampField("modifieddate", val);
+		return getTimestampField(FieldMap.Columns.get(ColumnEnumType.MODIFIEDDATE), val);
 	}
 	public static QueryField getFieldExpirationDate(XMLGregorianCalendar val)
 	{
-		return getTimestampField("expirationdate", val);
+		return getTimestampField(FieldMap.Columns.get(ColumnEnumType.EXPIRATIONDATE), val);
 	}
 	public static QueryField getFieldAccessedDate(XMLGregorianCalendar val)
 	{
-		return getTimestampField("accesseddate", val);
+		return getTimestampField(FieldMap.Columns.get(ColumnEnumType.ACCESSEDDATE), val);
 	}
 	public static QueryField getFieldStartTime(XMLGregorianCalendar val)
 	{
-		return getTimestampField("starttime", val);
+		return getTimestampField(FieldMap.Columns.get(ColumnEnumType.STARTTIME), val);
 	}
 
 	public static QueryField getFieldEndTime(XMLGregorianCalendar val)
 	{
-		return getTimestampField("endtime", val);
+		return getTimestampField(FieldMap.Columns.get(ColumnEnumType.ENDTIME), val);
 	}
 	public static QueryField getFieldApproverLevel(int level)
 	{
-		return getIntField("approverlevel", level);
+		return getIntField(FieldMap.Columns.get(ColumnEnumType.APPROVERLEVEL), level);
 	}
 	public static QueryField getFieldApprovalType(ApprovalEnumType type)
 	{
-		return getStringField("approvaltype", type.toString());
+		return getStringField(FieldMap.Columns.get(ColumnEnumType.APPROVALTYPE), type.toString());
 	}
 	public static QueryField getFieldApproverType(ApproverEnumType type)
 	{
-		return getStringField("approvertype", type.toString());
+		return getStringField(FieldMap.Columns.get(ColumnEnumType.APPROVERTYPE), type.toString());
 	}
 	public static QueryField getFieldApproverId(NameIdType obj)
 	{
-		return getBigIntField("approverid", (obj != null ? obj.getId() : 0));
+		return getBigIntField(FieldMap.Columns.get(ColumnEnumType.APPROVERID), (obj != null ? obj.getId() : 0));
 	}
 	public static QueryField getFieldApproverId(long id)
 	{
-		return getBigIntField("approverid", id);
+		return getBigIntField(FieldMap.Columns.get(ColumnEnumType.APPROVERID), id);
 	}
 	public static QueryField getFieldApprovalId(NameIdType obj)
 	{
-		return getBigIntField("approvalid", (obj != null ? obj.getId() : 0));
+		return getBigIntField(FieldMap.Columns.get(ColumnEnumType.APPROVALID), (obj != null ? obj.getId() : 0));
 	}
 	public static QueryField getFieldApprovalId(long id)
 	{
-		return getBigIntField("approvalid", id);
+		return getBigIntField(FieldMap.Columns.get(ColumnEnumType.APPROVALID), id);
 	}
 	public static QueryField getFieldResponse(ApprovalResponseEnumType art)
 	{
-		return getStringField("response", art.toString());
+		return getStringField(FieldMap.Columns.get(ColumnEnumType.RESPONSE), art.toString());
 	}
 	public static QueryField getFieldResponseMessage(String msg)
 	{
-		return getStringField("responsemessage", msg);
+		return getStringField(FieldMap.Columns.get(ColumnEnumType.RESPONSEMESSAGE), msg);
 	}
 	public static QueryField getFieldRequestId(String objId)
 	{
-		return getStringField("requestid", objId);
+		return getStringField(FieldMap.Columns.get(ColumnEnumType.REQUESTID), objId);
 	}
 	public static QueryField getFieldSignerId(String objId)
 	{
-		return getStringField("signerid", objId);
+		return getStringField(FieldMap.Columns.get(ColumnEnumType.SIGNERID), objId);
 	}
 	public static QueryField getFieldValidationId(String objId)
 	{
-		return getStringField("validationid", objId);
+		return getStringField(FieldMap.Columns.get(ColumnEnumType.VALIDATIONID), objId);
 	}
 	public static QueryField getFieldSignature(byte[] data)
 	{
-		return getBytesField("signature", data);
+		return getBytesField(FieldMap.Columns.get(ColumnEnumType.SIGNATURE), data);
 	}
 	public static QueryField getFieldEntitlementType(ApproverEnumType type)
 	{
-		return getStringField("entitlementtype", type.toString());
+		return getStringField(FieldMap.Columns.get(ColumnEnumType.ENTITLEMENTTYPE), type.toString());
 	}
 	public static QueryField getFieldEntitlementId(NameIdType obj)
 	{
-		return getBigIntField("entitlementid", (obj != null ? obj.getId() : 0));
+		return getBigIntField(FieldMap.Columns.get(ColumnEnumType.ENTITLEMENTID), (obj != null ? obj.getId() : 0));
 	}
 	public static QueryField getFieldEntitlementId(long id)
 	{
-		return getBigIntField("entitlementid", id);
+		return getBigIntField(FieldMap.Columns.get(ColumnEnumType.ENTITLEMENTID), id);
 	}
 	public static QueryField getFieldRequestorType(ApproverEnumType type)
 	{
-		return getStringField("requestortype", type.toString());
+		return getStringField(FieldMap.Columns.get(ColumnEnumType.REQUESTORTYPE), type.toString());
 	}
 	public static QueryField getFieldApprovalStatus(ApprovalResponseEnumType type)
 	{
-		return getStringField("approvalstatus", type.toString());
+		return getStringField(FieldMap.Columns.get(ColumnEnumType.APPROVALSTATUS), type.toString());
 	}
 	public static QueryField getFieldRequestorId(NameIdType obj)
 	{
-		return getBigIntField("requestorid", (obj != null ? obj.getId() : 0));
+		return getBigIntField(FieldMap.Columns.get(ColumnEnumType.REQUESTORID), (obj != null ? obj.getId() : 0));
 	}
 	public static QueryField getFieldRequestorId(long id)
 	{
-		return getBigIntField("requestorid", id);
+		return getBigIntField(FieldMap.Columns.get(ColumnEnumType.REQUESTORID), id);
 	}
 	public static QueryField getFieldDelegateType(ApproverEnumType type)
 	{
-		return getStringField("delegatetype", type.toString());
+		return getStringField(FieldMap.Columns.get(ColumnEnumType.DELEGATETYPE), type.toString());
 	}
 	public static QueryField getFieldDelegateId(NameIdType obj)
 	{
-		return getBigIntField("delegateid", (obj != null ? obj.getId() : 0));
+		return getBigIntField(FieldMap.Columns.get(ColumnEnumType.DELEGATEID), (obj != null ? obj.getId() : 0));
 	}
 	public static QueryField getFieldDelegateId(long id)
 	{
-		return getBigIntField("delegateid", id);
+		return getBigIntField(FieldMap.Columns.get(ColumnEnumType.DELEGATEID), id);
 	}
-/*
-	public static QueryField getFieldOrganization(NameIdType map)
-	{
-		return getFieldOrganization((map.getOrganization() != null ? map.getOrganization().getId() : 0));
-	}
-*/
+
 	public static QueryField getFieldOrganization(long id)
 	{
-		QueryField of =  new QueryField(SqlDataEnumType.BIGINT, "organizationid", id);
+		QueryField of =  new QueryField(SqlDataEnumType.BIGINT, FieldMap.Columns.get(ColumnEnumType.ORGANIZATIONID), id);
 		of.setComparator(ComparatorEnumType.EQUALS);
 		return of;
 	}	
@@ -443,7 +440,7 @@ public class QueryFields {
 	}
 	public static QueryField getFieldId(long id)
 	{
-		QueryField of =  new QueryField(SqlDataEnumType.BIGINT, "id", id);
+		QueryField of =  new QueryField(SqlDataEnumType.BIGINT, FieldMap.Columns.get(ColumnEnumType.ID), id);
 		of.setComparator(ComparatorEnumType.EQUALS);
 		return of;
 	}
@@ -453,7 +450,7 @@ public class QueryFields {
 	}
 	public static QueryField getFieldObjectId(String objId)
 	{
-		return getStringField("objectid",objId);
+		return getStringField(FieldMap.Columns.get(ColumnEnumType.OBJECTID),objId);
 	}
 	public static QueryField getFieldName(NameIdType map)
 	{
@@ -462,7 +459,7 @@ public class QueryFields {
 
 	public static QueryField getFieldName(String name)
 	{
-		return getStringField("name",name);
+		return getStringField(FieldMap.Columns.get(ColumnEnumType.NAME),name);
 	}
 	public static QueryField getFieldParent(NameIdType map)
 	{
@@ -470,7 +467,7 @@ public class QueryFields {
 	}
 	public static QueryField getFieldParent(long id)
 	{
-		return getBigIntField("parentid",id);
+		return getBigIntField(FieldMap.Columns.get(ColumnEnumType.PARENTID),id);
 	}
 	public static QueryField getFieldOwner(NameIdType map)
 	{
@@ -478,15 +475,15 @@ public class QueryFields {
 	}
 	public static QueryField getFieldOwner(long id)
 	{
-		return getBigIntField("ownerid",id);
+		return getBigIntField(FieldMap.Columns.get(ColumnEnumType.OWNERID),id);
 	}
 	public static QueryField getFieldReferenceId(long val)
 	{
-		return getBigIntField("referenceid", val);
+		return getBigIntField(FieldMap.Columns.get(ColumnEnumType.REFERENCEID), val);
 	}		
 	public static QueryField getFieldDescription(String desc)
 	{
-		return getStringField("description", desc);
+		return getStringField(FieldMap.Columns.get(ColumnEnumType.DESCRIPTION), desc);
 	}
 	
 	public static QueryField getFieldLogicalId(OrganizationType map)
@@ -495,14 +492,14 @@ public class QueryFields {
 	}
 	public static QueryField getFieldLogicalId(long id)
 	{
-		return getBigIntField("logicalid", id);
+		return getBigIntField(FieldMap.Columns.get(ColumnEnumType.LOGICALID), id);
 	}
 	public static QueryField getFieldLogicalOrder(int order){
-		return getIntField("logicalorder", order);
+		return getIntField(FieldMap.Columns.get(ColumnEnumType.LOGICALORDER), order);
 	}
 	public static QueryField getFieldDecisionAge(long age)
 	{
-		return getBigIntField("decisionage",age);
+		return getBigIntField(FieldMap.Columns.get(ColumnEnumType.DECISIONAGE),age);
 	}
 
 	public static QueryField getFieldReferenceId(OrganizationType map)
@@ -514,362 +511,362 @@ public class QueryFields {
 	{
 		return getFieldOrganizationType(map.getOrganizationType());
 	}
-	public static QueryField getFieldOrganizationType(OrganizationEnumType org_type)
+	public static QueryField getFieldOrganizationType(OrganizationEnumType orgType)
 	{
-		return getStringField("organizationtype", org_type.toString());
+		return getStringField(FieldMap.Columns.get(ColumnEnumType.ORGANIZATIONTYPE), orgType.toString());
 	}
 
 	public static QueryField getFieldGroupType(String val)
 	{
-		return getStringField("grouptype", val);
+		return getStringField(FieldMap.Columns.get(ColumnEnumType.GROUPTYPE), val);
 	}
-	public static QueryField getFieldGroupType(GroupEnumType group_type)
+	public static QueryField getFieldGroupType(GroupEnumType groupType)
 	{
-		return getStringField("grouptype", group_type.toString());
+		return getStringField(FieldMap.Columns.get(ColumnEnumType.GROUPTYPE), groupType.toString());
 	}
 	public static QueryField getFieldContactInformationType(ContactInformationEnumType type)
 	{
-		return getStringField("contactinformationtype", type.toString());
+		return getStringField(FieldMap.Columns.get(ColumnEnumType.CONTACTINFORMATIONTYPE), type.toString());
 	}
 	public static QueryField getFieldContactInformationId(ContactInformationType obj)
 	{
-		return getBigIntField("contactinformationid", (obj != null ? obj.getId() : 0));
+		return getBigIntField(FieldMap.Columns.get(ColumnEnumType.CONTACTINFORMATIONID), (obj != null ? obj.getId() : 0));
 	}
 	public static QueryField getFieldWebsite(String val)
 	{
-		return getStringField("website", val);
+		return getStringField(FieldMap.Columns.get(ColumnEnumType.WEBSITE), val);
 	}
 	public static QueryField getFieldTitle(String val)
 	{
-		return getStringField("title", val);
+		return getStringField(FieldMap.Columns.get(ColumnEnumType.TITLE), val);
 	}
 	public static QueryField getFieldState(String val)
 	{
-		return getStringField("state", val);
+		return getStringField(FieldMap.Columns.get(ColumnEnumType.STATE), val);
 	}
 	public static QueryField getFieldCountry(String val)
 	{
-		return getStringField("country", val);
+		return getStringField(FieldMap.Columns.get(ColumnEnumType.COUNTRY), val);
 	}
 	public static QueryField getFieldCity(String val)
 	{
-		return getStringField("city", val);
+		return getStringField(FieldMap.Columns.get(ColumnEnumType.CITY), val);
 	}
 	public static QueryField getFieldPostalCode(String val)
 	{
-		return getStringField("postalcode", val);
+		return getStringField(FieldMap.Columns.get(ColumnEnumType.POSTALCODE), val);
 	}
 	public static QueryField getFieldPhone(String val)
 	{
-		return getStringField("phone", val);
+		return getStringField(FieldMap.Columns.get(ColumnEnumType.PHONE), val);
 	}
 	public static QueryField getFieldMiddleName(String val)
 	{
-		return getStringField("middlename", val);
+		return getStringField(FieldMap.Columns.get(ColumnEnumType.MIDDLENAME), val);
 	}
 	public static QueryField getFieldLastName(String val)
 	{
-		return getStringField("lastname", val);
+		return getStringField(FieldMap.Columns.get(ColumnEnumType.LASTNAME), val);
 	}
 	public static QueryField getFieldFirstName(String val)
 	{
-		return getStringField("firstname", val);
+		return getStringField(FieldMap.Columns.get(ColumnEnumType.FIRSTNAME), val);
 	}
 	public static QueryField getFieldAlias(String val)
 	{
-		return getStringField("alias", val);
+		return getStringField(FieldMap.Columns.get(ColumnEnumType.ALIAS), val);
 	}
 	public static QueryField getFieldPrefix(String val)
 	{
-		return getStringField("prefix", val);
+		return getStringField(FieldMap.Columns.get(ColumnEnumType.PREFIX), val);
 	}
 	public static QueryField getFieldRegion(String val)
 	{
-		return getStringField("region", val);
+		return getStringField(FieldMap.Columns.get(ColumnEnumType.REGION), val);
 	}
 	public static QueryField getFieldLocationType(LocationEnumType val)
 	{
-		return getStringField("locationtype", val.toString());
+		return getStringField(FieldMap.Columns.get(ColumnEnumType.LOCATIONTYPE), val.toString());
 	}
 	public static QueryField getFieldContactType(ContactEnumType val)
 	{
-		return getStringField("contacttype", val.toString());
+		return getStringField(FieldMap.Columns.get(ColumnEnumType.CONTACTTYPE), val.toString());
 	}
 	public static QueryField getFieldContactValue(String val)
 	{
-		return getStringField("contactvalue", val);
+		return getStringField(FieldMap.Columns.get(ColumnEnumType.CONTACTVALUE), val);
 	}
 	public static QueryField getFieldSuffix(String val)
 	{
-		return getStringField("suffix", val);
+		return getStringField(FieldMap.Columns.get(ColumnEnumType.SUFFIX), val);
 	}
 
 	public static QueryField getFieldGender(String val)
 	{
-		return getStringField("gender", val);
+		return getStringField(FieldMap.Columns.get(ColumnEnumType.GENDER), val);
 	}
 	public static QueryField getFieldFax(String val)
 	{
-		return getStringField("fax", val);
+		return getStringField(FieldMap.Columns.get(ColumnEnumType.FAX), val);
 	}
 	public static QueryField getFieldEmail(String val)
 	{
-		return getStringField("email", val);
+		return getStringField(FieldMap.Columns.get(ColumnEnumType.EMAIL), val);
 	}
 	public static QueryField getFieldBirthDate(XMLGregorianCalendar val)
 	{
-		return getTimestampField("birthdate", val);
+		return getTimestampField(FieldMap.Columns.get(ColumnEnumType.BIRTHDATE), val);
 	}
 	public static QueryField getFieldAddressLine1(String val)
 	{
-		return getStringField("addressline1", val);
+		return getStringField(FieldMap.Columns.get(ColumnEnumType.ADDRESSLINE_1), val);
 	}
 	public static QueryField getFieldAddressLine2(String val)
 	{
-		return getStringField("addressline2", val);
+		return getStringField(FieldMap.Columns.get(ColumnEnumType.ADDRESSLINE_2), val);
 	}
 	public static QueryField getFieldStatisticsType(StatisticsEnumType val){
-		return getStringField("statisticstype", val.toString());
+		return getStringField(FieldMap.Columns.get(ColumnEnumType.STATISTICSTYPE), val.toString());
 	}
 
 	public static QueryField getFieldAffectId(BaseParticipantType participant)
 	{
-		return getBigIntField("affectid", participant.getAffectId());
+		return getBigIntField(FieldMap.Columns.get(ColumnEnumType.AFFECTID), participant.getAffectId());
 	}
 	public static QueryField getFieldAffectId(BasePermissionType permission)
 	{
-		return getBigIntField("affectid", permission.getId());
+		return getBigIntField(FieldMap.Columns.get(ColumnEnumType.AFFECTID), permission.getId());
 	}
 	public static QueryField getFieldAffectType(BaseParticipantType participant)
 	{
-		return getStringField("affecttype", participant.getAffectType().toString());
+		return getStringField(FieldMap.Columns.get(ColumnEnumType.AFFECTTYPE), participant.getAffectType().toString());
 	}
 	public static QueryField getFieldAffectType(AffectEnumType affectType)
 	{
-		return getStringField("affecttype", affectType.toString());
+		return getStringField(FieldMap.Columns.get(ColumnEnumType.AFFECTTYPE), affectType.toString());
 	}
 	public static QueryField getFieldParticipantId(NameIdType map)
 	{
-		return getBigIntField("participantid", map.getId());
+		return getBigIntField(FieldMap.Columns.get(ColumnEnumType.PARTICIPANTID), map.getId());
 	}
 
 	public static QueryField getFieldParticipantId(BaseParticipantType participant)
 	{
-		return getBigIntField("participantid", participant.getParticipantId());
+		return getBigIntField(FieldMap.Columns.get(ColumnEnumType.PARTICIPANTID), participant.getParticipantId());
 	}
 	public static QueryField getFieldParticipationId(NameIdType map)
 	{
-		return getBigIntField("participationid", map.getId());
+		return getBigIntField(FieldMap.Columns.get(ColumnEnumType.PARTICIPATIONID), map.getId());
 	}
 	public static QueryField getFieldParticipationId(BaseParticipantType participant)
 	{
-		return getBigIntField("participationid", participant.getParticipationId());
+		return getBigIntField(FieldMap.Columns.get(ColumnEnumType.PARTICIPATIONID), participant.getParticipationId());
 	}
 	public static QueryField getFieldParticipantType(ParticipantEnumType participantType)
 	{
-		return getStringField("participanttype", participantType.toString());
+		return getStringField(FieldMap.Columns.get(ColumnEnumType.PARTICIPANTTYPE), participantType.toString());
 	}
 
 	public static QueryField getFieldRoleType(RoleEnumType type){
-		return getStringField("roletype",type.toString());
+		return getStringField(FieldMap.Columns.get(ColumnEnumType.ROLETYPE),type.toString());
 	}
 	public static QueryField getFieldPermissionType(PermissionEnumType type){
-		return getStringField("permissiontype", type.toString());
+		return getStringField(FieldMap.Columns.get(ColumnEnumType.PERMISSIONTYPE), type.toString());
 	}
 	public static QueryField getFieldSessionId(String id){
-		return getStringField("sessionid", id);
+		return getStringField(FieldMap.Columns.get(ColumnEnumType.SESSIONID), id);
 	}
 	public static QueryField getFieldUserId(long id){
-		return getBigIntField("userid", id);
+		return getBigIntField(FieldMap.Columns.get(ColumnEnumType.USERID), id);
 	}
 	public static QueryField getFieldDataId(long id){
-		return getBigIntField("dataid", id);
+		return getBigIntField(FieldMap.Columns.get(ColumnEnumType.DATAID), id);
 	}
 	public static QueryField getFieldRoleId(long id){
-		return getBigIntField("roleid", id);
+		return getBigIntField(FieldMap.Columns.get(ColumnEnumType.ROLEID), id);
 	}
 	public static QueryField getFieldData(String val){
-		return getStringField("data", val);
+		return getStringField(FieldMap.Columns.get(ColumnEnumType.DATA), val);
 	}
 	public static QueryField getFieldSecurityId(String id){
-		return getStringField("securityid", id);
+		return getStringField(FieldMap.Columns.get(ColumnEnumType.SECURITYID), id);
 	}
 	public static QueryField getFieldSessionCreated(XMLGregorianCalendar val){
-		return getTimestampField("sessioncreated", val);
+		return getTimestampField(FieldMap.Columns.get(ColumnEnumType.SESSIONCREATED), val);
 	}
 	public static QueryField getFieldSessionExpiration(XMLGregorianCalendar val){
-		return getTimestampField("sessionexpiration", val);
+		return getTimestampField(FieldMap.Columns.get(ColumnEnumType.SESSIONEXPIRATION), val);
 	}
 	public static QueryField getFieldExpiration(XMLGregorianCalendar val){
-		return getTimestampField("expiration", val);
+		return getTimestampField(FieldMap.Columns.get(ColumnEnumType.EXPIRATION), val);
 	}
 
 	public static QueryField getFieldSessionAccessed(XMLGregorianCalendar val){
-		return getTimestampField("sessionaccessed", val);
+		return getTimestampField(FieldMap.Columns.get(ColumnEnumType.SESSIONACCESSED), val);
 	}
 	public static QueryField getFieldSessionStatus(SessionStatusEnumType val)
 	{
-		return getStringField("sessionstatus", val.toString());
+		return getStringField(FieldMap.Columns.get(ColumnEnumType.SESSIONSTATUS), val.toString());
 	}
 	public static QueryField getFieldSessionDataSize(int val)
 	{
-		return getIntField("sessiondatasize", val);
+		return getIntField(FieldMap.Columns.get(ColumnEnumType.SESSIONDATASIZE), val);
 	}
 
 	public static QueryField getFieldGuid(String guid)
 	{
-		return getStringField("guid", guid);
+		return getStringField(FieldMap.Columns.get(ColumnEnumType.GUID), guid);
 	}
 	public static QueryField getFieldClassification(String cls)
 	{
-		return getStringField("classification", cls);
+		return getStringField(FieldMap.Columns.get(ColumnEnumType.CLASSIFICATION), cls);
 	}
 	public static QueryField getFieldCurrentLevel(int level)
 	{
-		return getIntField("currentlevel", level);
+		return getIntField(FieldMap.Columns.get(ColumnEnumType.CURRENTLEVEL), level);
 	}
 	public static QueryField getFieldEndLevel(int level)
 	{
-		return getIntField("endlevel", level);
+		return getIntField(FieldMap.Columns.get(ColumnEnumType.ENDLEVEL), level);
 	}
 	public static QueryField getFieldParentGuid(String guid)
 	{
-		return getStringField("parentguid", guid);
+		return getStringField(FieldMap.Columns.get(ColumnEnumType.PARENTGUID), guid);
 	}
 	
 	public static QueryField getFieldExpires(boolean val)
 	{
-		return getBooleanField("expires", val);
+		return getBooleanField(FieldMap.Columns.get(ColumnEnumType.EXPIRES), val);
 	}
 	public static QueryField getFieldSpoolStatus(SpoolStatusEnumType val)
 	{
-		return getStringField("spoolstatus", val.toString());
+		return getStringField(FieldMap.Columns.get(ColumnEnumType.SPOOLSTATUS), val.toString());
 	}
-	public static QueryField getFieldSpoolBucketName(SpoolNameEnumType spool_type){
-		return getStringField("spoolbucketname",spool_type.toString());
+	public static QueryField getFieldSpoolBucketName(SpoolNameEnumType spoolType){
+		return getStringField(FieldMap.Columns.get(ColumnEnumType.SPOOLBUCKETNAME),spoolType.toString());
 	}
-	public static QueryField getFieldSpoolBucketType(SpoolBucketEnumType spool_type){
-		return getStringField("spoolbuckettype",spool_type.toString());
+	public static QueryField getFieldSpoolBucketType(SpoolBucketEnumType spoolType){
+		return getStringField(FieldMap.Columns.get(ColumnEnumType.SPOOLBUCKETTYPE),spoolType.toString());
 	}
 	public static QueryField getFieldSpoolData(byte[] data){
-		return getBytesField("spooldata",data);
+		return getBytesField(FieldMap.Columns.get(ColumnEnumType.SPOOLDATA),data);
 	}
-	public static QueryField getFieldSpoolValueType(ValueEnumType spool_type){
-		return getStringField("spoolvaluetype",spool_type.toString());
+	public static QueryField getFieldSpoolValueType(ValueEnumType spoolType){
+		return getStringField(FieldMap.Columns.get(ColumnEnumType.SPOOLVALUETYPE),spoolType.toString());
 	}
-	public static QueryField getFieldAuditSourceType(AuditEnumType audit_type){
-		return getStringField("auditsourcetype",audit_type.toString());
+	public static QueryField getFieldAuditSourceType(AuditEnumType auditType){
+		return getStringField(FieldMap.Columns.get(ColumnEnumType.AUDITSOURCETYPE),auditType.toString());
 	}
-	public static QueryField getFieldAuditSourceData(String audit_data){
-		return getStringField("auditsourcedata",audit_data);
+	public static QueryField getFieldAuditSourceData(String auditData){
+		return getStringField(FieldMap.Columns.get(ColumnEnumType.AUDITSOURCEDATA),auditData);
 	}
-	public static QueryField getFieldAuditTargetType(AuditEnumType audit_type){
-		return getStringField("audittargettype",audit_type.toString());
+	public static QueryField getFieldAuditTargetType(AuditEnumType auditType){
+		return getStringField(FieldMap.Columns.get(ColumnEnumType.AUDITTARGETTYPE),auditType.toString());
 	}
-	public static QueryField getFieldAuditTargetData(String audit_data){
-		return getStringField("audittargetdata",audit_data);
+	public static QueryField getFieldAuditTargetData(String auditData){
+		return getStringField(FieldMap.Columns.get(ColumnEnumType.AUDITTARGETDATA),auditData);
 	}
 	public static QueryField getFieldActionType(ActionEnumType type){
-		return getStringField("actiontype",type.toString());
+		return getStringField(FieldMap.Columns.get(ColumnEnumType.ACTIONTYPE),type.toString());
 	}
 	public static QueryField getFieldReferenceType(FactoryEnumType type){
-		return getStringField("referencetype",type.toString());
+		return getStringField(FieldMap.Columns.get(ColumnEnumType.REFERENCETYPE),type.toString());
 	}
 	public static QueryField getFieldReferenceType(NameEnumType type){
-		return getStringField("referencetype",type.toString());
+		return getStringField(FieldMap.Columns.get(ColumnEnumType.REFERENCETYPE),type.toString());
 	}
 	public static QueryField getFieldControlType(ControlEnumType type){
-		return getStringField("controltype",type.toString());
+		return getStringField(FieldMap.Columns.get(ColumnEnumType.CONTROLTYPE),type.toString());
 	}
 	public static QueryField getFieldControlId(long id){
-		return getBigIntField("controlid",id);
+		return getBigIntField(FieldMap.Columns.get(ColumnEnumType.CONTROLID),id);
 	}
 	public static QueryField getFieldControlAction(ControlActionEnumType type){
-		return getStringField("controlaction",type.toString());
+		return getStringField(FieldMap.Columns.get(ColumnEnumType.CONTROLACTION),type.toString());
 	}
 	public static QueryField getFieldGlobalKey(boolean b)
 	{
-		return getBooleanField("globalkey", b);
+		return getBooleanField(FieldMap.Columns.get(ColumnEnumType.GLOBALKEY), b);
 	}
 	public static QueryField getFieldOrganizationKey(boolean b)
 	{
-		return getBooleanField("organizationkey", b);
+		return getBooleanField(FieldMap.Columns.get(ColumnEnumType.ORGANIZATIONKEY), b);
 	}
 	public static QueryField getFieldPrimaryCredential(boolean b)
 	{
-		return getBooleanField("primarycredential", b);
+		return getBooleanField(FieldMap.Columns.get(ColumnEnumType.PRIMARYCREDENTIAL), b);
 	}
 	public static QueryField getFieldPrimaryKey(boolean b)
 	{
-		return getBooleanField("primarykey", b);
+		return getBooleanField(FieldMap.Columns.get(ColumnEnumType.PRIMARYKEY), b);
 	}
 	public static QueryField getFieldCredentialId(long b)
 	{
-		return getBigIntField("credentialid", b);
+		return getBigIntField(FieldMap.Columns.get(ColumnEnumType.CREDENTIALID), b);
 	}
 	public static QueryField getFieldRecipientId(long b)
 	{
-		return getBigIntField("recipientid", b);
+		return getBigIntField(FieldMap.Columns.get(ColumnEnumType.RECIPIENTID), b);
 	}
 	public static QueryField getFieldTransportId(long b)
 	{
-		return getBigIntField("transportid", b);
+		return getBigIntField(FieldMap.Columns.get(ColumnEnumType.TRANSPORTID), b);
 	}
 	public static QueryField getFieldRecipientType(FactoryEnumType type)
 	{
-		return getStringField("recipienttype", type.toString());
+		return getStringField(FieldMap.Columns.get(ColumnEnumType.RECIPIENTTYPE), type.toString());
 	}
 	public static QueryField getFieldTransportType(FactoryEnumType type)
 	{
-		return getStringField("transporttype", type.toString());
+		return getStringField(FieldMap.Columns.get(ColumnEnumType.TRANSPORTTYPE), type.toString());
 	}
 	public static QueryField getFieldPreviousKeyId(long b)
 	{
-		return getBigIntField("previouskeyid", b);
+		return getBigIntField(FieldMap.Columns.get(ColumnEnumType.PREVIOUSKEYID), b);
 	}
 	public static QueryField getFieldAsymmetricKeyId(long b)
 	{
-		return getBigIntField("asymmetrickeyid", b);
+		return getBigIntField(FieldMap.Columns.get(ColumnEnumType.ASYMMETRICKEYID), b);
 	}
 	public static QueryField getFieldSymmetricKeyId(long b)
 	{
-		return getBigIntField("symmetrickeyid", b);
+		return getBigIntField(FieldMap.Columns.get(ColumnEnumType.SYMMETRICKEYID), b);
 	}
 	public static QueryField getFieldPreviousCredentialId(long id){
-		return getBigIntField("previouscredentialid",id);
+		return getBigIntField(FieldMap.Columns.get(ColumnEnumType.PREVIOUSCREDENTIALID),id);
 	}
 	public static QueryField getFieldNextCredentialId(long id){
-		return getBigIntField("nextcredentialid",id);
+		return getBigIntField(FieldMap.Columns.get(ColumnEnumType.NEXTCREDENTIALID),id);
 	}
 	public static QueryField getFieldCredentialType(CredentialEnumType type){
-		return getStringField("credentialtype",type.toString());
+		return getStringField(FieldMap.Columns.get(ColumnEnumType.CREDENTIALTYPE),type.toString());
 	}
 	public static QueryField getFieldCredential(byte[] val)
 	{
-		return getBytesField("credential", val);
+		return getBytesField(FieldMap.Columns.get(ColumnEnumType.CREDENTIAL), val);
 	}
 	public static QueryField getFieldSalt(byte[] val)
 	{
-		return getBytesField("salt", val);
+		return getBytesField(FieldMap.Columns.get(ColumnEnumType.SALT), val);
 	}
 
 	public static QueryField getFieldReferenceType(SqlDataEnumType type){
-		return getStringField("datatype",type.toString());
+		return getStringField(FieldMap.Columns.get(ColumnEnumType.DATATYPE),type.toString());
 	}
 	public static QueryField getFieldIndex(int index){
-		return getIntField("valueindex",index);
+		return getIntField(FieldMap.Columns.get(ColumnEnumType.VALUEINDEX),index);
 	}
 	public static QueryField getFieldValue(String val){
-		return getStringField("value",val);
+		return getStringField(FieldMap.Columns.get(ColumnEnumType.VALUE),val);
 	}
 	public static QueryField getFieldAccountId(String val){
-		return getStringField("accountid",val);
+		return getStringField(FieldMap.Columns.get(ColumnEnumType.ACCOUNTID),val);
 	}
 	public static QueryField getFieldAccountStatus(AccountStatusEnumType val){
-		return getStringField("accountstatus",val.toString());
+		return getStringField(FieldMap.Columns.get(ColumnEnumType.ACCOUNTSTATUS),val.toString());
 	}
 	public static QueryField getFieldAccountType(AccountEnumType val){
-		return getStringField("accounttype",val.toString());
+		return getStringField(FieldMap.Columns.get(ColumnEnumType.ACCOUNTTYPE),val.toString());
 	}
 
 
@@ -907,7 +904,7 @@ public class QueryFields {
 			ints.add(((BaseParticipantType)list[i]).getParticipantId());
 		}
 
-		QueryField match = new QueryField(SqlDataEnumType.BIGINT, "id", getFilteredLongList(FactoryBase.convertLongList(ints)));
+		QueryField match = new QueryField(SqlDataEnumType.BIGINT, FieldMap.Columns.get(ColumnEnumType.ID), getFilteredLongList(FactoryBase.convertLongList(ints)));
 		match.setComparator(ComparatorEnumType.IN);
 		return match;
 	}
@@ -920,38 +917,38 @@ public class QueryFields {
 			ints.add(((BaseParticipantType)list[i]).getParticipationId());
 		}
 
-		QueryField match = new QueryField(SqlDataEnumType.BIGINT, "id", getFilteredLongList(FactoryBase.convertLongList(ints)));
+		QueryField match = new QueryField(SqlDataEnumType.BIGINT, FieldMap.Columns.get(ColumnEnumType.ID), getFilteredLongList(FactoryBase.convertLongList(ints)));
 		match.setComparator(ComparatorEnumType.IN);
 		return match;
 	}
 	public static String getFilteredLongList(long[] longs){
 		StringBuilder buff = new StringBuilder();
-		Map<Long,Boolean> id_map = new HashMap<Long, Boolean>();
+		Map<Long,Boolean> idMap = new HashMap<>();
 		int counter = 0;
 		for(int i = 0; i < longs.length; i++){
-			if(id_map.containsKey(longs[i])) continue;
+			if(idMap.containsKey(longs[i])) continue;
 			if(counter > 0) buff.append(",");
 			buff.append(longs[i]);
-			id_map.put(longs[i], true);
+			idMap.put(longs[i], true);
 			counter++;
 		}
 		return buff.toString();
 	}
 	public static String getFilteredIntList(int[] ints){
 		StringBuilder buff = new StringBuilder();
-		Map<Integer,Boolean> id_map = new HashMap<Integer, Boolean>();
+		Map<Integer,Boolean> idMap = new HashMap<>();
 		int counter = 0;
 		for(int i = 0; i < ints.length; i++){
-			if(id_map.containsKey(ints[i])) continue;
+			if(idMap.containsKey(ints[i])) continue;
 			if(counter > 0) buff.append(",");
 			buff.append(ints[i]);
-			id_map.put(ints[i], true);
+			idMap.put(ints[i], true);
 			counter++;
 		}
 		return buff.toString();
 	}
 	public static QueryField getFieldTagType(TagEnumType type){
-		return getStringField("tagtype", type.toString());
+		return getStringField(FieldMap.Columns.get(ColumnEnumType.TAGTYPE), type.toString());
 	}
 	
 }

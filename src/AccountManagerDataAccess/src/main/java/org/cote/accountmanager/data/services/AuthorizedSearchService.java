@@ -94,7 +94,7 @@ public class AuthorizedSearchService {
 	private static List<QueryField> getQueryFieldsFromRequest(ObjectSearchRequestType request){
 		List<QueryField> fields = new ArrayList<>();
 		for(FieldMatch fm : request.getFields()) {
-			if(!FieldMap.getColumnMap().containsKey(fm.getFieldName())) {
+			if(!FieldMap.Columns.containsKey(fm.getFieldName())) {
 				logger.error("Invalid column name: " + fm.getFieldName().toString());
 				continue;
 			}
@@ -102,7 +102,7 @@ public class AuthorizedSearchService {
 				logger.error("Invalid data type");
 				continue;
 			}
-			QueryField f = new QueryField(fm.getDataType(), FieldMap.getColumnMap().get(fm.getFieldName()), (fm.getComparator().equals(ComparatorEnumType.LIKE) ? fm.getEncodedValue().replaceAll("\\*","%") : fm.getEncodedValue()));
+			QueryField f = new QueryField(fm.getDataType(), FieldMap.Columns.get(fm.getFieldName()), (fm.getComparator().equals(ComparatorEnumType.LIKE) ? fm.getEncodedValue().replaceAll("\\*","%") : fm.getEncodedValue()));
 			f.setComparator(fm.getComparator());
 			fields.add(f);
 		}

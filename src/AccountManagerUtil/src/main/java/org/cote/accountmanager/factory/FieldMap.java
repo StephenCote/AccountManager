@@ -191,13 +191,83 @@ public class FieldMap {
 	   columnMap.put(ColumnEnumType.ACCOUNTID, "accountid");
 	   columnMap.put(ColumnEnumType.ACCOUNTSTATUS, "accountstatus");
 	   columnMap.put(ColumnEnumType.ACCOUNTTYPE, "accounttype");
+	   columnMap.put(ColumnEnumType.TAGTYPE, "tagtype");
+	   
+	   columnMap.put(ColumnEnumType.GOALTYPE, "goaltype");
+	   columnMap.put(ColumnEnumType.COSTID, "costid");
+	   columnMap.put(ColumnEnumType.TIMEID, "timeid");
+	   columnMap.put(ColumnEnumType.BUDGETTYPE, "budgettype");
+	   columnMap.put(ColumnEnumType.ASSIGNEDRESOURCEID, "assignedresourceid");
+	   columnMap.put(ColumnEnumType.PRIORITY, "priority");
+	   columnMap.put(ColumnEnumType.SEVERITY, "severity");
+	   columnMap.put(ColumnEnumType.TICKETSTATUS, "ticketstatus");
+	   columnMap.put(ColumnEnumType.ACTUALTIMEID, "actualtimeid");
+	   columnMap.put(ColumnEnumType.ACTUALCOSTID, "actualcostid");
+	   columnMap.put(ColumnEnumType.DUEDATE, "duedate");
+	   columnMap.put(ColumnEnumType.CLOSEDDATE, "closeddate");
+	   columnMap.put(ColumnEnumType.COMPLETEDDATE, "completeddate");
+	   columnMap.put(ColumnEnumType.REOPENEDDATE, "reopeneddate");
+	   columnMap.put(ColumnEnumType.CURRENCYTYPE, "currencytype");
+	   columnMap.put(ColumnEnumType.BASISTYPE, "basistype");
+	   columnMap.put(ColumnEnumType.ARTIFACTTYPE, "artifacttype");
+	   columnMap.put(ColumnEnumType.PREVIOUSTRANSITIONID, "previoustransitionid");
+	   columnMap.put(ColumnEnumType.NEXTTRANSITIONID, "nexttransitionid");
+	   columnMap.put(ColumnEnumType.ARTIFACTDATAID, "artifactdataid");
+	   columnMap.put(ColumnEnumType.REQUIREMENTTYPE, "requirementtype");
+	   columnMap.put(ColumnEnumType.REQUIREMENTSTATUS, "requirementstatus");
+	   columnMap.put(ColumnEnumType.MODELTYPE, "modeltype");
+	   columnMap.put(ColumnEnumType.ESTIMATETYPE, "estimatetype");
+	   columnMap.put(ColumnEnumType.TASKSTATUS, "taskstatus");
+	   columnMap.put(ColumnEnumType.RESOURCETYPE, "resourcetype");
+	   columnMap.put(ColumnEnumType.MODULETYPE, "moduletype");
+	   columnMap.put(ColumnEnumType.CASETYPE, "casetype");
+	   columnMap.put(ColumnEnumType.TRAITTYPE, "traittype");
+	   columnMap.put(ColumnEnumType.ALIGNMENT, "alignment");
+	   columnMap.put(ColumnEnumType.EVENTTYPE, "eventtype");
+	   columnMap.put(ColumnEnumType.LOCATIONID, "locationid");
+	   columnMap.put(ColumnEnumType.GEOGRAPHYTYPE, "geographytype");
+	   columnMap.put(ColumnEnumType.CLASSIFICATION, "classification");
+	   columnMap.put(ColumnEnumType.ESTIMATEID, "estimateid");
+	   columnMap.put(ColumnEnumType.RESOURCEID, "resourceid");
+	   columnMap.put(ColumnEnumType.SCHEDULEID, "scheduleid");
+	   columnMap.put(ColumnEnumType.WORKID, "workid");
+	   columnMap.put(ColumnEnumType.BUDGETID, "budgetid");
+	   columnMap.put(ColumnEnumType.METHODOLOGYID, "methodologyid");
+	   columnMap.put(ColumnEnumType.UTILIZATION, "utilization");
+	   columnMap.put(ColumnEnumType.ITERATES, "iterates");
+	   columnMap.put(ColumnEnumType.ISBINARY, "isbinary");
+	   columnMap.put(ColumnEnumType.BINARYVALUEID, "binaryvalueid");
+	   columnMap.put(ColumnEnumType.TEXTVALUE, "textvalue");
+	   columnMap.put(ColumnEnumType.FORMELEMENTID, "formelementid");
+	   columnMap.put(ColumnEnumType.ELEMENTTYPE, "elementtype");
+	   columnMap.put(ColumnEnumType.ELEMENTNAME, "elementname");
+	   columnMap.put(ColumnEnumType.ELEMENTLABEL, "elementlabel");
+	   columnMap.put(ColumnEnumType.FORMID, "formid");
+	   columnMap.put(ColumnEnumType.VALIDATIONRULEID, "validationruleid");
+	   columnMap.put(ColumnEnumType.ALLOWNULL, "allownull");
+	   columnMap.put(ColumnEnumType.TEMPLATEID, "templateid");
+	   columnMap.put(ColumnEnumType.VIEWTEMPLATEID, "viewtemplateid");
+	   columnMap.put(ColumnEnumType.ELEMENTTEMPLATEID, "elementtemplateid");
+	   columnMap.put(ColumnEnumType.ISTEMPLATE, "istemplate");
+	   columnMap.put(ColumnEnumType.ISGRID, "isgrid");
+	   columnMap.put(ColumnEnumType.VALIDATIONTYPE, "validationtype");
+	   columnMap.put(ColumnEnumType.ISRULESET, "isruleset");
+	   columnMap.put(ColumnEnumType.COMPARISON, "comparison");
+	   columnMap.put(ColumnEnumType.ISREPLACEMENTRULE, "isreplacementrule");
+	   columnMap.put(ColumnEnumType.EXPRESSION, "expression");
+	   columnMap.put(ColumnEnumType.ERRORMESSAGE, "errormessage");
+	   columnMap.put(ColumnEnumType.REPLACEMENTVALUE, "replacementvalue");
+	   columnMap.put(ColumnEnumType.REQUIREMENTID, "requirementid");
+	   columnMap.put(ColumnEnumType.TEXT, "text");
    }
-
+	   
+	public static final Map<ColumnEnumType,String> Columns = Collections.unmodifiableMap(columnMap);
+/*
 	private static Map<ColumnEnumType, String> unmodifiableMap = null;
 	public static Map<ColumnEnumType, String> getColumnMap() {
 		if(unmodifiableMap != null) return unmodifiableMap;
 		unmodifiableMap = Collections.unmodifiableMap(columnMap);
 		return unmodifiableMap;
 	}
-	
+*/
 }
