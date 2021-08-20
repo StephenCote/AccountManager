@@ -259,15 +259,21 @@ public class FieldMap {
 	   columnMap.put(ColumnEnumType.REPLACEMENTVALUE, "replacementvalue");
 	   columnMap.put(ColumnEnumType.REQUIREMENTID, "requirementid");
 	   columnMap.put(ColumnEnumType.TEXT, "text");
+	   
+	   
+		columnMap.put(ColumnEnumType.CIPHERPROVIDER, "cipherprovider");
+		columnMap.put(ColumnEnumType.CIPHERKEYSPEC, "cipherkeyspec");
+		columnMap.put(ColumnEnumType.ASYMMETRICCIPHERKEYSPEC, "asymmetriccipherkeyspec");
+		columnMap.put(ColumnEnumType.SYMMETRICCIPHERKEYSPEC, "symmetriccipherkeyspec");
+		columnMap.put(ColumnEnumType.CIPHERKEY, "cipherkey");
+		columnMap.put(ColumnEnumType.CIPHERIV, "cipheriv");
+		columnMap.put(ColumnEnumType.ENCRYPTEDKEY, "encryptedkey");
+		columnMap.put(ColumnEnumType.SEEDLENGTH, "seedlength");
+		columnMap.put(ColumnEnumType.PUBLICKEY, "publickey");
+		columnMap.put(ColumnEnumType.PRIVATEKEY, "privatekey");
+	   
    }
 	   
 	public static final Map<ColumnEnumType,String> Columns = Collections.unmodifiableMap(columnMap);
-/*
-	private static Map<ColumnEnumType, String> unmodifiableMap = null;
-	public static Map<ColumnEnumType, String> getColumnMap() {
-		if(unmodifiableMap != null) return unmodifiableMap;
-		unmodifiableMap = Collections.unmodifiableMap(columnMap);
-		return unmodifiableMap;
-	}
-*/
+
 }
