@@ -521,7 +521,7 @@ public class DataFactory extends NameIdFactory {
 			if ((i > 0 || dataIds.length == 1) && ((i % BulkFactories.bulkQueryLimit == 0) || i == dataIds.length - 1))
 			{
 				QueryField match = new QueryField(SqlDataEnumType.BIGINT, "id", buff.toString());
-				match.setComparator(ComparatorEnumType.IN);
+				match.setComparator(ComparatorEnumType.ANY);
 				List<DataType> tmpDataList = getDataList(new QueryField[] { match }, null, detailsOnly, organizationId);
 				outList.addAll(tmpDataList);
 				buff.delete(0,  buff.length());

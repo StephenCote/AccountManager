@@ -882,7 +882,7 @@ public abstract class NameIdFactory extends FactoryBase implements INameIdFactor
 			if ((i > 0 || ids.length == 1) && ((i % BulkFactories.bulkQueryLimit == 0) || i == ids.length - 1))
 			{
 				QueryField match = new QueryField(SqlDataEnumType.BIGINT, "id", buff.toString());
-				match.setComparator(ComparatorEnumType.IN);
+				match.setComparator(ComparatorEnumType.ANY);
 				List<NameIdType> tmpDataList = getByField(new QueryField[] { match }, instruction, organizationId);
 				outList.addAll(tmpDataList);
 				buff.delete(0,  buff.length());

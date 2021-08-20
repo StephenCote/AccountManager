@@ -1136,7 +1136,7 @@ public class IdentityService {
 							 List<QueryField> fields = new ArrayList<>();
 							 fields.add(QueryFields.getFieldGroup(application.getId()));
 							 QueryField match = new QueryField(SqlDataEnumType.VARCHAR,"name",nameBuff.toString());
-							 match.setComparator(ComparatorEnumType.IN);
+							 match.setComparator(ComparatorEnumType.ANY);
 							 fields.add(match);
 							 mapAccounts = ((AccountFactory)Factories.getFactory(FactoryEnumType.ACCOUNT)).getAccountList(fields.toArray(new QueryField[0]), 0, 0, application.getOrganizationId());
 								
@@ -1195,7 +1195,7 @@ public class IdentityService {
 							 List<QueryField> fields = new ArrayList<>();
 							 fields.add(QueryFields.getFieldGroup(application.getId()));
 							 QueryField match = new QueryField(SqlDataEnumType.VARCHAR,"name",nameBuff.toString());
-							 match.setComparator(ComparatorEnumType.IN);
+							 match.setComparator(ComparatorEnumType.ANY);
 							 fields.add(match);
 							 mapAccounts = ((AccountFactory)Factories.getFactory(FactoryEnumType.ACCOUNT)).getAccountList(fields.toArray(new QueryField[0]), 0, 0, application.getOrganizationId());
 

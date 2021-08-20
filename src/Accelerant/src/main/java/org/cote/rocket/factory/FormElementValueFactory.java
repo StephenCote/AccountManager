@@ -213,14 +213,14 @@ public class FormElementValueFactory extends NameIdFactory {
 	public int deleteFormElementValuesByElementIds(long[] ids, long organizationId) throws FactoryException
 	{
 		QueryField match = new QueryField(SqlDataEnumType.BIGINT, "formelementid", QueryFields.getFilteredLongList(ids));
-		match.setComparator(ComparatorEnumType.IN);
+		match.setComparator(ComparatorEnumType.ANY);
 		int deleted = deleteByField(new QueryField[]{match}, organizationId);
 		return deleted;
 	}
 	public int deleteFormElementValuesByFormIds(long[] ids, long organizationId) throws FactoryException
 	{
 		QueryField match = new QueryField(SqlDataEnumType.BIGINT, "formid", QueryFields.getFilteredLongList(ids));
-		match.setComparator(ComparatorEnumType.IN);
+		match.setComparator(ComparatorEnumType.ANY);
 		int deleted = deleteByField(new QueryField[]{match}, organizationId);
 		return deleted;
 	}

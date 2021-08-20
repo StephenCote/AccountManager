@@ -555,11 +555,18 @@ public abstract class FactoryBase {
 			}
 			else if (fieldComp == ComparatorEnumType.IN || fieldComp == ComparatorEnumType.NOT_IN)
 			{
-				// WARN: This is a SQL Injection Point -- need to fix or be sure to restrict
-				// At the moment, assuming it's a string value
+				// 2021/08/20 - revising old warning about this being a SQL Injection Point
+				// It is parameterized so the value is properly encoded
 				//
 				String notStr = (fieldComp == ComparatorEnumType.NOT_IN ? " NOT " : "");
-				matchBuff.append(String.format("%s %s IN (%s)",fieldName, notStr, (String)fields[i].getValue()));
+				matchBuff.append(String.format("%s %s IN (%s)", fieldName, notStr, paramToken));
+			}
+			else if (fieldComp == ComparatorEnumType.ANY || fieldComp == ComparatorEnumType.NOT_ANY)
+			{
+				/// Most of the AM5 codebase uses the ANY over the IN method due to primary repository being postgres, and how postgres handles parameterized IN vs. ANY clauses
+				///
+				String notStr = (fieldComp == ComparatorEnumType.NOT_ANY ? " NOT " : "");
+				matchBuff.append(String.format("%s %s = ANY(%s)", notStr, fieldName, paramToken));
 			}
 			else if (fieldComp == ComparatorEnumType.GREATER_THAN || fieldComp == ComparatorEnumType.GREATER_THAN_OR_EQUALS)
 			{

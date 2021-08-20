@@ -658,7 +658,7 @@ public class RoleFactory extends NameIdFactory {
 			if ((i > 0 || roleIds.length == 1) && ((i % BulkFactories.bulkQueryLimit == 0) || i == roleIds.length - 1))
 			{
 				QueryField match = new QueryField(SqlDataEnumType.BIGINT, "id", buff.toString());
-				match.setComparator(ComparatorEnumType.IN);
+				match.setComparator(ComparatorEnumType.ANY);
 				List<BaseRoleType> tmpRoleList = getRoleList(new QueryField[] { match }, null, organizationId);
 				outList.addAll(tmpRoleList);
 				buff.delete(0,  buff.length());

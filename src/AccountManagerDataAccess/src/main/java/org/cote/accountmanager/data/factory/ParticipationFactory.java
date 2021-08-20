@@ -126,7 +126,7 @@ public abstract class ParticipationFactory extends NameIdFactory implements IPar
 			if ((i > 0 || permissions.length == 1) && ((i % BulkFactories.bulkQueryLimit == 0) || i == permissions.length - 1))
 			{
 				QueryField match = new QueryField(SqlDataEnumType.BIGINT, "affectid", buff.toString());
-				match.setComparator(ComparatorEnumType.IN);
+				match.setComparator(ComparatorEnumType.ANY);
 				count += deleteByField(new QueryField[] { QueryFields.getFieldParticipationId(source),match }, source.getOrganizationId());
 				buff.delete(0,  buff.length());
 			}
@@ -172,7 +172,7 @@ public abstract class ParticipationFactory extends NameIdFactory implements IPar
 			{
 				QueryField match = new QueryField(SqlDataEnumType.BIGINT, field_name, buff.toString());
 				List<QueryField> matches = new ArrayList<>();
-				match.setComparator(ComparatorEnumType.IN);
+				match.setComparator(ComparatorEnumType.ANY);
 				matches.add(match);
 				if(query != null) matches.add(query);
 				deleted += deleteByField(matches.toArray(new QueryField[0]), organizationId);
@@ -389,7 +389,7 @@ public abstract class ParticipationFactory extends NameIdFactory implements IPar
 		}
 
 		QueryField match = new QueryField(SqlDataEnumType.VARCHAR, "participationid", QueryFields.getFilteredLongList(convertLongList(ids)));
-		match.setComparator(ComparatorEnumType.IN);
+		match.setComparator(ComparatorEnumType.ANY);
 		matches.add(match);
 		return getByField(matches.toArray(new QueryField[0]), org);
 	}

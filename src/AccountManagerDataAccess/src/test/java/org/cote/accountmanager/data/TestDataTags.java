@@ -241,7 +241,7 @@ public class TestDataTags extends BaseDataAccessTest {
 					}
 					List<QueryField> fields = new ArrayList<>();
 					QueryField nameField = new QueryField(SqlDataEnumType.VARCHAR,"name",names.toString());
-					nameField.setComparator(ComparatorEnumType.IN);
+					nameField.setComparator(ComparatorEnumType.ANY);
 					fields.add(nameField);
 					fields.add(QueryFields.getFieldGroup(dir.getId()));
 					

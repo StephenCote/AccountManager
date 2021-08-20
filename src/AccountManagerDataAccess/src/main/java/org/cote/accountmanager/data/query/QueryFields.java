@@ -905,7 +905,7 @@ public class QueryFields {
 		}
 
 		QueryField match = new QueryField(SqlDataEnumType.BIGINT, FieldMap.Columns.get(ColumnEnumType.ID), getFilteredLongList(FactoryBase.convertLongList(ints)));
-		match.setComparator(ComparatorEnumType.IN);
+		match.setComparator(ComparatorEnumType.ANY);
 		return match;
 	}
 	public static <T> QueryField getFieldParticipationIds(T[] list)
@@ -918,7 +918,7 @@ public class QueryFields {
 		}
 
 		QueryField match = new QueryField(SqlDataEnumType.BIGINT, FieldMap.Columns.get(ColumnEnumType.ID), getFilteredLongList(FactoryBase.convertLongList(ints)));
-		match.setComparator(ComparatorEnumType.IN);
+		match.setComparator(ComparatorEnumType.ANY);
 		return match;
 	}
 	public static String getFilteredLongList(long[] longs){

@@ -497,6 +497,8 @@
     <simpleType name="ComparatorEnumType">
     	<restriction base="string">
     		<enumeration value="UNKNOWN"></enumeration>
+    		<enumeration value="ANY"></enumeration>
+    		<enumeration value="NOT_ANY"></enumeration>
     		<enumeration value="EQUALS"></enumeration>
     		<enumeration value="NOT_EQUALS"></enumeration>
     		<enumeration value="BETWEEN"></enumeration>

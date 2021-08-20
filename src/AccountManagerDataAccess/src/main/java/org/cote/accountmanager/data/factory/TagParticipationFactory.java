@@ -122,7 +122,7 @@ public class TagParticipationFactory extends ParticipationFactory {
 			buff.append(tags[i].getId());
 		}
 		QueryField field = new QueryField(SqlDataEnumType.BIGINT,"participationid",buff.toString());
-		field.setComparator(ComparatorEnumType.IN);
+		field.setComparator(ComparatorEnumType.ANY);
 		matches.add(field);
 		instruction.setHavingClause("count(participantid) = " + tags.length);
 		instruction.setGroupClause("participantid");

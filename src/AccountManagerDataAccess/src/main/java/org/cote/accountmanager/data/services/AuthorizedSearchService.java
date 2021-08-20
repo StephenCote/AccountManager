@@ -154,7 +154,7 @@ public class AuthorizedSearchService {
 				if ((i > 0 || ids.length == 1) && ((i % BulkFactories.bulkQueryLimit == 0) || i == ids.length - 1))
 				{
 					QueryField match = new QueryField(SqlDataEnumType.BIGINT, "id", buff.toString());
-					match.setComparator(ComparatorEnumType.IN);
+					match.setComparator(ComparatorEnumType.ANY);
 					QueryField[] subFields = ArrayUtils.addAll(fields.toArray(new QueryField[0]), match);
 					List<NameIdType> tmpDataList = fact.getByField(subFields , member.getOrganizationId());
 					for(NameIdType obj : tmpDataList) {
@@ -168,7 +168,7 @@ public class AuthorizedSearchService {
 		}
 		catch(FactoryException | ArgumentException e) {
 			logger.error(e);
-			e.printStackTrace();
+			logger.error(e.getStackTrace());
 		}
 		
 		return outL;

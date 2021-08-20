@@ -23,6 +23,7 @@
  *******************************************************************************/
 package org.cote.accountmanager.data;
 
+import java.sql.Array;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.Date;
@@ -33,6 +34,10 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Timestamp;
 import java.sql.Types;
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import javax.xml.datatype.XMLGregorianCalendar;
 
@@ -71,20 +76,49 @@ public class DBFactory {
 		for(int i = 0; i < len; i++){
 			if(fields[i] == null)
 				continue;
-			if(fields[i].getComparator() == ComparatorEnumType.GROUP_AND || fields[i].getComparator() == ComparatorEnumType.GROUP_OR){
+			ComparatorEnumType comp = fields[i].getComparator();
+			if(comp == ComparatorEnumType.GROUP_AND || comp == ComparatorEnumType.GROUP_OR){
 				paramMarker = setStatementParameters(fields[i].getFields().toArray(new QueryField[0]), paramMarker, statement);
 			}
 			else if (
-				fields[i].getComparator() == ComparatorEnumType.EQUALS
-				|| fields[i].getComparator() == ComparatorEnumType.NOT_EQUALS	
-				|| fields[i].getComparator() == ComparatorEnumType.GREATER_THAN
-				|| fields[i].getComparator() == ComparatorEnumType.GREATER_THAN_OR_EQUALS	
-				|| fields[i].getComparator() == ComparatorEnumType.LESS_THAN
-				|| fields[i].getComparator() == ComparatorEnumType.LESS_THAN_OR_EQUALS
-				|| fields[i].getComparator() == ComparatorEnumType.LIKE
-
+				comp == ComparatorEnumType.EQUALS
+				|| comp == ComparatorEnumType.NOT_EQUALS	
+				|| comp == ComparatorEnumType.GREATER_THAN
+				|| comp == ComparatorEnumType.GREATER_THAN_OR_EQUALS	
+				|| comp == ComparatorEnumType.LESS_THAN
+				|| comp == ComparatorEnumType.LESS_THAN_OR_EQUALS
+				|| comp == ComparatorEnumType.LIKE
 			){
 				setStatementParameter(statement, fields[i].getDataType(), fields[i].getValue(), paramMarker++);
+			}
+			else if(
+					comp == ComparatorEnumType.IN
+					|| comp == ComparatorEnumType.NOT_IN
+					|| comp == ComparatorEnumType.ANY
+					|| comp == ComparatorEnumType.NOT_ANY
+			) {
+				try {
+					String[] packVal = ((String)fields[i].getValue()).split(",");
+					Object[] array = packVal;
+					switch(fields[i].getDataType()) {
+						case BIGINT:
+							List<Long> useValLong = Stream.of(packVal).map(Long::valueOf).collect(Collectors.toList());
+							array = useValLong.toArray(new Long[0]);
+							break;
+						case INTEGER:
+							List<Integer> useValInt = Stream.of(packVal).map(Integer::valueOf).collect(Collectors.toList());
+							array = useValInt.toArray(new Long[0]);
+							break;
+						default:
+							/// leave it as varchar
+							break;
+					}
+					Array arr = statement.getConnection().createArrayOf(fields[i].getDataType().toString(), array);
+					statement.setArray(paramMarker++, arr);
+				} catch (SQLException e) {
+					logger.error(e.getMessage());
+					throw new FactoryException(e.getMessage());
+				}
 			}
 		}
 		return paramMarker;
