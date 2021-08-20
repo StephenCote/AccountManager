@@ -39,6 +39,7 @@ import org.cote.accountmanager.objects.NameIdType;
 import org.cote.accountmanager.objects.ProcessingInstructionType;
 import org.cote.accountmanager.objects.SecurityType;
 import org.cote.accountmanager.objects.UserType;
+import org.cote.accountmanager.objects.types.ColumnEnumType;
 import org.cote.accountmanager.objects.types.FactoryEnumType;
 import org.cote.accountmanager.objects.types.NameEnumType;
 
@@ -62,18 +63,19 @@ public class AsymmetricKeyFactory extends NameIdFactory {
 		factoryType = FactoryEnumType.ASYMMETRICKEY;
 	}
 
+	@Override
 	protected void configureTableRestrictions(DataTable table){
-		if(table.getName().equalsIgnoreCase("asymmetrickeys")){
-			table.setRestrictUpdateColumn("cipherprovider",true);
-			table.setRestrictUpdateColumn("cipherkeyspec",true);
-			table.setRestrictUpdateColumn("asymmetriccipherkeyspec",true);
-			table.setRestrictUpdateColumn("hashprovider",true);
-			table.setRestrictUpdateColumn("seedlength",true);
-			table.setRestrictUpdateColumn("publickey",true);
-			table.setRestrictUpdateColumn("privatekey",true);
-			table.setRestrictUpdateColumn("ownerid",true);
-			table.setRestrictUpdateColumn("organizationkey",true);
-			table.setRestrictUpdateColumn("globalkey",true);
+		if(table.getName().equalsIgnoreCase(primaryTableName)){
+			table.setRestrictUpdateColumn(Columns.get(ColumnEnumType.CIPHERPROVIDER),true);
+			table.setRestrictUpdateColumn(Columns.get(ColumnEnumType.CIPHERKEYSPEC),true);
+			table.setRestrictUpdateColumn(Columns.get(ColumnEnumType.ASYMMETRICCIPHERKEYSPEC),true);
+			table.setRestrictUpdateColumn(Columns.get(ColumnEnumType.HASHPROVIDER),true);
+			table.setRestrictUpdateColumn(Columns.get(ColumnEnumType.SEEDLENGTH),true);
+			table.setRestrictUpdateColumn(Columns.get(ColumnEnumType.PUBLICKEY),true);
+			table.setRestrictUpdateColumn(Columns.get(ColumnEnumType.PRIVATEKEY),true);
+			table.setRestrictUpdateColumn(Columns.get(ColumnEnumType.OWNERID),true);
+			table.setRestrictUpdateColumn(Columns.get(ColumnEnumType.ORGANIZATIONKEY),true);
+			table.setRestrictUpdateColumn(Columns.get(ColumnEnumType.GLOBALKEY),true);
 
 		}
 	}
@@ -103,18 +105,18 @@ public class AsymmetricKeyFactory extends NameIdFactory {
 
 		try{
 
-			row.setCellValue("globalkey",obj.getGlobalKey());
-			row.setCellValue("primarykey",obj.getPrimaryKey());
-			row.setCellValue("organizationkey",obj.getOrganizationKey());
-			row.setCellValue("cipherprovider",obj.getCipherProvider());
-			row.setCellValue("cipherkeyspec",obj.getCipherKeySpec());
-			row.setCellValue("asymmetriccipherkeyspec",obj.getAsymmetricCipherKeySpec());
-			row.setCellValue("hashprovider",obj.getHashProvider());
-			row.setCellValue("seedlength",obj.getRandomSeedLength());
-			row.setCellValue("previouskeyid",obj.getPreviousKeyId());
-			row.setCellValue("symmetrickeyid",obj.getSymmetricKeyId());
-			row.setCellValue("publickey",obj.getPublicKeyBytes());
-			row.setCellValue("privatekey",obj.getPrivateKeyBytes());
+			row.setCellValue(Columns.get(ColumnEnumType.GLOBALKEY),obj.getGlobalKey());
+			row.setCellValue(Columns.get(ColumnEnumType.PRIMARYKEY),obj.getPrimaryKey());
+			row.setCellValue(Columns.get(ColumnEnumType.ORGANIZATIONKEY),obj.getOrganizationKey());
+			row.setCellValue(Columns.get(ColumnEnumType.CIPHERPROVIDER),obj.getCipherProvider());
+			row.setCellValue(Columns.get(ColumnEnumType.CIPHERKEYSPEC),obj.getCipherKeySpec());
+			row.setCellValue(Columns.get(ColumnEnumType.ASYMMETRICCIPHERKEYSPEC),obj.getAsymmetricCipherKeySpec());
+			row.setCellValue(Columns.get(ColumnEnumType.HASHPROVIDER),obj.getHashProvider());
+			row.setCellValue(Columns.get(ColumnEnumType.SEEDLENGTH),obj.getRandomSeedLength());
+			row.setCellValue(Columns.get(ColumnEnumType.PREVIOUSKEYID),obj.getPreviousKeyId());
+			row.setCellValue(Columns.get(ColumnEnumType.SYMMETRICKEYID),obj.getSymmetricKeyId());
+			row.setCellValue(Columns.get(ColumnEnumType.PUBLICKEY),obj.getPublicKeyBytes());
+			row.setCellValue(Columns.get(ColumnEnumType.PRIVATEKEY),obj.getPrivateKeyBytes());
 
 			
 			if(insertRow(row)) return true;
@@ -131,18 +133,18 @@ public class AsymmetricKeyFactory extends NameIdFactory {
 		SecurityType newCred = new SecurityType();
 		newCred.setNameType(NameEnumType.SECURITY);
 		super.read(rset, newCred);
-		newCred.setGlobalKey(rset.getBoolean("globalkey"));
-		newCred.setOrganizationKey(rset.getBoolean("organizationkey"));
-		newCred.setPrimaryKey(rset.getBoolean("primarykey"));
-		newCred.setHashProvider(rset.getString("hashprovider"));
-		newCred.setRandomSeedLength(rset.getLong("seedlength"));
-		newCred.setPreviousKeyId(rset.getLong("previouskeyid"));
-		newCred.setSymmetricKeyId(rset.getLong("symmetrickeyid"));
-		newCred.setCipherProvider(rset.getString("cipherprovider"));
-		newCred.setCipherKeySpec(rset.getString("cipherkeyspec"));
-		newCred.setAsymmetricCipherKeySpec(rset.getString("asymmetriccipherkeyspec"));
-		newCred.setPublicKeyBytes(rset.getBytes("publickey"));
-		newCred.setPrivateKeyBytes(rset.getBytes("privatekey"));
+		newCred.setGlobalKey(rset.getBoolean(Columns.get(ColumnEnumType.GLOBALKEY)));
+		newCred.setOrganizationKey(rset.getBoolean(Columns.get(ColumnEnumType.ORGANIZATIONKEY)));
+		newCred.setPrimaryKey(rset.getBoolean(Columns.get(ColumnEnumType.PRIMARYKEY)));
+		newCred.setHashProvider(rset.getString(Columns.get(ColumnEnumType.HASHPROVIDER)));
+		newCred.setRandomSeedLength(rset.getLong(Columns.get(ColumnEnumType.SEEDLENGTH)));
+		newCred.setPreviousKeyId(rset.getLong(Columns.get(ColumnEnumType.PREVIOUSKEYID)));
+		newCred.setSymmetricKeyId(rset.getLong(Columns.get(ColumnEnumType.SYMMETRICKEYID)));
+		newCred.setCipherProvider(rset.getString(Columns.get(ColumnEnumType.CIPHERPROVIDER)));
+		newCred.setCipherKeySpec(rset.getString(Columns.get(ColumnEnumType.CIPHERKEYSPEC)));
+		newCred.setAsymmetricCipherKeySpec(rset.getString(Columns.get(ColumnEnumType.ASYMMETRICCIPHERKEYSPEC)));
+		newCred.setPublicKeyBytes(rset.getBytes(Columns.get(ColumnEnumType.PUBLICKEY)));
+		newCred.setPrivateKeyBytes(rset.getBytes(Columns.get(ColumnEnumType.PRIVATEKEY)));
 		return newCred;
 	}
 	

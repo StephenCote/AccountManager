@@ -48,8 +48,10 @@ import org.cote.accountmanager.data.DataTable;
 import org.cote.accountmanager.data.io.BulkInsertUtil;
 import org.cote.accountmanager.data.query.QueryField;
 import org.cote.accountmanager.exceptions.FactoryException;
+import org.cote.accountmanager.factory.FieldMap;
 import org.cote.accountmanager.objects.DataColumnType;
 import org.cote.accountmanager.objects.ProcessingInstructionType;
+import org.cote.accountmanager.objects.types.ColumnEnumType;
 import org.cote.accountmanager.objects.types.ComparatorEnumType;
 import org.cote.accountmanager.objects.types.FactoryEnumType;
 import org.cote.accountmanager.objects.types.SqlDataEnumType;
@@ -74,6 +76,7 @@ public abstract class FactoryBase {
 	private int batchSize = 250;
 	private static boolean enableSchemaCache = false;
 	private static String schemaCachePath = null;
+	protected Map<ColumnEnumType,String> Columns = null;
 	
 	/// PostGres sequence name
 	///
@@ -94,6 +97,7 @@ public abstract class FactoryBase {
 		tableNames = new ArrayList<>();
 		dataTables = new ArrayList<>();
 		bulkMap = new HashMap<>();
+		Columns = FieldMap.Columns;
 	}
 	public FactoryEnumType getFactoryType(){
 		return factoryType;
@@ -249,13 +253,13 @@ public abstract class FactoryBase {
 				}
 			}
 
-			String attributeClause = " INNER JOIN Attribute ATR on ATR.referenceId = " + alias + ".id AND ATR.referenceType = '" + factoryType.toString() + "' AND ATR.organizationId = " + alias + ".organizationId";
+			String attributeClause = " INNER JOIN Attribute ATR on ATR." + Columns.get(ColumnEnumType.REFERENCEID) + " " + alias + ".id AND ATR." + Columns.get(ColumnEnumType.REFERENCETYPE) + " = '" + factoryType.toString() + "' AND ATR." + Columns.get(ColumnEnumType.ORGANIZATIONID) + " = " + alias + "." + Columns.get(ColumnEnumType.ORGANIZATIONID);
 			String tableClause = " FROM " + tableName + lockHint;
 			table.setSelectFullTemplate(buff.toString() + " #PAGE# " + tableClause);
 			table.setSelectFullAttributeTemplate(aliasBuff.toString() + " #PAGE# FROM " + tableName + " " + alias + " " + lockHint + attributeClause);
-			table.setSelectIdTemplate("SELECT id" + tableClause);
+			table.setSelectIdTemplate("SELECT " + Columns.get(ColumnEnumType.ID) + tableClause);
 			table.setSelectAggregateTemplate("SELECT %AGGREGATE%" + tableClause);
-			table.setSelectNameTemplate("SELECT name" + tableClause);
+			table.setSelectNameTemplate("SELECT " + Columns.get(ColumnEnumType.NAME) + tableClause);
 			
 			if(enableSchemaCache){
 				logger.info("Caching schema to " + schemaCacheFile);
@@ -420,7 +424,7 @@ public abstract class FactoryBase {
 	
 	protected int deleteById(long[] id) throws FactoryException
 	{
-		return deleteByBigIntField("id", id, 0);
+		return deleteByBigIntField(Columns.get(ColumnEnumType.ID), id, 0);
 	}
 	protected int deleteById(long id) throws FactoryException
 	{
@@ -428,11 +432,11 @@ public abstract class FactoryBase {
 	}
 	protected int deleteById(long id, long organizationId) throws FactoryException
 	{
-		return deleteByBigIntField("id",new long[] { id }, organizationId);
+		return deleteByBigIntField(Columns.get(ColumnEnumType.ID),new long[] { id }, organizationId);
 	}
 	protected int deleteById(long[] id, long organizationId) throws FactoryException
 	{
-		return deleteByBigIntField("id", id, organizationId);
+		return deleteByBigIntField(Columns.get(ColumnEnumType.ID), id, organizationId);
 	}
 	protected int deleteByBigIntField(String fieldName, long[] list, long organizationId) throws FactoryException
 	{
@@ -635,7 +639,7 @@ public abstract class FactoryBase {
 		;
 		String queryClauseCond = (queryClause.length() == 0 ? " " : " AND ");
 		return pagePrefix + modSelectString + " WHERE " + queryClause
-			+ (scopeToOrganization && organizationId > 0L ? queryClauseCond + tableAlias + "organizationid=" + organizationId : "")
+			+ (scopeToOrganization && organizationId > 0L ? queryClauseCond + tableAlias + Columns.get(ColumnEnumType.ORGANIZATIONID) + "=" + organizationId : "")
 			+ (instruction != null && instruction.getGroupClause() != null ? " GROUP BY " + instruction.getGroupClause() : "")
 			+ (instruction != null && instruction.getHavingClause() != null ? " HAVING " + instruction.getHavingClause() : "")
 			+ pageSuffix

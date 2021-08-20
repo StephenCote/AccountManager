@@ -27,6 +27,7 @@ import org.cote.accountmanager.objects.ApproverType;
 import org.cote.accountmanager.objects.NameIdType;
 import org.cote.accountmanager.objects.ProcessingInstructionType;
 import org.cote.accountmanager.objects.UserType;
+import org.cote.accountmanager.objects.types.ColumnEnumType;
 import org.cote.accountmanager.objects.types.FactoryEnumType;
 import org.cote.accountmanager.objects.types.NameEnumType;
 import org.cote.accountmanager.util.CalendarUtil;
@@ -152,24 +153,24 @@ public class ApprovalFactory  extends NameIdFactory {
 		ApprovalType obj = (ApprovalType)object;
 		DataRow row = prepareAdd(obj, this.primaryTableName);
 		try{
-			row.setCellValue("requestid",obj.getRequestId());
-			row.setCellValue("response",obj.getResponse().toString());
-			row.setCellValue("responsemessage", obj.getResponseMessage());
-			row.setCellValue("signerid",obj.getSignerId());
-			row.setCellValue("validationid",obj.getValidationId());
-			row.setCellValue("signature", obj.getSignature());
+			row.setCellValue(Columns.get(ColumnEnumType.REQUESTID),obj.getRequestId());
+			row.setCellValue(Columns.get(ColumnEnumType.RESPONSE),obj.getResponse().toString());
+			row.setCellValue(Columns.get(ColumnEnumType.RESPONSEMESSAGE), obj.getResponseMessage());
+			row.setCellValue(Columns.get(ColumnEnumType.SIGNERID),obj.getSignerId());
+			row.setCellValue(Columns.get(ColumnEnumType.VALIDATIONID),obj.getValidationId());
+			row.setCellValue(Columns.get(ColumnEnumType.SIGNATURE), obj.getSignature());
 
-			row.setCellValue("referencetype",obj.getReferenceType().toString());
-			row.setCellValue("referenceid",obj.getReferenceId());
-			row.setCellValue("approvaltype",obj.getApprovalType().toString());
-			row.setCellValue("approvertype",obj.getApproverType().toString());
-			row.setCellValue("approverid",obj.getApproverId());
-			row.setCellValue("approvalid",obj.getApproverId());
-			row.setCellValue("approverlevel",obj.getApproverLevel());
+			row.setCellValue(Columns.get(ColumnEnumType.REFERENCETYPE),obj.getReferenceType().toString());
+			row.setCellValue(Columns.get(ColumnEnumType.REFERENCEID),obj.getReferenceId());
+			row.setCellValue(Columns.get(ColumnEnumType.APPROVALTYPE),obj.getApprovalType().toString());
+			row.setCellValue(Columns.get(ColumnEnumType.APPROVERTYPE),obj.getApproverType().toString());
+			row.setCellValue(Columns.get(ColumnEnumType.APPROVERID),obj.getApproverId());
+			row.setCellValue(Columns.get(ColumnEnumType.APPROVALID),obj.getApproverId());
+			row.setCellValue(Columns.get(ColumnEnumType.APPROVERLEVEL),obj.getApproverLevel());
 			
-			row.setCellValue("createddate", obj.getCreatedDate());
-			row.setCellValue("modifieddate", obj.getModifiedDate());
-			row.setCellValue("expirationdate", obj.getExpiryDate());
+			row.setCellValue(Columns.get(ColumnEnumType.CREATEDDATE), obj.getCreatedDate());
+			row.setCellValue(Columns.get(ColumnEnumType.MODIFIEDDATE), obj.getModifiedDate());
+			row.setCellValue(Columns.get(ColumnEnumType.EXPIRATIONDATE), obj.getExpiryDate());
 		
 			if(insertRow(row)) return true;
 		}
@@ -185,22 +186,22 @@ public class ApprovalFactory  extends NameIdFactory {
 		ApprovalType newAppr = new ApprovalType();
 		newAppr.setNameType(NameEnumType.APPROVAL);
 		super.read(rset, newAppr);
-		newAppr.setRequestId(rset.getString("requestid"));
-		newAppr.setSignature(rset.getBytes("signature"));
-		newAppr.setSignerId(rset.getString("signerid"));
-		newAppr.setValidationId(rset.getString("validationid"));
-		newAppr.setResponseMessage(rset.getString("responsemessage"));
-		newAppr.setResponse(ApprovalResponseEnumType.valueOf(rset.getString("response")));
-		newAppr.setReferenceId(rset.getLong("referenceid"));
-		newAppr.setReferenceType(FactoryEnumType.fromValue(rset.getString("referencetype")));
-		newAppr.setApproverId(rset.getLong("approverid"));
-		newAppr.setApproverType(ApproverEnumType.fromValue(rset.getString("approvertype")));
-		newAppr.setApprovalType(ApprovalEnumType.fromValue(rset.getString("approvaltype")));
-		newAppr.setApprovalId(rset.getLong("approvalid"));
-		newAppr.setApproverLevel(rset.getInt("approverlevel"));
-		newAppr.setCreatedDate(CalendarUtil.getXmlGregorianCalendar(rset.getTimestamp("createddate")));
-		newAppr.setModifiedDate(CalendarUtil.getXmlGregorianCalendar(rset.getTimestamp("modifieddate")));
-		newAppr.setExpiryDate(CalendarUtil.getXmlGregorianCalendar(rset.getTimestamp("expirationdate")));
+		newAppr.setRequestId(rset.getString(Columns.get(ColumnEnumType.REQUESTID)));
+		newAppr.setSignature(rset.getBytes(Columns.get(ColumnEnumType.SIGNATURE)));
+		newAppr.setSignerId(rset.getString(Columns.get(ColumnEnumType.SIGNERID)));
+		newAppr.setValidationId(rset.getString(Columns.get(ColumnEnumType.VALIDATIONID)));
+		newAppr.setResponseMessage(rset.getString(Columns.get(ColumnEnumType.RESPONSEMESSAGE)));
+		newAppr.setResponse(ApprovalResponseEnumType.valueOf(rset.getString(Columns.get(ColumnEnumType.RESPONSE))));
+		newAppr.setReferenceId(rset.getLong(Columns.get(ColumnEnumType.REFERENCEID)));
+		newAppr.setReferenceType(FactoryEnumType.fromValue(rset.getString(Columns.get(ColumnEnumType.REFERENCETYPE))));
+		newAppr.setApproverId(rset.getLong(Columns.get(ColumnEnumType.APPROVERID)));
+		newAppr.setApproverType(ApproverEnumType.fromValue(rset.getString(Columns.get(ColumnEnumType.APPROVERTYPE))));
+		newAppr.setApprovalType(ApprovalEnumType.fromValue(rset.getString(Columns.get(ColumnEnumType.APPROVALTYPE))));
+		newAppr.setApprovalId(rset.getLong(Columns.get(ColumnEnumType.APPROVALID)));
+		newAppr.setApproverLevel(rset.getInt(Columns.get(ColumnEnumType.APPROVERLEVEL)));
+		newAppr.setCreatedDate(CalendarUtil.getXmlGregorianCalendar(rset.getTimestamp(Columns.get(ColumnEnumType.CREATEDDATE))));
+		newAppr.setModifiedDate(CalendarUtil.getXmlGregorianCalendar(rset.getTimestamp(Columns.get(ColumnEnumType.MODIFIEDDATE))));
+		newAppr.setExpiryDate(CalendarUtil.getXmlGregorianCalendar(rset.getTimestamp(Columns.get(ColumnEnumType.EXPIRATIONDATE))));
 		
 		return newAppr;
 	}
@@ -248,7 +249,7 @@ public class ApprovalFactory  extends NameIdFactory {
 		pi.setPaginate(true);
 		pi.setStartIndex(0L);
 		pi.setRecordCount(0);
-		pi.setOrderClause("approverlevel ASC");
+		pi.setOrderClause(Columns.get(ColumnEnumType.APPROVERLEVEL) + " ASC");
 		
 		return list(fields.toArray(new QueryField[0]), pi, request.getOrganizationId());
 

@@ -43,6 +43,7 @@ import org.cote.accountmanager.objects.ApproverType;
 import org.cote.accountmanager.objects.NameIdType;
 import org.cote.accountmanager.objects.ProcessingInstructionType;
 import org.cote.accountmanager.objects.UserType;
+import org.cote.accountmanager.objects.types.ColumnEnumType;
 import org.cote.accountmanager.objects.types.FactoryEnumType;
 import org.cote.accountmanager.objects.types.NameEnumType;
 
@@ -134,14 +135,14 @@ public class ApproverFactory extends NameIdFactory {
 		DataRow row = prepareAdd(obj, this.primaryTableName);
 		try{
 
-			row.setCellValue("referencetype",obj.getReferenceType().toString());
-			row.setCellValue("referenceid",obj.getReferenceId());
-			row.setCellValue("approvertype",obj.getApproverType().toString());
-			row.setCellValue("approvaltype",obj.getApprovalType().toString());
-			row.setCellValue("approverid",obj.getApproverId());
-			row.setCellValue("entitlementtype",obj.getEntitlementType().toString());
-			row.setCellValue("entitlementid",obj.getEntitlementId());
-			row.setCellValue("approverlevel",obj.getApproverLevel());
+			row.setCellValue(Columns.get(ColumnEnumType.REFERENCETYPE),obj.getReferenceType().toString());
+			row.setCellValue(Columns.get(ColumnEnumType.REFERENCEID),obj.getReferenceId());
+			row.setCellValue(Columns.get(ColumnEnumType.APPROVERTYPE),obj.getApproverType().toString());
+			row.setCellValue(Columns.get(ColumnEnumType.APPROVALTYPE),obj.getApprovalType().toString());
+			row.setCellValue(Columns.get(ColumnEnumType.APPROVERID),obj.getApproverId());
+			row.setCellValue(Columns.get(ColumnEnumType.ENTITLEMENTTYPE),obj.getEntitlementType().toString());
+			row.setCellValue(Columns.get(ColumnEnumType.ENTITLEMENTID),obj.getEntitlementId());
+			row.setCellValue(Columns.get(ColumnEnumType.APPROVERLEVEL),obj.getApproverLevel());
 		
 			if(insertRow(row)) return true;
 		}
@@ -158,14 +159,14 @@ public class ApproverFactory extends NameIdFactory {
 		newCred.setNameType(NameEnumType.APPROVER);
 		super.read(rset, newCred);
 		
-		newCred.setReferenceId(rset.getLong("referenceid"));
-		newCred.setReferenceType(FactoryEnumType.fromValue(rset.getString("referencetype")));
-		newCred.setApproverId(rset.getLong("approverid"));
-		newCred.setApproverType(ApproverEnumType.fromValue(rset.getString("approvertype")));
-		newCred.setApprovalType(ApprovalEnumType.fromValue(rset.getString("approvaltype")));
-		newCred.setEntitlementId(rset.getLong("entitlementid"));
-		newCred.setEntitlementType(ApproverEnumType.fromValue(rset.getString("entitlementtype")));
-		newCred.setApproverLevel(rset.getInt("approverlevel"));
+		newCred.setReferenceId(rset.getLong(Columns.get(ColumnEnumType.REFERENCEID)));
+		newCred.setReferenceType(FactoryEnumType.fromValue(rset.getString(Columns.get(ColumnEnumType.REFERENCETYPE))));
+		newCred.setApproverId(rset.getLong(Columns.get(ColumnEnumType.APPROVERID)));
+		newCred.setApproverType(ApproverEnumType.fromValue(rset.getString(Columns.get(ColumnEnumType.APPROVERTYPE))));
+		newCred.setApprovalType(ApprovalEnumType.fromValue(rset.getString(Columns.get(ColumnEnumType.APPROVALTYPE))));
+		newCred.setEntitlementId(rset.getLong(Columns.get(ColumnEnumType.ENTITLEMENTID)));
+		newCred.setEntitlementType(ApproverEnumType.fromValue(rset.getString(Columns.get(ColumnEnumType.ENTITLEMENTTYPE))));
+		newCred.setApproverLevel(rset.getInt(Columns.get(ColumnEnumType.APPROVERLEVEL)));
 		
 		return newCred;
 	}
@@ -214,7 +215,7 @@ public class ApproverFactory extends NameIdFactory {
 		pi.setPaginate(true);
 		pi.setStartIndex(0L);
 		pi.setRecordCount(2);
-		pi.setOrderClause("approverlevel ASC");
+		pi.setOrderClause(Columns.get(ColumnEnumType.APPROVERLEVEL) + " ASC");
 		return list(fields.toArray(new QueryField[0]), pi, (obj == null ? entitlement : obj).getOrganizationId());
 	}
 	public boolean deleteApproversForType(NameIdType obj, NameIdType entitlement) throws FactoryException, ArgumentException{

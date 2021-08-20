@@ -333,9 +333,7 @@ public abstract class SpoolFactory extends FactoryBase {
 			clearCache();
 		}
 	}
-	protected boolean haveCacheId(int id){
-		return typeIdMap.containsKey(id);
-	}
+
 	protected void removeFromCache(BaseSpoolType obj){
 		removeFromCache(obj, obj.getName());
 	}
@@ -369,14 +367,6 @@ public abstract class SpoolFactory extends FactoryBase {
 		return null;
 	}
 
-	@SuppressWarnings("unchecked")
-	public <T> T readCache(int id){
-		checkCacheExpires();
-		if(typeIdMap.containsKey(id)){
-			return (T)typeMap.get(typeIdMap.get(id));
-		}
-		return null;
-	}
 	public boolean addToCache(BaseSpoolType map){
 		return addToCache(map, map.getName());
 	}

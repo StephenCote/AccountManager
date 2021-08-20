@@ -41,6 +41,7 @@ import org.cote.accountmanager.objects.NameIdDirectoryGroupType;
 import org.cote.accountmanager.objects.NameIdType;
 import org.cote.accountmanager.objects.ProcessingInstructionType;
 import org.cote.accountmanager.objects.UserType;
+import org.cote.accountmanager.objects.types.ColumnEnumType;
 import org.cote.accountmanager.objects.types.ComparatorEnumType;
 import org.cote.accountmanager.objects.types.FactoryEnumType;
 import org.cote.accountmanager.objects.types.LocationEnumType;
@@ -50,7 +51,6 @@ import org.cote.accountmanager.objects.types.SqlDataEnumType;
 
 public class AddressFactory extends NameIdGroupFactory {
 	
-	/// static{ org.cote.accountmanager.data.Factories.registerClass(FactoryEnumType.ADDRESS, AddressFactory.class); }
 	public AddressFactory(){
 		super();
 		this.hasParentId=false;
@@ -105,20 +105,20 @@ public class AddressFactory extends NameIdGroupFactory {
 		AddressType obj = (AddressType)object;
 		if (obj.getGroupId().compareTo(0L) == 0) throw new FactoryException("Cannot add new Address without a group");
 
-		DataRow row = prepareAdd(obj, "addresses");
+		DataRow row = prepareAdd(obj, primaryTableName);
 
 
 		try{
-			row.setCellValue("preferred", obj.getPreferred());
-			row.setCellValue("addressline1",obj.getAddressLine1());
-			row.setCellValue("addressline2",obj.getAddressLine2());
-			row.setCellValue("city",obj.getCity());
-			row.setCellValue("country",obj.getCountry());
-			row.setCellValue("description",obj.getDescription());
-			row.setCellValue("postalcode",obj.getPostalCode());
-			row.setCellValue("state",obj.getState());
-			row.setCellValue("region",obj.getRegion());
-			row.setCellValue("locationtype",obj.getLocationType().toString());
+			row.setCellValue(Columns.get(ColumnEnumType.PREFERRED), obj.getPreferred());
+			row.setCellValue(Columns.get(ColumnEnumType.ADDRESSLINE_1),obj.getAddressLine1());
+			row.setCellValue(Columns.get(ColumnEnumType.ADDRESSLINE_2),obj.getAddressLine2());
+			row.setCellValue(Columns.get(ColumnEnumType.CITY),obj.getCity());
+			row.setCellValue(Columns.get(ColumnEnumType.COUNTRY),obj.getCountry());
+			row.setCellValue(Columns.get(ColumnEnumType.DESCRIPTION),obj.getDescription());
+			row.setCellValue(Columns.get(ColumnEnumType.POSTALCODE),obj.getPostalCode());
+			row.setCellValue(Columns.get(ColumnEnumType.STATE),obj.getState());
+			row.setCellValue(Columns.get(ColumnEnumType.REGION),obj.getRegion());
+			row.setCellValue(Columns.get(ColumnEnumType.LOCATIONTYPE),obj.getLocationType().toString());
 			row.setCellValue("groupid", obj.getGroupId());
 			
 			if(insertRow(row)) return true;
@@ -139,16 +139,16 @@ public class AddressFactory extends NameIdGroupFactory {
 		newObj.setNameType(NameEnumType.ADDRESS);
 		super.read(rset, newObj);
 		readGroup(rset, newObj);
-		newObj.setPreferred(rset.getBoolean("preferred"));
-		newObj.setDescription(rset.getString("description"));
-		newObj.setAddressLine1(rset.getString("addressline1"));
-		newObj.setAddressLine2(rset.getString("addressline2"));
-		newObj.setCity(rset.getString("city"));
-		newObj.setCountry(rset.getString("country"));
-		newObj.setPostalCode(rset.getString("postalcode"));
-		newObj.setState(rset.getString("state"));
-		newObj.setRegion(rset.getString("region"));
-		newObj.setLocationType(LocationEnumType.valueOf(rset.getString("locationtype")));
+		newObj.setPreferred(rset.getBoolean(Columns.get(ColumnEnumType.PREFERRED)));
+		newObj.setDescription(rset.getString(Columns.get(ColumnEnumType.DESCRIPTION)));
+		newObj.setAddressLine1(rset.getString(Columns.get(ColumnEnumType.ADDRESSLINE_1)));
+		newObj.setAddressLine2(rset.getString(Columns.get(ColumnEnumType.ADDRESSLINE_2)));
+		newObj.setCity(rset.getString(Columns.get(ColumnEnumType.CITY)));
+		newObj.setCountry(rset.getString(Columns.get(ColumnEnumType.COUNTRY)));
+		newObj.setPostalCode(rset.getString(Columns.get(ColumnEnumType.POSTALCODE)));
+		newObj.setState(rset.getString(Columns.get(ColumnEnumType.STATE)));
+		newObj.setRegion(rset.getString(Columns.get(ColumnEnumType.REGION)));
+		newObj.setLocationType(LocationEnumType.valueOf(rset.getString(Columns.get(ColumnEnumType.LOCATIONTYPE))));
 		return newObj;
 	}
 	@Override
@@ -217,7 +217,7 @@ public class AddressFactory extends NameIdGroupFactory {
 		ProcessingInstructionType instruction = null;
 		if(startRecord >= 0 && recordCount >= 0){
 			instruction = new ProcessingInstructionType();
-			instruction.setOrderClause("name ASC");
+			instruction.setOrderClause(Columns.get(ColumnEnumType.NAME) + " ASC");
 			instruction.setPaginate(true);
 			instruction.setStartIndex(startRecord);
 			instruction.setRecordCount(recordCount);
@@ -240,10 +240,10 @@ public class AddressFactory extends NameIdGroupFactory {
 		List<QueryField> filters = new ArrayList<>();
 		QueryField searchFilters = new QueryField(SqlDataEnumType.NULL,"searchgroup",null);
 		searchFilters.setComparator(ComparatorEnumType.GROUP_OR);
-		QueryField nameFilter = new QueryField(SqlDataEnumType.VARCHAR,"name",searchValue);
+		QueryField nameFilter = new QueryField(SqlDataEnumType.VARCHAR,Columns.get(ColumnEnumType.NAME),searchValue);
 		nameFilter.setComparator(ComparatorEnumType.LIKE);
 		searchFilters.getFields().add(nameFilter);
-		QueryField firstNameFilter = new QueryField(SqlDataEnumType.VARCHAR,"firstname",searchValue);
+		QueryField firstNameFilter = new QueryField(SqlDataEnumType.VARCHAR,Columns.get(ColumnEnumType.FIRSTNAME),searchValue);
 		firstNameFilter.setComparator(ComparatorEnumType.LIKE);
 		searchFilters.getFields().add(firstNameFilter);
 		filters.add(searchFilters);

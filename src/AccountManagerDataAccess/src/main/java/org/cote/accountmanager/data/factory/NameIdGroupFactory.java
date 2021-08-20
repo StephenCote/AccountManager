@@ -42,6 +42,7 @@ import org.cote.accountmanager.objects.DirectoryGroupType;
 import org.cote.accountmanager.objects.NameIdDirectoryGroupType;
 import org.cote.accountmanager.objects.NameIdType;
 import org.cote.accountmanager.objects.ProcessingInstructionType;
+import org.cote.accountmanager.objects.types.ColumnEnumType;
 import org.cote.accountmanager.objects.types.FactoryEnumType;
 import org.cote.accountmanager.objects.types.GroupEnumType;
 
@@ -112,7 +113,7 @@ public abstract class NameIdGroupFactory extends NameIdFactory implements INameI
 	protected NameIdType readGroup(ResultSet rset, NameIdType obj) throws SQLException, FactoryException, ArgumentException
 	{
 		super.read(rset, obj);
-		long groupId = rset.getLong("groupid");
+		long groupId = rset.getLong(Columns.get(ColumnEnumType.GROUPID));
 		NameIdDirectoryGroupType dobj = (NameIdDirectoryGroupType)obj;
 		
 		dobj.setGroupId(groupId);
@@ -132,7 +133,7 @@ public abstract class NameIdGroupFactory extends NameIdFactory implements INameI
 		ProcessingInstructionType instruction = null;
 		if(startRecord >= 0 && recordCount >= 0){
 			instruction = new ProcessingInstructionType();
-			instruction.setOrderClause("name ASC");
+			instruction.setOrderClause(Columns.get(ColumnEnumType.NAME) + " ASC");
 			instruction.setPaginate(true);
 			instruction.setStartIndex(startRecord);
 			instruction.setRecordCount(recordCount);

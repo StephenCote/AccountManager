@@ -139,6 +139,10 @@ public class ApiConnectionConfigurationService {
 
 		try {
 			UserType owner = getApiUser(organizationId);
+			if(owner == null) {
+				logger.error("API User was null");
+				return null;
+			}
 			dir = ((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getCreateDirectory(owner, apiDirectoryName, ((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getUserDirectory(owner),owner.getOrganizationId());
 			DataType data = ((DataFactory)Factories.getFactory(FactoryEnumType.DATA)).getDataByName(dataName, false, dir);
 			if(data == null){
@@ -167,6 +171,10 @@ public class ApiConnectionConfigurationService {
 		String dataName = serviceType.toString() + " " + name;
 		try {
 			UserType owner = getApiUser(organizationId);
+			if(owner == null) {
+				logger.error("API User was null");
+				return null;
+			}
 			dir = ((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getCreateDirectory(owner, apiDirectoryName, ((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getUserDirectory(owner),owner.getOrganizationId());
 			if(((DataFactory)Factories.getFactory(FactoryEnumType.DATA)).getDataByName(dataName, true, dir) != null){
 				logger.error("API Config already exists");

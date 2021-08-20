@@ -51,10 +51,12 @@ import org.cote.accountmanager.data.query.QueryFields;
 import org.cote.accountmanager.data.util.UrnUtil;
 import org.cote.accountmanager.exceptions.ArgumentException;
 import org.cote.accountmanager.exceptions.FactoryException;
+import org.cote.accountmanager.factory.FieldMap;
 import org.cote.accountmanager.objects.NameIdType;
 import org.cote.accountmanager.objects.OrganizationType;
 import org.cote.accountmanager.objects.ProcessingInstructionType;
 import org.cote.accountmanager.objects.UserType;
+import org.cote.accountmanager.objects.types.ColumnEnumType;
 import org.cote.accountmanager.objects.types.ComparatorEnumType;
 import org.cote.accountmanager.objects.types.FactoryEnumType;
 import org.cote.accountmanager.objects.types.NameEnumType;
@@ -339,7 +341,7 @@ public abstract class NameIdFactory extends FactoryBase implements INameIdFactor
 	}
 	public <T> boolean updateBulk(List<T> map, ProcessingInstructionType instruction) throws FactoryException
 	{
-		if(this.bulkMode == false) throw new FactoryException("Factory is not configured for bulk operation");
+		if(!this.bulkMode) throw new FactoryException("Factory is not configured for bulk operation");
 		DataTable table = dataTables.get(0);
 		if(instruction == null) instruction = new ProcessingInstructionType();
 		if(map.isEmpty()){
@@ -425,7 +427,7 @@ public abstract class NameIdFactory extends FactoryBase implements INameIdFactor
 
 	public <T> boolean deleteBulk(List<T> map, ProcessingInstructionType instruction) throws FactoryException
 	{
-		if(this.bulkMode == false) throw new FactoryException("Factory is not configured for bulk operation");
+		if(!this.bulkMode) throw new FactoryException("Factory is not configured for bulk operation");
 		DataTable table = dataTables.get(0);
 		if(instruction == null) instruction = new ProcessingInstructionType();
 		if(map.isEmpty()){
@@ -522,7 +524,6 @@ public abstract class NameIdFactory extends FactoryBase implements INameIdFactor
 				}
 				fields.add(QueryFields.getFieldUrn(map));
 			}
-				//fields.add(QueryFields.getFieldUrn(map));
 			if(scopeToOrganization) fields.add(QueryFields.getFieldOrganization(map.getOrganizationId()));
 	}
 	protected DataRow prepareAdd(NameIdType obj, String tableName) throws FactoryException{
@@ -546,18 +547,18 @@ public abstract class NameIdFactory extends FactoryBase implements INameIdFactor
 		}
 		DataRow row = table.newRow();
 		try{
-			if(bulkMode && obj.getId() > 0) row.setCellValue("id", obj.getId());
-			if(hasObjectId) row.setCellValue("objectid", obj.getObjectId());
-			if(hasName) row.setCellValue("name", obj.getName());
-			if(hasUrn) row.setCellValue("urn", obj.getUrn());
-			if(hasParentId) row.setCellValue("parentid",obj.getParentId());
-			if(hasOwnerId) row.setCellValue("ownerid",obj.getOwnerId());
-			if (scopeToOrganization) row.setCellValue("organizationid", obj.getOrganizationId());
+			if(bulkMode && obj.getId() > 0) row.setCellValue(Columns.get(ColumnEnumType.ID), obj.getId());
+			if(hasObjectId) row.setCellValue(Columns.get(ColumnEnumType.OBJECTID), obj.getObjectId());
+			if(hasName) row.setCellValue(Columns.get(ColumnEnumType.NAME), obj.getName());
+			if(hasUrn) row.setCellValue(Columns.get(ColumnEnumType.URN), obj.getUrn());
+			if(hasParentId) row.setCellValue(Columns.get(ColumnEnumType.PARENTID),obj.getParentId());
+			if(hasOwnerId) row.setCellValue(Columns.get(ColumnEnumType.OWNERID),obj.getOwnerId());
+			if (scopeToOrganization) row.setCellValue(Columns.get(ColumnEnumType.ORGANIZATIONID), obj.getOrganizationId());
 			if(isVaulted) {
-				row.setCellValue("vaultid",obj.getVaultId());
-				row.setCellValue("keyid", obj.getKeyId());
-				row.setCellValue("isvaulted", obj.getVaulted());
-				row.setCellValue("isenciphered", obj.getEnciphered());
+				row.setCellValue(Columns.get(ColumnEnumType.VAULTID),obj.getVaultId());
+				row.setCellValue(Columns.get(ColumnEnumType.KEYID), obj.getKeyId());
+				row.setCellValue(Columns.get(ColumnEnumType.ISVAULTED), obj.getVaulted());
+				row.setCellValue(Columns.get(ColumnEnumType.ISENCIPHERED), obj.getEnciphered());
 			}
 		}
 		catch(DataAccessException dae){
@@ -628,7 +629,7 @@ public abstract class NameIdFactory extends FactoryBase implements INameIdFactor
 	protected long getIdByName(String name, long organizationId) throws FactoryException
 	{
 		if (!hasName) throw new FactoryException("Table " + dataTables.get(0).getName() + " does not define a Name");
-		long[] ids = getIdByField("name", SqlDataEnumType.VARCHAR, name, organizationId);
+		long[] ids = getIdByField(Columns.get(ColumnEnumType.NAME), SqlDataEnumType.VARCHAR, name, organizationId);
 		if (ids.length > 0) return ids[0];
 		return 0;
 	}
@@ -689,27 +690,27 @@ public abstract class NameIdFactory extends FactoryBase implements INameIdFactor
 
 	protected NameIdType read(ResultSet rset, NameIdType obj) throws SQLException, FactoryException, ArgumentException
 	{
-		obj.setId(rset.getLong("id"));
+		obj.setId(rset.getLong(Columns.get(ColumnEnumType.ID)));
 		if(obj.getNameType() == null) obj.setNameType(NameEnumType.UNKNOWN);
-		if(hasObjectId) obj.setObjectId(rset.getString("objectid"));
-		if(hasName) obj.setName(rset.getString("name"));
-		if(hasOwnerId) obj.setOwnerId(rset.getLong("ownerid"));
+		if(hasObjectId) obj.setObjectId(rset.getString(Columns.get(ColumnEnumType.OBJECTID)));
+		if(hasName) obj.setName(rset.getString(Columns.get(ColumnEnumType.NAME)));
+		if(hasOwnerId) obj.setOwnerId(rset.getLong(Columns.get(ColumnEnumType.OWNERID)));
 		else obj.setOwnerId(0L);
-		if(hasParentId) obj.setParentId(rset.getLong("parentid"));
+		if(hasParentId) obj.setParentId(rset.getLong(Columns.get(ColumnEnumType.PARENTID)));
 		else obj.setParentId(0L);
 		if(scopeToOrganization){
-			long org_id = rset.getLong("organizationid");
+			long org_id = rset.getLong(Columns.get(ColumnEnumType.ORGANIZATIONID));
 			obj.setOrganizationId(org_id);
 			obj.setOrganizationPath(((OrganizationFactory)Factories.getFactory(FactoryEnumType.ORGANIZATION)).getOrganizationPath(obj.getOrganizationId()));
 		}
 		if(isVaulted) {
-			obj.setVaultId(rset.getString("vaultid"));
-			obj.setKeyId(rset.getString("keyid"));
-			obj.setVaulted(rset.getBoolean("isvaulted"));
-			obj.setEnciphered(rset.getBoolean("isenciphered"));
+			obj.setVaultId(rset.getString(Columns.get(ColumnEnumType.VAULTID)));
+			obj.setKeyId(rset.getString(Columns.get(ColumnEnumType.KEYID)));
+			obj.setVaulted(rset.getBoolean(Columns.get(ColumnEnumType.ISVAULTED)));
+			obj.setEnciphered(rset.getBoolean(Columns.get(ColumnEnumType.ISENCIPHERED)));
 		}
 		if(hasUrn && usePersistedUrn){
-			obj.setUrn(rset.getString("urn"));
+			obj.setUrn(rset.getString(Columns.get(ColumnEnumType.URN)));
 		}
 
 		return obj;
@@ -759,7 +760,7 @@ public abstract class NameIdFactory extends FactoryBase implements INameIdFactor
 		List<QueryField> filters = new ArrayList<>();
 		QueryField searchFilters = new QueryField(SqlDataEnumType.NULL,"searchgroup",null);
 		searchFilters.setComparator(ComparatorEnumType.GROUP_OR);
-		QueryField nameFilter = new QueryField(SqlDataEnumType.VARCHAR,"name",searchValue);
+		QueryField nameFilter = new QueryField(SqlDataEnumType.VARCHAR,Columns.get(ColumnEnumType.NAME),searchValue);
 		nameFilter.setComparator(ComparatorEnumType.LIKE);
 		searchFilters.getFields().add(nameFilter);
 		QueryField descriptionFilter = new QueryField(SqlDataEnumType.VARCHAR,"description",searchValue);
@@ -773,7 +774,7 @@ public abstract class NameIdFactory extends FactoryBase implements INameIdFactor
 		ProcessingInstructionType instruction = null;
 		if(startRecord >= 0 && recordCount >= 0){
 			instruction = new ProcessingInstructionType();
-			instruction.setOrderClause("name ASC");
+			instruction.setOrderClause(Columns.get(ColumnEnumType.NAME) + " ASC");
 			instruction.setPaginate(true);
 			instruction.setStartIndex(startRecord);
 			instruction.setRecordCount(recordCount);
@@ -788,7 +789,7 @@ public abstract class NameIdFactory extends FactoryBase implements INameIdFactor
 	}
 	
 	protected <T> List<T> searchByIdInView(String viewName, QueryField[] filters, ProcessingInstructionType instruction, long organizationId){
-		return searchByIdInView(viewName, "id", filters, instruction, organizationId);
+		return searchByIdInView(viewName, Columns.get(ColumnEnumType.ID), filters, instruction, organizationId);
 	}
 	protected <T> List<T> searchByIdInView(String viewName, String idCol, QueryField[] filters, ProcessingInstructionType instruction, long organizationId){
 
@@ -845,13 +846,13 @@ public abstract class NameIdFactory extends FactoryBase implements INameIdFactor
 	public <T> List<T> list(QueryField[] fields, long organizationId) throws FactoryException, ArgumentException
 	{
 		ProcessingInstructionType instruction = new ProcessingInstructionType();
-		instruction.setOrderClause("name ASC");
+		instruction.setOrderClause(Columns.get(ColumnEnumType.NAME) + " ASC");
 		return list(fields, instruction, organizationId);
 	}
 	public <T> List<T>  paginateList(QueryField[] fields, long startRecord, int recordCount, long organizationId)  throws FactoryException, ArgumentException
 	{
 		ProcessingInstructionType instruction = new ProcessingInstructionType();
-		instruction.setOrderClause("name ASC");
+		instruction.setOrderClause(Columns.get(ColumnEnumType.NAME) + " ASC");
 		instruction.setPaginate(false);
 		return paginateList(fields, instruction, startRecord, recordCount, organizationId);
 	}
@@ -881,7 +882,7 @@ public abstract class NameIdFactory extends FactoryBase implements INameIdFactor
 			buff.append(ids[i]);
 			if ((i > 0 || ids.length == 1) && ((i % BulkFactories.bulkQueryLimit == 0) || i == ids.length - 1))
 			{
-				QueryField match = new QueryField(SqlDataEnumType.BIGINT, "id", buff.toString());
+				QueryField match = new QueryField(SqlDataEnumType.BIGINT, Columns.get(ColumnEnumType.ID), buff.toString());
 				match.setComparator(ComparatorEnumType.ANY);
 				List<NameIdType> tmpDataList = getByField(new QueryField[] { match }, instruction, organizationId);
 				outList.addAll(tmpDataList);
@@ -991,7 +992,7 @@ public abstract class NameIdFactory extends FactoryBase implements INameIdFactor
 					String key = entry.getKey();
 					Integer index = entry.getValue();
 					
-					if((objC = typeMap.get(index)) != null && objC.getId() == obj.getId()){
+					if((objC = typeMap.get(index)) != null && objC.getId().equals(obj.getId())){
 						typeNameMap.remove(key);
 						break;
 					}
@@ -1062,7 +1063,6 @@ public abstract class NameIdFactory extends FactoryBase implements INameIdFactor
 		}
 		int length = typeMap.size();
 		if(typeNameMap.containsKey(keyName) || typeIdMap.containsKey(map.getId())){
-			/// logger.warn("Type name map contains " + keyName + " (" + typeNameMap.containsKey(keyName) + ") or Type id map contains " + map.getId() + " (" + typeIdMap.containsKey(map.getId()) + ")");
 			return false;
 		}
 		typeMap.add(map);

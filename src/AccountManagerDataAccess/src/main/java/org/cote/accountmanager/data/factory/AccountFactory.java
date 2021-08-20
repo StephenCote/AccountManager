@@ -49,6 +49,7 @@ import org.cote.accountmanager.objects.StatisticsType;
 import org.cote.accountmanager.objects.UserType;
 import org.cote.accountmanager.objects.types.AccountEnumType;
 import org.cote.accountmanager.objects.types.AccountStatusEnumType;
+import org.cote.accountmanager.objects.types.ColumnEnumType;
 import org.cote.accountmanager.objects.types.FactoryEnumType;
 import org.cote.accountmanager.objects.types.NameEnumType;
 
@@ -73,7 +74,7 @@ public class AccountFactory extends NameIdGroupFactory {
 	
 	protected void configureTableRestrictions(DataTable table){
 		if(table.getName().equalsIgnoreCase(this.primaryTableName)){
-			table.setRestrictUpdateColumn("accountid", true);
+			table.setRestrictUpdateColumn(Columns.get(ColumnEnumType.ACCOUNTID), true);
 		}
 
 	}
@@ -107,9 +108,7 @@ public class AccountFactory extends NameIdGroupFactory {
 		/// Contact information is updated along with the parent object because it's a foreign-keyed object that is not otherwise easily referenced
 		///
 		if(account.getContactInformation() != null){
-
-				b = ((ContactInformationFactory)Factories.getFactory(FactoryEnumType.CONTACTINFORMATION)).update(account.getContactInformation());
-
+			b = ((ContactInformationFactory)Factories.getFactory(FactoryEnumType.CONTACTINFORMATION)).update(account.getContactInformation());
 		}
 		return b;
 	}
@@ -227,11 +226,11 @@ public class AccountFactory extends NameIdGroupFactory {
 
 		DataRow row = prepareAdd(newAccount, "accounts");
 		try{
-			row.setCellValue("accountstatus", newAccount.getAccountStatus().toString());
-			row.setCellValue("accounttype", newAccount.getAccountType().toString());
-			row.setCellValue("accountid", newAccount.getAccountId());
-			row.setCellValue("referenceid", newAccount.getReferenceId());
-			row.setCellValue("groupid", newAccount.getGroupId());
+			row.setCellValue(Columns.get(ColumnEnumType.ACCOUNTSTATUS), newAccount.getAccountStatus().toString());
+			row.setCellValue(Columns.get(ColumnEnumType.ACCOUNTTYPE), newAccount.getAccountType().toString());
+			row.setCellValue(Columns.get(ColumnEnumType.ACCOUNTID), newAccount.getAccountId());
+			row.setCellValue(Columns.get(ColumnEnumType.REFERENCEID), newAccount.getReferenceId());
+			row.setCellValue(Columns.get(ColumnEnumType.GROUPID), newAccount.getGroupId());
 			if (insertRow(row)){
 
 				newAccount = (bulkMode ? newAccount : getAccountByName(newAccount.getName(), (DirectoryGroupType)((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getGroupById(newAccount.getGroupId(),newAccount.getOrganizationId()), (newAccount.getParentId() != 0L ?  (AccountType)getById(newAccount.getParentId(),newAccount.getOrganizationId()) : null)));
@@ -291,10 +290,10 @@ public class AccountFactory extends NameIdGroupFactory {
 		super.read(rset, newAccount);
 		readGroup(rset, newAccount);
 		newAccount.setDatabaseRecord(true);
-		newAccount.setAccountId(rset.getString("accountid"));
-		newAccount.setReferenceId(rset.getLong("referenceid"));
-		newAccount.setAccountStatus(AccountStatusEnumType.valueOf(rset.getString("accountstatus")));
-		newAccount.setAccountType(AccountEnumType.valueOf(rset.getString("accounttype")));
+		newAccount.setAccountId(rset.getString(Columns.get(ColumnEnumType.ACCOUNTID)));
+		newAccount.setReferenceId(rset.getLong(Columns.get(ColumnEnumType.REFERENCEID)));
+		newAccount.setAccountStatus(AccountStatusEnumType.valueOf(rset.getString(Columns.get(ColumnEnumType.ACCOUNTSTATUS))));
+		newAccount.setAccountType(AccountEnumType.valueOf(rset.getString(Columns.get(ColumnEnumType.ACCOUNTTYPE))));
 		return newAccount;
 	}
 	
