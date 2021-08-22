@@ -931,6 +931,16 @@
 			<enumeration value="REPLACEMENTVALUE"></enumeration>
 			<enumeration value="REQUIREMENTID"></enumeration>
 			<enumeration value="TEXT"></enumeration>
+			<enumeration value="CIPHERPROVIDER"></enumeration>
+			<enumeration value="CIPHERKEYSPEC"></enumeration>
+			<enumeration value="ASYMMETRICCIPHERKEYSPEC"></enumeration>
+			<enumeration value="SYMMETRICCIPHERKEYSPEC"></enumeration>
+			<enumeration value="CIPHERKEY"></enumeration>
+			<enumeration value="CIPHERIV"></enumeration>
+			<enumeration value="ENCRYPTEDKEY"></enumeration>
+			<enumeration value="SEEDLENGTH"></enumeration>
+			<enumeration value="PUBLICKEY"></enumeration>
+			<enumeration value="PRIVATEKEY"></enumeration>
     	</restriction>
     </simpleType>
 </schema>
