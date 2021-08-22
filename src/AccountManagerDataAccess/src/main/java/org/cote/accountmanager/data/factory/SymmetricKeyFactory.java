@@ -202,18 +202,4 @@ public class SymmetricKeyFactory extends NameIdFactory {
 		return list(new QueryField[]{QueryFields.getFieldOrganizationKey(true)},org);
 	}
 
-/*
-	private List<SecurityType> listKeys(List<QueryField> fields, long start_record, int record_count, long org) throws FactoryException, ArgumentException{
-		ProcessingInstructionType pi = new ProcessingInstructionType();
-		pi.setPaginate(true);
-		pi.setStartIndex(start_record);
-		pi.setRecordCount(record_count);
-		
-		return list(fields.toArray(new QueryField[0]), pi, org);
-	}
-	public boolean deleteKeys(long org) throws FactoryException, ArgumentException{
-		int del = this.deleteByField(new QueryField[0], org);
-		return true;
-	}
-*/
 }
