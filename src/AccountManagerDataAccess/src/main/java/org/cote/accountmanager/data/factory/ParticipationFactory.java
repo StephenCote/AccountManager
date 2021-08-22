@@ -388,7 +388,7 @@ public abstract class ParticipationFactory extends NameIdFactory implements IPar
 			ids.add(maps[i].getId());
 		}
 
-		QueryField match = new QueryField(SqlDataEnumType.VARCHAR, "participationid", QueryFields.getFilteredLongList(convertLongList(ids)));
+		QueryField match = new QueryField(SqlDataEnumType.BIGINT, "participationid", QueryFields.getFilteredLongList(convertLongList(ids)));
 		match.setComparator(ComparatorEnumType.ANY);
 		matches.add(match);
 		return getByField(matches.toArray(new QueryField[0]), org);
