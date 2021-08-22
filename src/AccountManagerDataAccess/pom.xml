@@ -56,7 +56,7 @@
 				</dependencies>
 
 				<configuration>
-					<skipTests>false</skipTests>
+					<skipTests>true</skipTests>
 					<argLine>-Xmx4096m ${argLine}</argLine>
 
 					<includes>
@@ -65,10 +65,10 @@
 					<excludes>
 						<!-- 
 						
-						
+						<exclude>**/TestObjectEntitlementQuery.java</exclude>
 						 
 						 -->
-						  <exclude>**/TestObjectEntitlementQuery.java</exclude>
+						  
 						  <exclude>**/TestOrganizationFactory.java</exclude>
 						 <exclude>**/TestEffectiveAuthorization.java</exclude>
 						 
