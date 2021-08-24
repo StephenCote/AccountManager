@@ -48,7 +48,7 @@ public class FieldMap {
 	   columnMap.put(ColumnEnumType.ISBLOB, "isblob");
 	   columnMap.put(ColumnEnumType.ISENCIPHERED, "isenciphered");
 	   columnMap.put(ColumnEnumType.ISPASSWORDPROTECTED, "ispasswordprotected");
-	   columnMap.put(ColumnEnumType.ISVAULTED, "isvaulted");
+
 	   columnMap.put(ColumnEnumType.ISPOINTER, "ispointer");
 	   columnMap.put(ColumnEnumType.SIZE, "size");
 	   columnMap.put(ColumnEnumType.RATING, "rating");
@@ -65,8 +65,6 @@ public class FieldMap {
 	   columnMap.put(ColumnEnumType.APPROVALTYPE, "approvaltype");
 	   columnMap.put(ColumnEnumType.APPROVERTYPE, "approvertype");
 	   columnMap.put(ColumnEnumType.APPROVERID, "approverid");
-	   columnMap.put(ColumnEnumType.APPROVERID, "approverid");
-	   columnMap.put(ColumnEnumType.APPROVALID, "approvalid");
 	   columnMap.put(ColumnEnumType.APPROVALID, "approvalid");
 	   columnMap.put(ColumnEnumType.RESPONSE, "response");
 	   columnMap.put(ColumnEnumType.RESPONSEMESSAGE, "responsemessage");
@@ -76,13 +74,10 @@ public class FieldMap {
 	   columnMap.put(ColumnEnumType.SIGNATURE, "signature");
 	   columnMap.put(ColumnEnumType.ENTITLEMENTTYPE, "entitlementtype");
 	   columnMap.put(ColumnEnumType.ENTITLEMENTID, "entitlementid");
-	   columnMap.put(ColumnEnumType.ENTITLEMENTID, "entitlementid");
 	   columnMap.put(ColumnEnumType.REQUESTORTYPE, "requestortype");
 	   columnMap.put(ColumnEnumType.APPROVALSTATUS, "approvalstatus");
 	   columnMap.put(ColumnEnumType.REQUESTORID, "requestorid");
-	   columnMap.put(ColumnEnumType.REQUESTORID, "requestorid");
 	   columnMap.put(ColumnEnumType.DELEGATETYPE, "delegatetype");
-	   columnMap.put(ColumnEnumType.DELEGATEID, "delegateid");
 	   columnMap.put(ColumnEnumType.DELEGATEID, "delegateid");
 	   columnMap.put(ColumnEnumType.ORGANIZATIONID, "organizationid");
 	   columnMap.put(ColumnEnumType.ID, "id");
@@ -96,7 +91,6 @@ public class FieldMap {
 	   columnMap.put(ColumnEnumType.LOGICALORDER, "logicalorder");
 	   columnMap.put(ColumnEnumType.DECISIONAGE, "decisionage");
 	   columnMap.put(ColumnEnumType.ORGANIZATIONTYPE, "organizationtype");
-	   columnMap.put(ColumnEnumType.GROUPTYPE, "grouptype");
 	   columnMap.put(ColumnEnumType.GROUPTYPE, "grouptype");
 	   columnMap.put(ColumnEnumType.CONTACTINFORMATIONTYPE, "contactinformationtype");
 	   columnMap.put(ColumnEnumType.CONTACTINFORMATIONID, "contactinformationid");
@@ -125,12 +119,8 @@ public class FieldMap {
 	   columnMap.put(ColumnEnumType.ADDRESSLINE_2, "addressline2");
 	   columnMap.put(ColumnEnumType.STATISTICSTYPE, "statisticstype");
 	   columnMap.put(ColumnEnumType.AFFECTID, "affectid");
-	   columnMap.put(ColumnEnumType.AFFECTID, "affectid");
-	   columnMap.put(ColumnEnumType.AFFECTTYPE, "affecttype");
 	   columnMap.put(ColumnEnumType.AFFECTTYPE, "affecttype");
 	   columnMap.put(ColumnEnumType.PARTICIPANTID, "participantid");
-	   columnMap.put(ColumnEnumType.PARTICIPANTID, "participantid");
-	   columnMap.put(ColumnEnumType.PARTICIPATIONID, "participationid");
 	   columnMap.put(ColumnEnumType.PARTICIPATIONID, "participationid");
 	   columnMap.put(ColumnEnumType.PARTICIPANTTYPE, "participanttype");
 	   columnMap.put(ColumnEnumType.ROLETYPE, "roletype");
@@ -148,7 +138,6 @@ public class FieldMap {
 	   columnMap.put(ColumnEnumType.SESSIONSTATUS, "sessionstatus");
 	   columnMap.put(ColumnEnumType.SESSIONDATASIZE, "sessiondatasize");
 	   columnMap.put(ColumnEnumType.GUID, "guid");
-	   columnMap.put(ColumnEnumType.CLASSIFICATION, "classification");
 	   columnMap.put(ColumnEnumType.CURRENTLEVEL, "currentlevel");
 	   columnMap.put(ColumnEnumType.ENDLEVEL, "endlevel");
 	   columnMap.put(ColumnEnumType.PARENTGUID, "parentguid");
@@ -162,8 +151,16 @@ public class FieldMap {
 	   columnMap.put(ColumnEnumType.AUDITSOURCEDATA, "auditsourcedata");
 	   columnMap.put(ColumnEnumType.AUDITTARGETTYPE, "audittargettype");
 	   columnMap.put(ColumnEnumType.AUDITTARGETDATA, "audittargetdata");
+		columnMap.put(ColumnEnumType.AUDITACTIONSOURCE, "auditactionsource");
+		columnMap.put(ColumnEnumType.AUDITLEVELTYPE, "auditleveltype");
+		columnMap.put(ColumnEnumType.AUDITACTIONTYPE, "auditactiontype");
+		columnMap.put(ColumnEnumType.AUDITDATE, "auditdate");
+		columnMap.put(ColumnEnumType.AUDITRESULTDATE, "auditresultdate");
+		columnMap.put(ColumnEnumType.AUDITEXPIRESDATE, "auditexpiresdate");
+		columnMap.put(ColumnEnumType.AUDITRESULTDATA, "auditresultdata");
+		columnMap.put(ColumnEnumType.AUDITRESULTTYPE, "auditresulttype");
+		columnMap.put(ColumnEnumType.AUDITRETENTIONTYPE, "auditretentiontype");
 	   columnMap.put(ColumnEnumType.ACTIONTYPE, "actiontype");
-	   columnMap.put(ColumnEnumType.REFERENCETYPE, "referencetype");
 	   columnMap.put(ColumnEnumType.REFERENCETYPE, "referencetype");
 	   columnMap.put(ColumnEnumType.CONTROLTYPE, "controltype");
 	   columnMap.put(ColumnEnumType.CONTROLID, "controlid");
@@ -192,7 +189,6 @@ public class FieldMap {
 	   columnMap.put(ColumnEnumType.ACCOUNTSTATUS, "accountstatus");
 	   columnMap.put(ColumnEnumType.ACCOUNTTYPE, "accounttype");
 	   columnMap.put(ColumnEnumType.TAGTYPE, "tagtype");
-	   
 	   columnMap.put(ColumnEnumType.GOALTYPE, "goaltype");
 	   columnMap.put(ColumnEnumType.COSTID, "costid");
 	   columnMap.put(ColumnEnumType.TIMEID, "timeid");
@@ -259,8 +255,6 @@ public class FieldMap {
 	   columnMap.put(ColumnEnumType.REPLACEMENTVALUE, "replacementvalue");
 	   columnMap.put(ColumnEnumType.REQUIREMENTID, "requirementid");
 	   columnMap.put(ColumnEnumType.TEXT, "text");
-	   
-	   
 		columnMap.put(ColumnEnumType.CIPHERPROVIDER, "cipherprovider");
 		columnMap.put(ColumnEnumType.CIPHERKEYSPEC, "cipherkeyspec");
 		columnMap.put(ColumnEnumType.ASYMMETRICCIPHERKEYSPEC, "asymmetriccipherkeyspec");
@@ -271,7 +265,6 @@ public class FieldMap {
 		columnMap.put(ColumnEnumType.SEEDLENGTH, "seedlength");
 		columnMap.put(ColumnEnumType.PUBLICKEY, "publickey");
 		columnMap.put(ColumnEnumType.PRIVATEKEY, "privatekey");
-	   
    }
 	   
 	public static final Map<ColumnEnumType,String> Columns = Collections.unmodifiableMap(columnMap);

@@ -721,7 +721,7 @@
 			<enumeration value="ISBLOB"></enumeration>
 			<enumeration value="ISENCIPHERED"></enumeration>
 			<enumeration value="ISPASSWORDPROTECTED"></enumeration>
-			<enumeration value="ISVAULTED"></enumeration>
+
 			<enumeration value="ISPOINTER"></enumeration>
 			<enumeration value="SIZE"></enumeration>
 			<enumeration value="RATING"></enumeration>
@@ -738,8 +738,6 @@
 			<enumeration value="APPROVALTYPE"></enumeration>
 			<enumeration value="APPROVERTYPE"></enumeration>
 			<enumeration value="APPROVERID"></enumeration>
-			<enumeration value="APPROVERID"></enumeration>
-			<enumeration value="APPROVALID"></enumeration>
 			<enumeration value="APPROVALID"></enumeration>
 			<enumeration value="RESPONSE"></enumeration>
 			<enumeration value="RESPONSEMESSAGE"></enumeration>
@@ -749,13 +747,10 @@
 			<enumeration value="SIGNATURE"></enumeration>
 			<enumeration value="ENTITLEMENTTYPE"></enumeration>
 			<enumeration value="ENTITLEMENTID"></enumeration>
-			<enumeration value="ENTITLEMENTID"></enumeration>
 			<enumeration value="REQUESTORTYPE"></enumeration>
 			<enumeration value="APPROVALSTATUS"></enumeration>
 			<enumeration value="REQUESTORID"></enumeration>
-			<enumeration value="REQUESTORID"></enumeration>
 			<enumeration value="DELEGATETYPE"></enumeration>
-			<enumeration value="DELEGATEID"></enumeration>
 			<enumeration value="DELEGATEID"></enumeration>
 			<enumeration value="ORGANIZATIONID"></enumeration>
 			<enumeration value="ID"></enumeration>
@@ -769,7 +764,6 @@
 			<enumeration value="LOGICALORDER"></enumeration>
 			<enumeration value="DECISIONAGE"></enumeration>
 			<enumeration value="ORGANIZATIONTYPE"></enumeration>
-			<enumeration value="GROUPTYPE"></enumeration>
 			<enumeration value="GROUPTYPE"></enumeration>
 			<enumeration value="CONTACTINFORMATIONTYPE"></enumeration>
 			<enumeration value="CONTACTINFORMATIONID"></enumeration>
@@ -798,12 +792,8 @@
 			<enumeration value="ADDRESSLINE2"></enumeration>
 			<enumeration value="STATISTICSTYPE"></enumeration>
 			<enumeration value="AFFECTID"></enumeration>
-			<enumeration value="AFFECTID"></enumeration>
-			<enumeration value="AFFECTTYPE"></enumeration>
 			<enumeration value="AFFECTTYPE"></enumeration>
 			<enumeration value="PARTICIPANTID"></enumeration>
-			<enumeration value="PARTICIPANTID"></enumeration>
-			<enumeration value="PARTICIPATIONID"></enumeration>
 			<enumeration value="PARTICIPATIONID"></enumeration>
 			<enumeration value="PARTICIPANTTYPE"></enumeration>
 			<enumeration value="ROLETYPE"></enumeration>
@@ -835,8 +825,8 @@
 			<enumeration value="AUDITSOURCEDATA"></enumeration>
 			<enumeration value="AUDITTARGETTYPE"></enumeration>
 			<enumeration value="AUDITTARGETDATA"></enumeration>
+			<enumeration value="AUDITACTIONSOURCE"></enumeration>
 			<enumeration value="ACTIONTYPE"></enumeration>
-			<enumeration value="REFERENCETYPE"></enumeration>
 			<enumeration value="REFERENCETYPE"></enumeration>
 			<enumeration value="CONTROLTYPE"></enumeration>
 			<enumeration value="CONTROLID"></enumeration>
@@ -898,7 +888,6 @@
 			<enumeration value="EVENTTYPE"></enumeration>
 			<enumeration value="LOCATIONID"></enumeration>
 			<enumeration value="GEOGRAPHYTYPE"></enumeration>
-			<enumeration value="CLASSIFICATION"></enumeration>
 			<enumeration value="ESTIMATEID"></enumeration>
 			<enumeration value="RESOURCEID"></enumeration>
 			<enumeration value="SCHEDULEID"></enumeration>
@@ -941,6 +930,14 @@
 			<enumeration value="SEEDLENGTH"></enumeration>
 			<enumeration value="PUBLICKEY"></enumeration>
 			<enumeration value="PRIVATEKEY"></enumeration>
+			<enumeration value="AUDITLEVELTYPE"></enumeration>
+			<enumeration value="AUDITACTIONTYPE"></enumeration>
+			<enumeration value="AUDITDATE"></enumeration>
+			<enumeration value="AUDITRESULTDATE"></enumeration>
+			<enumeration value="AUDITEXPIRESDATE"></enumeration>
+			<enumeration value="AUDITRESULTDATA"></enumeration>
+			<enumeration value="AUDITRESULTTYPE"></enumeration>
+			<enumeration value="AUDITRETENTIONTYPE"></enumeration>
     	</restriction>
     </simpleType>
 </schema>
