@@ -50,6 +50,7 @@ import org.cote.accountmanager.exceptions.FactoryException;
 import org.cote.accountmanager.objects.AttributeType;
 import org.cote.accountmanager.objects.NameIdType;
 import org.cote.accountmanager.objects.ProcessingInstructionType;
+import org.cote.accountmanager.objects.types.ColumnEnumType;
 import org.cote.accountmanager.objects.types.NameEnumType;
 import org.cote.accountmanager.objects.types.SqlDataEnumType;
 import org.cote.accountmanager.util.BinaryUtil;
@@ -247,7 +248,7 @@ public class AttributeFactory extends NameIdFactory{
 		if(queryClause == null || queryClause.length() == 0){
 			throw new ArgumentException("Invalid query fields");
 		}
-		String sql = String.format("SELECT referenceid FROM attribute WHERE %s;",queryClause);
+		String sql = String.format("SELECT %s FROM %s WHERE %s;", Columns.get(ColumnEnumType.REFERENCEID), primaryTableName, queryClause);
 		PreparedStatement psa = null;
 		ResultSet rset = null;
 		try{
@@ -281,7 +282,10 @@ public class AttributeFactory extends NameIdFactory{
 		CONNECTION_TYPE connectionType = DBFactory.getConnectionType(connection);
 		String token = DBFactory.getParamToken(connectionType);
 
-		String sql = String.format("INSERT INTO attribute (referenceid, referencetype, name, datatype, valueindex, value, isenciphered, keyid, isvaulted, vaultid, organizationid) VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s);",token,token,token,token,token,token,token,token,token,token,token);
+///		String sql = String.format("INSERT INTO attribute (referenceid, referencetype, name, datatype, valueindex, value, isenciphered, keyid, isvaulted, vaultid, organizationid) VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s);",token,token,token,token,token,token,token,token,token,token,token);
+		String sql = String.format("INSERT INTO %s (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s) VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s);",primaryTableName, Columns.get(ColumnEnumType.REFERENCEID),Columns.get(ColumnEnumType.REFERENCETYPE),Columns.get(ColumnEnumType.NAME),Columns.get(ColumnEnumType.DATATYPE),Columns.get(ColumnEnumType.VALUEINDEX),Columns.get(ColumnEnumType.VALUE),Columns.get(ColumnEnumType.ISENCIPHERED),Columns.get(ColumnEnumType.KEYID),Columns.get(ColumnEnumType.ISVAULTED),Columns.get(ColumnEnumType.VAULTID),Columns.get(ColumnEnumType.ORGANIZATIONID),token,token,token,token,token,token,token,token,token,token,token);
+
+		
 		PreparedStatement psa = null;
 		try{
 			psa = connection.prepareStatement(sql);
@@ -342,7 +346,7 @@ public class AttributeFactory extends NameIdFactory{
 		fieldList.add(QueryFields.getFieldReferenceType(obj.getNameType()));
 		QueryField[] fields = fieldList.toArray(new QueryField[0]);
 		ProcessingInstructionType instruction = new ProcessingInstructionType();
-		instruction.setOrderClause("NAME ASC");
+		instruction.setOrderClause(Columns.get(ColumnEnumType.NAME) + " ASC");
 
 		if(this.dataTables.size() > 1)
 			throw new FactoryException("Multiple table select statements not yet supported");
@@ -362,23 +366,23 @@ public class AttributeFactory extends NameIdFactory{
 			AttributeType currentAttribute = null;
 			int valueIndex = 0;
 			while(rset.next()){
-				String name = rset.getString("name");
+				String name = rset.getString(Columns.get(ColumnEnumType.NAME));
 				if(lastName == null || !lastName.equals(name)){
 					currentAttribute = new AttributeType();
 					valueIndex = 0;
 					lastName = name;
 					currentAttribute.setName(name);
-					currentAttribute.setDataType(SqlDataEnumType.valueOf(rset.getString("datatype")));
-					currentAttribute.setReferenceType(NameEnumType.valueOf(rset.getString("referencetype")));
-					currentAttribute.setOrganizationId(rset.getLong("organizationid"));
-					currentAttribute.setReferenceId(rset.getLong("referenceid"));
-					currentAttribute.setVaultId(rset.getString("vaultid"));
-					currentAttribute.setKeyId(rset.getString("keyid"));
-					currentAttribute.setVaulted(rset.getBoolean("isvaulted"));
-					currentAttribute.setEnciphered(rset.getBoolean("isenciphered"));
+					currentAttribute.setDataType(SqlDataEnumType.valueOf(rset.getString(Columns.get(ColumnEnumType.DATATYPE))));
+					currentAttribute.setReferenceType(NameEnumType.valueOf(rset.getString(Columns.get(ColumnEnumType.REFERENCETYPE))));
+					currentAttribute.setOrganizationId(rset.getLong(Columns.get(ColumnEnumType.ORGANIZATIONID)));
+					currentAttribute.setReferenceId(rset.getLong(Columns.get(ColumnEnumType.REFERENCEID)));
+					currentAttribute.setVaultId(rset.getString(Columns.get(ColumnEnumType.VAULTID)));
+					currentAttribute.setKeyId(rset.getString(Columns.get(ColumnEnumType.KEYID)));
+					currentAttribute.setVaulted(rset.getBoolean(Columns.get(ColumnEnumType.ISVAULTED)));
+					currentAttribute.setEnciphered(rset.getBoolean(Columns.get(ColumnEnumType.ISENCIPHERED)));
 					attributes.add(currentAttribute);
 				}
-				currentAttribute.getValues().add(rset.getString("value"));
+				currentAttribute.getValues().add(rset.getString(Columns.get(ColumnEnumType.VALUE)));
 				currentAttribute.setIndex(valueIndex);
 				valueIndex++;
 			}
@@ -466,7 +470,7 @@ public class AttributeFactory extends NameIdFactory{
 		PreparedStatement statement = null;
 		int deletedRecords = 0;
 		try {
-			String sql = String.format("DELETE FROM %s WHERE referencetype = %s AND referenceid = %s",this.primaryTableName, token, token);
+			String sql = String.format("DELETE FROM %s WHERE %s = %s AND %s = %s",this.primaryTableName, Columns.get(ColumnEnumType.REFERENCETYPE), token, Columns.get(ColumnEnumType.REFERENCEID), token);
 			statement = connection.prepareStatement(sql);
 			for (int i = 0; i < ids.length; i++)
 			{
