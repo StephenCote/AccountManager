@@ -46,6 +46,7 @@ import org.cote.accountmanager.objects.CredentialType;
 import org.cote.accountmanager.objects.NameIdType;
 import org.cote.accountmanager.objects.ProcessingInstructionType;
 import org.cote.accountmanager.objects.UserType;
+import org.cote.accountmanager.objects.types.ColumnEnumType;
 import org.cote.accountmanager.objects.types.ComparatorEnumType;
 import org.cote.accountmanager.objects.types.FactoryEnumType;
 import org.cote.accountmanager.objects.types.NameEnumType;
@@ -95,7 +96,7 @@ public class CredentialFactory extends NameIdFactory {
 	@Override
 	protected void configureTableRestrictions(DataTable table){
 		if(table.getName().equalsIgnoreCase(primaryTableName)){
-			
+			/// Restrict any columns
 		}
 	}
 	
@@ -141,18 +142,18 @@ public class CredentialFactory extends NameIdFactory {
 
 
 		try{
-			row.setCellValue("hashprovider",obj.getHashProvider());
-			row.setCellValue("referencetype",obj.getReferenceType().toString());
-			row.setCellValue("referenceid",obj.getReferenceId());
-			row.setCellValue("previouscredentialid",obj.getPreviousCredentialId());
-			row.setCellValue("nextcredentialid",obj.getNextCredentialId());
-			row.setCellValue("createddate", obj.getCreatedDate());
-			row.setCellValue("modifieddate", obj.getModifiedDate());
-			row.setCellValue("expirationdate", obj.getExpiryDate());
-			row.setCellValue("credential", obj.getCredential());
-			row.setCellValue("salt", obj.getSalt());
-			row.setCellValue("credentialtype",obj.getCredentialType().toString());
-			row.setCellValue("primarycredential", obj.getPrimary());
+			row.setCellValue(Columns.get(ColumnEnumType.HASHPROVIDER),obj.getHashProvider());
+			row.setCellValue(Columns.get(ColumnEnumType.REFERENCETYPE),obj.getReferenceType().toString());
+			row.setCellValue(Columns.get(ColumnEnumType.REFERENCEID),obj.getReferenceId());
+			row.setCellValue(Columns.get(ColumnEnumType.PREVIOUSCREDENTIALID),obj.getPreviousCredentialId());
+			row.setCellValue(Columns.get(ColumnEnumType.NEXTCREDENTIALID),obj.getNextCredentialId());
+			row.setCellValue(Columns.get(ColumnEnumType.CREATEDDATE), obj.getCreatedDate());
+			row.setCellValue(Columns.get(ColumnEnumType.MODIFIEDDATE), obj.getModifiedDate());
+			row.setCellValue(Columns.get(ColumnEnumType.EXPIRATIONDATE), obj.getExpiryDate());
+			row.setCellValue(Columns.get(ColumnEnumType.CREDENTIAL), obj.getCredential());
+			row.setCellValue(Columns.get(ColumnEnumType.SALT), obj.getSalt());
+			row.setCellValue(Columns.get(ColumnEnumType.CREDENTIALTYPE),obj.getCredentialType().toString());
+			row.setCellValue(Columns.get(ColumnEnumType.PRIMARYCREDENTIAL), obj.getPrimary());
 			
 			if(insertRow(row)) return true;
 		}
@@ -169,17 +170,18 @@ public class CredentialFactory extends NameIdFactory {
 		newCred.setNameType(NameEnumType.CREDENTIAL);
 		super.read(rset, newCred);
 		
-		newCred.setHashProvider(rset.getString("hashprovider"));
-		newCred.setNextCredentialId(rset.getLong("nextcredentialid"));
-		newCred.setPreviousCredentialId(rset.getLong("previouscredentialid"));
-		newCred.setReferenceId(rset.getLong("referenceid"));
-		newCred.setReferenceType(FactoryEnumType.fromValue(rset.getString("referencetype")));
-		newCred.setCredentialType(CredentialEnumType.fromValue(rset.getString("credentialtype")));
-		newCred.setCreatedDate(CalendarUtil.getXmlGregorianCalendar(rset.getTimestamp("createddate")));
-		newCred.setModifiedDate(CalendarUtil.getXmlGregorianCalendar(rset.getTimestamp("modifieddate")));
-		newCred.setExpiryDate(CalendarUtil.getXmlGregorianCalendar(rset.getTimestamp("expirationdate")));
-		newCred.setSalt(rset.getBytes("salt"));
-		newCred.setCredential(rset.getBytes("credential"));
+		newCred.setHashProvider(rset.getString(Columns.get(ColumnEnumType.HASHPROVIDER)));
+		newCred.setNextCredentialId(rset.getLong(Columns.get(ColumnEnumType.NEXTCREDENTIALID)));
+		newCred.setPreviousCredentialId(rset.getLong(Columns.get(ColumnEnumType.PREVIOUSCREDENTIALID)));
+		newCred.setReferenceId(rset.getLong(Columns.get(ColumnEnumType.REFERENCEID)));
+		newCred.setReferenceType(FactoryEnumType.fromValue(rset.getString(Columns.get(ColumnEnumType.REFERENCETYPE))));
+		newCred.setCredentialType(CredentialEnumType.fromValue(rset.getString(Columns.get(ColumnEnumType.CREDENTIALTYPE))));
+		newCred.setCreatedDate(CalendarUtil.getXmlGregorianCalendar(rset.getTimestamp(Columns.get(ColumnEnumType.CREATEDDATE))));
+		newCred.setModifiedDate(CalendarUtil.getXmlGregorianCalendar(rset.getTimestamp(Columns.get(ColumnEnumType.MODIFIEDDATE))));
+		newCred.setExpiryDate(CalendarUtil.getXmlGregorianCalendar(rset.getTimestamp(Columns.get(ColumnEnumType.EXPIRATIONDATE))));
+		newCred.setSalt(rset.getBytes(Columns.get(ColumnEnumType.SALT)));
+		newCred.setCredential(rset.getBytes(Columns.get(ColumnEnumType.CREDENTIAL)));
+		newCred.setPrimary(rset.getBoolean(Columns.get(ColumnEnumType.PRIMARYCREDENTIAL)));
 		
 		return newCred;
 	}
@@ -239,13 +241,13 @@ public class CredentialFactory extends NameIdFactory {
 			fields.add(expiry);
 		}
 		ProcessingInstructionType pi = new ProcessingInstructionType();
-		pi.setOrderClause("createddate DESC");
+		pi.setOrderClause(Columns.get(ColumnEnumType.CREATEDDATE) + " DESC");
 		pi.setPaginate(true);
 		pi.setStartIndex(0L);
 		pi.setRecordCount(1);
 		if(credType != CredentialEnumType.UNKNOWN) fields.add(QueryFields.getFieldCredentialType(credType));
 		CredentialType outsec = null;
-		/// logger.info(JSONUtil.exportObject(fields));
+
 		List<NameIdType> recs = this.getByField(fields.toArray(new QueryField[0]), obj.getOrganizationId());
 		if(!recs.isEmpty()) outsec = (CredentialType)recs.get(0);
 		return outsec;

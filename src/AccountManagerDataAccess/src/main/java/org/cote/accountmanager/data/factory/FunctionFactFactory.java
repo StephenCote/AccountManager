@@ -46,6 +46,7 @@ import org.cote.accountmanager.objects.FunctionFactType;
 import org.cote.accountmanager.objects.NameIdType;
 import org.cote.accountmanager.objects.ProcessingInstructionType;
 import org.cote.accountmanager.objects.UserType;
+import org.cote.accountmanager.objects.types.ColumnEnumType;
 import org.cote.accountmanager.objects.types.FactoryEnumType;
 import org.cote.accountmanager.objects.types.NameEnumType;
 
@@ -65,7 +66,7 @@ public class FunctionFactFactory extends NameIdGroupFactory {
 	@Override
 	protected void configureTableRestrictions(DataTable table){
 		if(table.getName().equalsIgnoreCase(primaryTableName)){
-
+			/// restrict column names
 		}
 	}
 
@@ -73,7 +74,7 @@ public class FunctionFactFactory extends NameIdGroupFactory {
 	public <T> void populate(T obj) throws FactoryException, ArgumentException
 	{
 		FunctionFactType fact = (FunctionFactType)obj;
-		if(fact.getPopulated()) return;
+		if(fact.getPopulated().booleanValue()) return;
 		fact.setPopulated(true);
 		updateToCache(fact);
 	}
@@ -96,14 +97,14 @@ public class FunctionFactFactory extends NameIdGroupFactory {
 		FunctionFactType obj = (FunctionFactType)object;
 		if (obj.getGroupId() != 0L) throw new FactoryException("Cannot add new Fact without a group");
 
-		DataRow row = prepareAdd(obj, "functionfact");
+		DataRow row = prepareAdd(obj, primaryTableName);
 		try{
 
-			row.setCellValue("groupid", obj.getGroupId());
-			row.setCellValue("description", obj.getDescription());
-			row.setCellValue("logicalorder", obj.getLogicalOrder());
-			row.setCellValue("functionurn", obj.getFunctionUrn());
-			row.setCellValue("facturn", obj.getFactUrn());
+			row.setCellValue(Columns.get(ColumnEnumType.GROUPID), obj.getGroupId());
+			row.setCellValue(Columns.get(ColumnEnumType.DESCRIPTION), obj.getDescription());
+			row.setCellValue(Columns.get(ColumnEnumType.LOGICALORDER), obj.getLogicalOrder());
+			row.setCellValue(Columns.get(ColumnEnumType.FUNCTIONURN), obj.getFunctionUrn());
+			row.setCellValue(Columns.get(ColumnEnumType.FACTURN), obj.getFactUrn());
 			
 			if (insertRow(row)) return true;
 		}
@@ -124,10 +125,10 @@ public class FunctionFactFactory extends NameIdGroupFactory {
 		super.read(rset, newObj);
 		readGroup(rset, newObj);
 
-		newObj.setFunctionUrn(rset.getString("functionurn"));
-		newObj.setFactUrn(rset.getString("facturn"));
-		newObj.setDescription(rset.getString("description"));
-		newObj.setLogicalOrder(rset.getInt("logicalorder"));
+		newObj.setFunctionUrn(rset.getString(Columns.get(ColumnEnumType.FUNCTIONURN)));
+		newObj.setFactUrn(rset.getString(Columns.get(ColumnEnumType.FACTURN)));
+		newObj.setDescription(rset.getString(Columns.get(ColumnEnumType.DESCRIPTION)));
+		newObj.setLogicalOrder(rset.getInt(Columns.get(ColumnEnumType.LOGICALORDER)));
 		return newObj;
 	}
 	@Override

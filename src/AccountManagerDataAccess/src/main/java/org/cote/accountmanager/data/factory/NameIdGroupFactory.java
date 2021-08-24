@@ -71,9 +71,6 @@ public abstract class NameIdGroupFactory extends NameIdFactory implements INameI
 		}
 		NameIdDirectoryGroupType obj = (NameIdDirectoryGroupType)object;
 		
-		/// 2017/02/07 - Why is this returning out?
-		///
-		
 		if(obj.getGroupPath() == null || obj.getGroupPath().length() == 0){
 			logger.debug("Group path not defined");
 			return;

@@ -181,15 +181,7 @@ public class GroupParticipationFactory extends ParticipationFactory {
 		if (dp.isEmpty()) return true;
 		return deleteParticipants(dp.toArray(new BaseParticipantType[0]), data.getOrganizationId());
 	}
-	/*
-	/// TODO: Deprecated
-	public boolean deleteDataGroupParticipationsForAccount(AccountType account) throws FactoryException
-	{
-		long[] data_ids = ParticipationUtil.getDataFromGroupForAccount(account);
-		///return deleteParts(data_ids, "participantid", account.getOrganizationId());
-		return deleteParticipants(data_ids, account.getOrganizationId());
-	}
-	*/
+
 	public boolean deleteDataGroupParticipants(BucketGroupType group, DataType data) throws FactoryException, ArgumentException
 	{
 		List<DataParticipantType> dp = getDataGroupParticipants(group, data);
@@ -388,13 +380,13 @@ public class GroupParticipationFactory extends ParticipationFactory {
 	}
 	public List<UserParticipantType> getUserGroupParticipants(
 		BaseGroupType group,
-		UserType User,
+		UserType user,
 		BasePermissionType permission,
 		AffectEnumType affectType
 	) throws FactoryException, ArgumentException
 	{
 		
-		return convertList(getParticipants(group, User, ParticipantEnumType.USER, permission, affectType));
+		return convertList(getParticipants(group, user, ParticipantEnumType.USER, permission, affectType));
 	}
 	public UserParticipantType getUserGroupParticipant(BaseGroupType group, UserType User) throws ArgumentException, FactoryException
 	{

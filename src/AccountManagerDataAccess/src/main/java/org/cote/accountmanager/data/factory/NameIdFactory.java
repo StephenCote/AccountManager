@@ -699,8 +699,8 @@ public abstract class NameIdFactory extends FactoryBase implements INameIdFactor
 		if(hasParentId) obj.setParentId(rset.getLong(Columns.get(ColumnEnumType.PARENTID)));
 		else obj.setParentId(0L);
 		if(scopeToOrganization){
-			long org_id = rset.getLong(Columns.get(ColumnEnumType.ORGANIZATIONID));
-			obj.setOrganizationId(org_id);
+			long orgId = rset.getLong(Columns.get(ColumnEnumType.ORGANIZATIONID));
+			obj.setOrganizationId(orgId);
 			obj.setOrganizationPath(((OrganizationFactory)Factories.getFactory(FactoryEnumType.ORGANIZATION)).getOrganizationPath(obj.getOrganizationId()));
 		}
 		if(isVaulted) {

@@ -214,7 +214,7 @@ public class MessageFactory extends SpoolFactory {
 
 	public boolean isValid(BaseSpoolType message)
 	{
-		if (
+		return !(
 			message == null
 			|| message.getOrganizationId() <= 0L
 			|| message.getGroupId().compareTo(0L) == 0
@@ -223,8 +223,7 @@ public class MessageFactory extends SpoolFactory {
 			|| message.getName() == null
 			|| message.getGuid() == null
 			|| message.getOwnerId() <= 0L
-		) return false;
-		return true;
+		);
 	}
 
 }

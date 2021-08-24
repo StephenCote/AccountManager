@@ -49,6 +49,7 @@ import org.cote.accountmanager.objects.PersonGroupType;
 import org.cote.accountmanager.objects.ProcessingInstructionType;
 import org.cote.accountmanager.objects.UserGroupType;
 import org.cote.accountmanager.objects.UserType;
+import org.cote.accountmanager.objects.types.ColumnEnumType;
 import org.cote.accountmanager.objects.types.FactoryEnumType;
 import org.cote.accountmanager.objects.types.GroupEnumType;
 import org.cote.accountmanager.objects.types.NameEnumType;
@@ -83,7 +84,7 @@ public class GroupFactory  extends NameIdFactory {
 	@Override
 	protected void configureTableRestrictions(DataTable table){
 		if(table.getName().equalsIgnoreCase(primaryTableName)){
-			
+			/// restrict column names
 		}
 	}
 	
@@ -209,9 +210,9 @@ public class GroupFactory  extends NameIdFactory {
 		///
 		if(group.getName().equals("Lifecycles") && group.getParentId().compareTo(0L) == 0) throw new ArgumentException("Invalid parent id");
 		try{
-			DataRow row = prepareAdd(group, "groups");
-			row.setCellValue("grouptype", group.getGroupType().toString());
-			row.setCellValue("referenceid", group.getReferenceId());
+			DataRow row = prepareAdd(group, primaryTableName);
+			row.setCellValue(Columns.get(ColumnEnumType.GROUPTYPE), group.getGroupType().toString());
+			row.setCellValue(Columns.get(ColumnEnumType.REFERENCEID), group.getReferenceId());
 			if (insertRow(row))
 			{
 				if(!bulkMode) clearGroupParentCache(group);
@@ -239,8 +240,8 @@ public class GroupFactory  extends NameIdFactory {
 	@Override
 	protected NameIdType read(ResultSet rset, ProcessingInstructionType instruction) throws SQLException, FactoryException, ArgumentException
 	{
-		BaseGroupType newGroup = newGroup(GroupEnumType.valueOf(rset.getString("grouptype")));
-		newGroup.setReferenceId(rset.getLong("referenceid"));
+		BaseGroupType newGroup = newGroup(GroupEnumType.valueOf(rset.getString(Columns.get(ColumnEnumType.GROUPTYPE))));
+		newGroup.setReferenceId(rset.getLong(Columns.get(ColumnEnumType.REFERENCEID)));
 		return super.read(rset, newGroup);
 	}
 	
@@ -530,7 +531,7 @@ public class GroupFactory  extends NameIdFactory {
 	{
 		BaseGroupType group = (BaseGroupType)obj;
 		boolean valid = isValid(group);
-		if (group.getPopulated()) return;
+		if (group.getPopulated().booleanValue()) return;
 	
         group.setPopulated(true);
         if(valid) updateToCache(group);
@@ -634,7 +635,6 @@ public class GroupFactory  extends NameIdFactory {
 				{
 					break;
 				}
-				// name = paths[++i];
 				i++;
 			}
 			else if (name.equals("~") && user != null)
@@ -643,7 +643,6 @@ public class GroupFactory  extends NameIdFactory {
 				if(user.getHomeDirectory() == null) throw new FactoryException("User home directory not populated");
 				nestedGroup = user.getHomeDirectory();
 				if (paths.length == 1) break;
-				// name = paths[++i];
 				i++;
 			}
 			nestedGroup = getGroupByName(paths[i], groupType,nestedGroup, organizationId);

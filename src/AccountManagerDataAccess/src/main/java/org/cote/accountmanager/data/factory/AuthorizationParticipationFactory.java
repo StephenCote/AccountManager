@@ -72,31 +72,31 @@ public abstract class AuthorizationParticipationFactory extends BaseParticipatio
 	@Override
 	protected BaseParticipantType newParticipant(ParticipantEnumType type) throws ArgumentException
 	{
-		BaseParticipantType new_participant = null;
+		BaseParticipantType newParticipant = null;
 		switch (type)
 		{
 			case RULE:
-				new_participant = new RuleParticipantType();
+				newParticipant = new RuleParticipantType();
 				break;
 			case FUNCTIONFACT:
-				new_participant = new FunctionFactParticipantType();
+				newParticipant = new FunctionFactParticipantType();
 				break;
 			case PATTERN:
-				new_participant = new PatternParticipantType();
+				newParticipant = new PatternParticipantType();
 				break;
 			case FACT:
-				new_participant = new FactParticipantType();
+				newParticipant = new FactParticipantType();
 				break;
 			
 			default:
-				new_participant = super.newParticipant(type);
+				newParticipant = super.newParticipant(type);
 				break;
 		}
-		new_participant.setParticipantType(type);
-		return new_participant;
+		newParticipant.setParticipantType(type);
+		return newParticipant;
 	}
 	public List<PatternType> getPatternsFromParticipation(NameIdType participation) throws ArgumentException{
-		List<PatternType> items = new ArrayList<PatternType>();
+		List<PatternType> items = new ArrayList<>();
 		try{
 			PatternParticipantType[] parts = getPatternParticipations(participation).toArray(new PatternParticipantType[0]);
 			if(parts.length > 0){
@@ -120,7 +120,7 @@ public abstract class AuthorizationParticipationFactory extends BaseParticipatio
 	}
 
 	public List<RuleType> getRulesFromParticipation(NameIdType participation) throws ArgumentException{
-		List<RuleType> items = new ArrayList<RuleType>();
+		List<RuleType> items = new ArrayList<>();
 		try{
 			RuleParticipantType[] parts = getRuleParticipations(participation).toArray(new RuleParticipantType[0]);
 			if(parts.length > 0){
@@ -145,7 +145,7 @@ public abstract class AuthorizationParticipationFactory extends BaseParticipatio
 
 	
 	public List<FactType> getFactsFromParticipation(NameIdType participation) throws ArgumentException{
-		List<FactType> items = new ArrayList<FactType>();
+		List<FactType> items = new ArrayList<>();
 		try{
 			FactParticipantType[] parts = getFactParticipations(participation).toArray(new FactParticipantType[0]);
 			if(parts.length > 0){
@@ -170,7 +170,7 @@ public abstract class AuthorizationParticipationFactory extends BaseParticipatio
 
 	
 	public List<FunctionFactType> getFunctionFactsFromParticipation(NameIdType participation) throws ArgumentException{
-		List<FunctionFactType> items = new ArrayList<FunctionFactType>();
+		List<FunctionFactType> items = new ArrayList<>();
 		try{
 			FunctionFactParticipantType[] parts = getFunctionFactParticipations(participation).toArray(new FunctionFactParticipantType[0]);
 			if(parts.length > 0){

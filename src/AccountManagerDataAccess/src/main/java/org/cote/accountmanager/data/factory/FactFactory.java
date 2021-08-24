@@ -46,6 +46,7 @@ import org.cote.accountmanager.objects.FactType;
 import org.cote.accountmanager.objects.NameIdType;
 import org.cote.accountmanager.objects.ProcessingInstructionType;
 import org.cote.accountmanager.objects.UserType;
+import org.cote.accountmanager.objects.types.ColumnEnumType;
 import org.cote.accountmanager.objects.types.FactoryEnumType;
 import org.cote.accountmanager.objects.types.NameEnumType;
 import org.cote.accountmanager.objects.types.SqlDataEnumType;
@@ -63,9 +64,10 @@ public class FactFactory extends NameIdGroupFactory {
 		factoryType = FactoryEnumType.FACT;
 	}
 	
+	@Override
 	protected void configureTableRestrictions(DataTable table){
 		if(table.getName().equalsIgnoreCase(primaryTableName)){
-
+			// restrict any columns
 		}
 	}
 
@@ -73,7 +75,7 @@ public class FactFactory extends NameIdGroupFactory {
 	public <T> void populate(T obj) throws FactoryException, ArgumentException
 	{
 		FactType fact = (FactType)obj;
-		if(fact.getPopulated()) return;
+		if(fact.getPopulated().booleanValue()) return;
 		fact.setPopulated(true);
 		updateToCache(fact);
 	}
@@ -99,19 +101,19 @@ public class FactFactory extends NameIdGroupFactory {
 		FactType obj = (FactType)object;
 		if (obj.getGroupId().compareTo(0L) == 0) throw new FactoryException("Cannot add new Fact without a group");
 
-		DataRow row = prepareAdd(obj, "fact");
+		DataRow row = prepareAdd(obj, primaryTableName);
 		try{
-			row.setCellValue("facttype", obj.getFactType().toString());
-			row.setCellValue("factorytype", obj.getFactoryType().toString());
-			row.setCellValue("groupid", obj.getGroupId());
-			row.setCellValue("factdata", obj.getFactData());
-			row.setCellValue("description", obj.getDescription());
-			row.setCellValue("score", obj.getScore());
-			row.setCellValue("logicalorder", obj.getLogicalOrder());
-			row.setCellValue("sourceurn", obj.getSourceUrn());
-			row.setCellValue("sourceurl", obj.getSourceUrl());
-			row.setCellValue("sourcetype", obj.getSourceType());
-			row.setCellValue("sourcedatatype", obj.getSourceDataType().toString());
+			row.setCellValue(Columns.get(ColumnEnumType.FACTTYPE), obj.getFactType().toString());
+			row.setCellValue(Columns.get(ColumnEnumType.FACTORYTYPE), obj.getFactoryType().toString());
+			row.setCellValue(Columns.get(ColumnEnumType.GROUPID), obj.getGroupId());
+			row.setCellValue(Columns.get(ColumnEnumType.FACTDATA), obj.getFactData());
+			row.setCellValue(Columns.get(ColumnEnumType.DESCRIPTION), obj.getDescription());
+			row.setCellValue(Columns.get(ColumnEnumType.SCORE), obj.getScore());
+			row.setCellValue(Columns.get(ColumnEnumType.LOGICALORDER), obj.getLogicalOrder());
+			row.setCellValue(Columns.get(ColumnEnumType.SOURCEURN), obj.getSourceUrn());
+			row.setCellValue(Columns.get(ColumnEnumType.SOURCEURL), obj.getSourceUrl());
+			row.setCellValue(Columns.get(ColumnEnumType.SOURCETYPE), obj.getSourceType());
+			row.setCellValue(Columns.get(ColumnEnumType.SOURCEDATATYPE), obj.getSourceDataType().toString());
 			
 			if (insertRow(row)) return true;
 		}
@@ -131,16 +133,16 @@ public class FactFactory extends NameIdGroupFactory {
 		newObj.setNameType(NameEnumType.FACT);
 		super.read(rset, newObj);
 		readGroup(rset, newObj);
-		newObj.setFactType(FactEnumType.valueOf(rset.getString("facttype")));
-		newObj.setFactoryType(FactoryEnumType.valueOf(rset.getString("factorytype")));
-		newObj.setScore(rset.getInt("score"));
-		newObj.setFactData(rset.getString("factdata"));
-		newObj.setDescription(rset.getString("description"));
-		newObj.setSourceUrn(rset.getString("sourceurn"));
-		newObj.setSourceUrl(rset.getString("sourceurl"));
-		newObj.setSourceType(rset.getString("sourcetype"));
-		newObj.setSourceDataType(SqlDataEnumType.valueOf(rset.getString("sourcedatatype")));
-		newObj.setLogicalOrder(rset.getInt("logicalorder"));
+		newObj.setFactType(FactEnumType.valueOf(rset.getString(Columns.get(ColumnEnumType.FACTTYPE))));
+		newObj.setFactoryType(FactoryEnumType.valueOf(rset.getString(Columns.get(ColumnEnumType.FACTORYTYPE))));
+		newObj.setScore(rset.getInt(Columns.get(ColumnEnumType.SCORE)));
+		newObj.setFactData(rset.getString(Columns.get(ColumnEnumType.FACTDATA)));
+		newObj.setDescription(rset.getString(Columns.get(ColumnEnumType.DESCRIPTION)));
+		newObj.setSourceUrn(rset.getString(Columns.get(ColumnEnumType.SOURCEURN)));
+		newObj.setSourceUrl(rset.getString(Columns.get(ColumnEnumType.SOURCEURL)));
+		newObj.setSourceType(rset.getString(Columns.get(ColumnEnumType.SOURCETYPE)));
+		newObj.setSourceDataType(SqlDataEnumType.valueOf(rset.getString(Columns.get(ColumnEnumType.SOURCEDATATYPE))));
+		newObj.setLogicalOrder(rset.getInt(Columns.get(ColumnEnumType.LOGICALORDER)));
 		return newObj;
 	}
 	@Override

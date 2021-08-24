@@ -277,7 +277,7 @@ public abstract class BaseParticipationFactory extends ParticipationFactory {
 		}
 
 		public List<AddressType> getAddressesFromParticipation(NameIdType participation) throws ArgumentException{
-			List<AddressType> items = new ArrayList<AddressType>();
+			List<AddressType> items = new ArrayList<>();
 			try{
 				AddressParticipantType[] parts = getAddressParticipations(participation).toArray(new AddressParticipantType[0]);
 				if(parts.length > 0){

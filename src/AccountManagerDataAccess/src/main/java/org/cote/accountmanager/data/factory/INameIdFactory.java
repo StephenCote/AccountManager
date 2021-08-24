@@ -35,9 +35,7 @@ import org.cote.accountmanager.objects.UserType;
 import org.cote.accountmanager.objects.types.FactoryEnumType;
 
 public interface INameIdFactory {
-	//public String getDataTable();
-	//public void writeSpool(String tableName);
-	
+
 	public <T> T find(String path) throws FactoryException,ArgumentException;
 	public <T> T find(String type, String path, long organizationId) throws FactoryException, ArgumentException;
 	public <T> T find(UserType user, String type, String path, long organizationId) throws FactoryException, ArgumentException;
@@ -71,17 +69,16 @@ public interface INameIdFactory {
 	public <T> boolean updateBulk(List<T> map) throws FactoryException;
 	public <T> boolean updateBulk(List<T> map, ProcessingInstructionType instruction) throws FactoryException;
 
-	//public void setFactoryFields(List<QueryField> fields, NameIdType map, ProcessingInstructionType instruction);
-	public <T> T getByNameInParent(String name, String type, long parent_id, long organization_id) throws FactoryException, ArgumentException;
-	public <T> T getByNameInParent(String name, long parent_id, long organization_id) throws FactoryException, ArgumentException;
+	public <T> T getByNameInParent(String name, String type, long parentId, long organizationId) throws FactoryException, ArgumentException;
+	public <T> T getByNameInParent(String name, long parentId, long organizationId) throws FactoryException, ArgumentException;
 	public <T> T getByName(String name, long organizationId) throws FactoryException, ArgumentException;
-	public List<NameIdType> getByField(QueryField field, long organization_id) throws FactoryException, ArgumentException;
-	public List<NameIdType> getByField(QueryField field, ProcessingInstructionType instruction, long organization_id) throws FactoryException, ArgumentException;
-	public List<NameIdType> getByField(QueryField[] fields, long organization_id) throws FactoryException, ArgumentException;
-	public List<NameIdType> getByField(QueryField[] fields, ProcessingInstructionType instruction, long organization_id) throws FactoryException, ArgumentException;
+	public List<NameIdType> getByField(QueryField field, long organizationId) throws FactoryException, ArgumentException;
+	public List<NameIdType> getByField(QueryField field, ProcessingInstructionType instruction, long organizationId) throws FactoryException, ArgumentException;
+	public List<NameIdType> getByField(QueryField[] fields, long organizationId) throws FactoryException, ArgumentException;
+	public List<NameIdType> getByField(QueryField[] fields, ProcessingInstructionType instruction, long organizationId) throws FactoryException, ArgumentException;
 
 	public <T> List<T> listByOwner(UserType user) throws FactoryException, ArgumentException;
-	public <T> List<T> listByName(String name, long organization_id) throws FactoryException, ArgumentException;
+	public <T> List<T> listByName(String name, long organizationId) throws FactoryException, ArgumentException;
 	public <T> List<T> list(QueryField[] fields, ProcessingInstructionType pi, long organizationId) throws FactoryException, ArgumentException;	
 	public <T> List<T> list(QueryField[] fields, long organizationId) throws FactoryException, ArgumentException;
 	public <T> List<T>  paginateList(QueryField[] fields, long startRecord, int recordCount, long organizationId)  throws FactoryException, ArgumentException;
@@ -94,7 +91,7 @@ public interface INameIdFactory {
 	public <T> T getByUrn(String urn);
 	public <T> List<T> search(String searchValue, long startRecord, int recordCount, long org) throws FactoryException, ArgumentException;
 	public <T> List<T> search(QueryField[] fields, ProcessingInstructionType pi, long organizationId) throws FactoryException, ArgumentException;
-	public int countInOrganization(long organization_id) throws FactoryException;
+	public int countInOrganization(long organizationId) throws FactoryException;
 	public <T> int countInParent(T parent) throws FactoryException;
 	public <T> List<T> listInParent(String type, long parentId, long startRecord, int recordCount, long organizationId) throws FactoryException,ArgumentException;
 	public <T> List<T> listInParent(long parentId, long startRecord, int recordCount, long organizationId) throws FactoryException,ArgumentException;

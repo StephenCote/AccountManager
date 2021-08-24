@@ -55,6 +55,7 @@ import org.cote.accountmanager.objects.FunctionType;
 import org.cote.accountmanager.objects.NameIdType;
 import org.cote.accountmanager.objects.ProcessingInstructionType;
 import org.cote.accountmanager.objects.UserType;
+import org.cote.accountmanager.objects.types.ColumnEnumType;
 import org.cote.accountmanager.objects.types.FactoryEnumType;
 import org.cote.accountmanager.objects.types.NameEnumType;
 
@@ -73,7 +74,7 @@ public class FunctionFactory extends NameIdGroupFactory {
 	@Override
 	protected void configureTableRestrictions(DataTable table){
 		if(table.getName().equalsIgnoreCase(primaryTableName)){
-
+			// restrict column names
 		}
 	}
 
@@ -81,7 +82,7 @@ public class FunctionFactory extends NameIdGroupFactory {
 	public <T> void populate(T obj) throws FactoryException, ArgumentException
 	{
 		FunctionType func = (FunctionType)obj;
-		if(func.getPopulated()) return;
+		if(func.getPopulated().booleanValue()) return;
 		func.getFacts().addAll(((FunctionParticipationFactory)Factories.getFactory(FactoryEnumType.FUNCTIONPARTICIPATION)).getFunctionFactsFromParticipation(func));
 		Collections.sort(func.getFacts(),new LogicalTypeComparator());
 		func.setPopulated(true);
@@ -107,19 +108,16 @@ public class FunctionFactory extends NameIdGroupFactory {
 		FunctionType obj = (FunctionType)object;
 		if (obj.getGroupId().compareTo(0L) == 0) throw new FactoryException("Cannot add new Fact without a group");
 
-		DataRow row = prepareAdd(obj, "function");
+		DataRow row = prepareAdd(obj, primaryTableName);
 		try{
-			row.setCellValue("functiontype", obj.getFunctionType().toString());
-			row.setCellValue("groupid", obj.getGroupId());
-			row.setCellValue("description", obj.getDescription());
-			row.setCellValue("score", obj.getScore());
-			row.setCellValue("logicalorder", obj.getLogicalOrder());
-			if(obj.getFunctionData() != null){
-				row.setCellValue("sourceurn", obj.getFunctionData().getUrn());
-			}
-			else{
-				row.setCellValue("sourceurn", obj.getSourceUrn());
-				row.setCellValue("sourceurl", obj.getSourceUrl());
+			row.setCellValue(Columns.get(ColumnEnumType.FUNCTIONTYPE), obj.getFunctionType().toString());
+			row.setCellValue(Columns.get(ColumnEnumType.GROUPID), obj.getGroupId());
+			row.setCellValue(Columns.get(ColumnEnumType.DESCRIPTION), obj.getDescription());
+			row.setCellValue(Columns.get(ColumnEnumType.SCORE), obj.getScore());
+			row.setCellValue(Columns.get(ColumnEnumType.LOGICALORDER), obj.getLogicalOrder());
+			row.setCellValue(Columns.get(ColumnEnumType.SOURCEURN), obj.getFunctionData().getUrn());
+			if(obj.getFunctionData() == null){
+				row.setCellValue(Columns.get(ColumnEnumType.SOURCEURL), obj.getSourceUrl());
 			}
 			if (insertRow(row)){
 				FunctionType cobj = (bulkMode ? obj : (FunctionType)getByNameInGroup(obj.getName(), obj.getGroupId(),obj.getOrganizationId()));
@@ -154,12 +152,12 @@ public class FunctionFactory extends NameIdGroupFactory {
 		newObj.setNameType(NameEnumType.FUNCTION);
 		super.read(rset, newObj);
 		readGroup(rset, newObj);
-		newObj.setFunctionType(FunctionEnumType.valueOf(rset.getString("functiontype")));
-		newObj.setScore(rset.getInt("score"));
-		newObj.setDescription(rset.getString("description"));
-		newObj.setSourceUrn(rset.getString("sourceurn"));
-		newObj.setSourceUrl(rset.getString("sourceurl"));
-		newObj.setLogicalOrder(rset.getInt("logicalorder"));
+		newObj.setFunctionType(FunctionEnumType.valueOf(rset.getString(Columns.get(ColumnEnumType.FUNCTIONTYPE))));
+		newObj.setScore(rset.getInt(Columns.get(ColumnEnumType.SCORE)));
+		newObj.setDescription(rset.getString(Columns.get(ColumnEnumType.DESCRIPTION)));
+		newObj.setSourceUrn(rset.getString(Columns.get(ColumnEnumType.SOURCEURN)));
+		newObj.setSourceUrl(rset.getString(Columns.get(ColumnEnumType.SOURCEURL)));
+		newObj.setLogicalOrder(rset.getInt(Columns.get(ColumnEnumType.LOGICALORDER)));
 		return newObj;
 	}
 	@Override
@@ -176,7 +174,7 @@ public class FunctionFactory extends NameIdGroupFactory {
 				for(int i = 0; i < maps.length;i++) set.add(maps[i].getParticipantId());
 				
 				for(int i = 0; i < data.getFacts().size();i++){
-					if(set.contains(data.getFacts().get(i).getId())== false){
+					if(!set.contains(data.getFacts().get(i).getId())){
 						((FunctionParticipationFactory)Factories.getFactory(FactoryEnumType.FUNCTIONPARTICIPATION)).add(((FunctionParticipationFactory)Factories.getFactory(FactoryEnumType.FUNCTIONPARTICIPATION)).newFunctionFactParticipation(data,data.getFacts().get(i)));
 					}
 					else{

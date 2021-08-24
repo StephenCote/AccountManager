@@ -47,6 +47,7 @@ import org.cote.accountmanager.objects.ControlType;
 import org.cote.accountmanager.objects.NameIdType;
 import org.cote.accountmanager.objects.ProcessingInstructionType;
 import org.cote.accountmanager.objects.UserType;
+import org.cote.accountmanager.objects.types.ColumnEnumType;
 import org.cote.accountmanager.objects.types.ComparatorEnumType;
 import org.cote.accountmanager.objects.types.FactoryEnumType;
 import org.cote.accountmanager.objects.types.NameEnumType;
@@ -96,7 +97,7 @@ public class ControlFactory extends NameIdFactory {
 	@Override
 	protected void configureTableRestrictions(DataTable table){
 		if(table.getName().equalsIgnoreCase(primaryTableName)){
-
+			/// Restrict any columns
 		}
 	}
 
@@ -139,17 +140,17 @@ public class ControlFactory extends NameIdFactory {
 	public <T> boolean add(T object) throws ArgumentException,FactoryException
 	{
 		ControlType obj = (ControlType)object;
-		DataRow row = prepareAdd(obj, "control");
+		DataRow row = prepareAdd(obj, primaryTableName);
 		try{
 
-			row.setCellValue("controlid",obj.getControlId());
-			row.setCellValue("referencetype",obj.getReferenceType().toString());
-			row.setCellValue("referenceid",obj.getReferenceId());
-			row.setCellValue("createddate", obj.getCreatedDate());
-			row.setCellValue("modifieddate", obj.getModifiedDate());
-			row.setCellValue("expirationdate", obj.getExpiryDate());
-			row.setCellValue("controltype",obj.getControlType().toString());
-			row.setCellValue("controlaction",obj.getControlAction().toString());
+			row.setCellValue(Columns.get(ColumnEnumType.CONTROLID),obj.getControlId());
+			row.setCellValue(Columns.get(ColumnEnumType.REFERENCETYPE),obj.getReferenceType().toString());
+			row.setCellValue(Columns.get(ColumnEnumType.REFERENCEID),obj.getReferenceId());
+			row.setCellValue(Columns.get(ColumnEnumType.CREATEDDATE), obj.getCreatedDate());
+			row.setCellValue(Columns.get(ColumnEnumType.MODIFIEDDATE), obj.getModifiedDate());
+			row.setCellValue(Columns.get(ColumnEnumType.EXPIRATIONDATE), obj.getExpiryDate());
+			row.setCellValue(Columns.get(ColumnEnumType.CONTROLTYPE),obj.getControlType().toString());
+			row.setCellValue(Columns.get(ColumnEnumType.CONTROLACTION),obj.getControlAction().toString());
 
 			
 			if(insertRow(row)) return true;
@@ -167,15 +168,15 @@ public class ControlFactory extends NameIdFactory {
 		newCred.setNameType(NameEnumType.CREDENTIAL);
 		super.read(rset, newCred);
 		
-		newCred.setReferenceId(rset.getLong("referenceid"));
-		newCred.setReferenceType(FactoryEnumType.fromValue(rset.getString("referencetype")));
-		newCred.setControlId(rset.getLong("controlid"));
-		newCred.setControlType(ControlEnumType.fromValue(rset.getString("controltype")));
-		newCred.setControlAction(ControlActionEnumType.fromValue(rset.getString("controlaction")));
+		newCred.setReferenceId(rset.getLong(Columns.get(ColumnEnumType.REFERENCEID)));
+		newCred.setReferenceType(FactoryEnumType.fromValue(rset.getString(Columns.get(ColumnEnumType.REFERENCETYPE))));
+		newCred.setControlId(rset.getLong(Columns.get(ColumnEnumType.CONTROLID)));
+		newCred.setControlType(ControlEnumType.fromValue(rset.getString(Columns.get(ColumnEnumType.CONTROLTYPE))));
+		newCred.setControlAction(ControlActionEnumType.fromValue(rset.getString(Columns.get(ColumnEnumType.CONTROLACTION))));
 
-		newCred.setCreatedDate(CalendarUtil.getXmlGregorianCalendar(rset.getTimestamp("createddate")));
-		newCred.setModifiedDate(CalendarUtil.getXmlGregorianCalendar(rset.getTimestamp("modifieddate")));
-		newCred.setExpiryDate(CalendarUtil.getXmlGregorianCalendar(rset.getTimestamp("expirationdate")));
+		newCred.setCreatedDate(CalendarUtil.getXmlGregorianCalendar(rset.getTimestamp(Columns.get(ColumnEnumType.CREATEDDATE))));
+		newCred.setModifiedDate(CalendarUtil.getXmlGregorianCalendar(rset.getTimestamp(Columns.get(ColumnEnumType.MODIFIEDDATE))));
+		newCred.setExpiryDate(CalendarUtil.getXmlGregorianCalendar(rset.getTimestamp(Columns.get(ColumnEnumType.EXPIRATIONDATE))));
 
 		
 		return newCred;
@@ -217,7 +218,7 @@ public class ControlFactory extends NameIdFactory {
 		if(controlType != ControlEnumType.UNKNOWN) fields.add(QueryFields.getFieldControlType(controlType));
 		if(controlId > 0L) fields.add(QueryFields.getFieldControlId(controlId));
 		if(controlActionType != ControlActionEnumType.UNKNOWN) fields.add(QueryFields.getFieldControlAction(controlActionType));
-		QueryField referenceIdFilters = new QueryField(SqlDataEnumType.NULL,"referenceid",null);
+		QueryField referenceIdFilters = new QueryField(SqlDataEnumType.NULL,Columns.get(ColumnEnumType.REFERENCEID),null);
 		referenceIdFilters.setComparator(ComparatorEnumType.GROUP_OR);
 		if(!onlyGlobal) referenceIdFilters.getFields().add(QueryFields.getFieldReferenceId(obj.getId()));
 		if(includeGlobal || onlyGlobal) referenceIdFilters.getFields().add(QueryFields.getFieldReferenceId(0L));

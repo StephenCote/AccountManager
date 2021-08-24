@@ -46,6 +46,7 @@ import org.cote.accountmanager.objects.OperationEnumType;
 import org.cote.accountmanager.objects.OperationType;
 import org.cote.accountmanager.objects.ProcessingInstructionType;
 import org.cote.accountmanager.objects.UserType;
+import org.cote.accountmanager.objects.types.ColumnEnumType;
 import org.cote.accountmanager.objects.types.FactoryEnumType;
 import org.cote.accountmanager.objects.types.NameEnumType;
 
@@ -53,7 +54,6 @@ import org.cote.accountmanager.objects.types.NameEnumType;
 
 public class OperationFactory extends NameIdGroupFactory {
 	
-	/// static{ org.cote.accountmanager.data.Factories.registerClass(FactoryEnumType.OPERATION, OperationFactory.class); }
 	public OperationFactory(){
 		super();
 		this.tableNames.add("operation");
@@ -64,19 +64,15 @@ public class OperationFactory extends NameIdGroupFactory {
 	
 	protected void configureTableRestrictions(DataTable table){
 		if(table.getName().equalsIgnoreCase("operation")){
-			/// table.setRestrictSelectColumn("logicalid", true);
+			/// restrict column names
 		}
 	}
-	@Override
-	public<T> void depopulate(T obj) throws FactoryException, ArgumentException
-	{
-		
-	}
+
 	@Override
 	public <T> void populate(T obj) throws FactoryException, ArgumentException
 	{
 		OperationType oper = (OperationType)obj;
-		if(oper.getPopulated()) return;
+		if(oper.getPopulated().booleanValue()) return;
 		oper.setPopulated(true);
 		updateToCache(oper);
 	}
@@ -100,15 +96,14 @@ public class OperationFactory extends NameIdGroupFactory {
 		OperationType obj = (OperationType)object;
 		if (obj.getGroupId().compareTo(0L) == 0) throw new FactoryException("Cannot add new Fact without a group");
 
-		DataRow row = prepareAdd(obj, "operation");
+		DataRow row = prepareAdd(obj, primaryTableName);
 		try{
-			row.setCellValue("operationtype", obj.getOperationType().toString());
-			row.setCellValue("groupid", obj.getGroupId());
-			row.setCellValue("description", obj.getDescription());
-			//row.setCellValue("urn", obj.getUrn());
-			row.setCellValue("score", obj.getScore());
-			row.setCellValue("logicalorder", obj.getLogicalOrder());
-			row.setCellValue("operation", obj.getOperation());
+			row.setCellValue(Columns.get(ColumnEnumType.OPERATIONTYPE), obj.getOperationType().toString());
+			row.setCellValue(Columns.get(ColumnEnumType.GROUPID), obj.getGroupId());
+			row.setCellValue(Columns.get(ColumnEnumType.DESCRIPTION), obj.getDescription());
+			row.setCellValue(Columns.get(ColumnEnumType.SCORE), obj.getScore());
+			row.setCellValue(Columns.get(ColumnEnumType.LOGICALORDER), obj.getLogicalOrder());
+			row.setCellValue(Columns.get(ColumnEnumType.OPERATION), obj.getOperation());
 			
 			if (insertRow(row)) return true;
 		}
@@ -128,12 +123,11 @@ public class OperationFactory extends NameIdGroupFactory {
 		newObj.setNameType(NameEnumType.OPERATION);
 		super.read(rset, newObj);
 		readGroup(rset, newObj);
-		newObj.setOperationType(OperationEnumType.valueOf(rset.getString("operationtype")));
-		//newObj.setUrn(rset.getString("urn"));
-		newObj.setScore(rset.getInt("score"));
-		newObj.setDescription(rset.getString("description"));
-		newObj.setOperation(rset.getString("operation"));
-		newObj.setLogicalOrder(rset.getInt("logicalorder"));
+		newObj.setOperationType(OperationEnumType.valueOf(rset.getString(Columns.get(ColumnEnumType.OPERATIONTYPE))));
+		newObj.setScore(rset.getInt(Columns.get(ColumnEnumType.SCORE)));
+		newObj.setDescription(rset.getString(Columns.get(ColumnEnumType.DESCRIPTION)));
+		newObj.setOperation(rset.getString(Columns.get(ColumnEnumType.OPERATION)));
+		newObj.setLogicalOrder(rset.getInt(Columns.get(ColumnEnumType.LOGICALORDER)));
 		return newObj;
 	}
 	@Override
@@ -148,7 +142,6 @@ public class OperationFactory extends NameIdGroupFactory {
 	@Override
 	public void setFactoryFields(List<QueryField> fields, NameIdType map, ProcessingInstructionType instruction){
 		OperationType useMap = (OperationType)map;
-		//fields.add(QueryFields.getFieldUrn(useMap.getUrn()));
 		fields.add(QueryFields.getFieldScore(useMap.getScore()));
 		fields.add(QueryFields.getFieldOperation(useMap.getOperation()));
 		fields.add(QueryFields.getFieldLogicalOrder(useMap.getLogicalOrder()));
@@ -173,16 +166,7 @@ public class OperationFactory extends NameIdGroupFactory {
 	}
 	public int deleteOperationsByIds(long[] ids, long organizationId) throws FactoryException
 	{
-		int deleted = deleteById(ids, organizationId);
-		if (deleted > 0)
-		{
-			/*
-			Factories.getOperationParticipationFactory().deleteParticipations(ids, organizationId);
-			Factory.DataParticipationFactoryInstance.DeleteParticipations(ids, organizationId);
-			Factory.TagParticipationFactoryInstance.DeleteParticipants(ids, organizationId);
-			*/
-		}
-		return deleted;
+		return deleteById(ids, organizationId);
 	}
 	public int deleteOperationsInGroup(DirectoryGroupType group)  throws FactoryException
 	{
@@ -190,8 +174,6 @@ public class OperationFactory extends NameIdGroupFactory {
 		// Need to get ids so as to delete participations as well
 		//
 		long[] ids = getIdByField(new QueryField[] { QueryFields.getFieldGroup(group.getId()) }, group.getOrganizationId());
-		/// TODO: Delete participations
-		///
 		return deleteOperationsByIds(ids, group.getOrganizationId());
 	}
 	public String getUrnCacheKey(OperationType operation){

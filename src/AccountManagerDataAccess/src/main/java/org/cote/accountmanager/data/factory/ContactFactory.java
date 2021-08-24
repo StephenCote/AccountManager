@@ -41,6 +41,7 @@ import org.cote.accountmanager.objects.NameIdDirectoryGroupType;
 import org.cote.accountmanager.objects.NameIdType;
 import org.cote.accountmanager.objects.ProcessingInstructionType;
 import org.cote.accountmanager.objects.UserType;
+import org.cote.accountmanager.objects.types.ColumnEnumType;
 import org.cote.accountmanager.objects.types.ComparatorEnumType;
 import org.cote.accountmanager.objects.types.ContactEnumType;
 import org.cote.accountmanager.objects.types.FactoryEnumType;
@@ -116,12 +117,12 @@ public class ContactFactory extends NameIdGroupFactory {
 
 
 		try{
-			row.setCellValue("description",obj.getDescription());
-			row.setCellValue("locationtype",obj.getLocationType().toString());
-			row.setCellValue("contacttype",obj.getContactType().toString());
-			row.setCellValue("contactvalue",obj.getContactValue());
-			row.setCellValue("groupid", obj.getGroupId());
-			row.setCellValue("preferred", obj.getPreferred());
+			row.setCellValue(Columns.get(ColumnEnumType.DESCRIPTION),obj.getDescription());
+			row.setCellValue(Columns.get(ColumnEnumType.LOCATIONTYPE),obj.getLocationType().toString());
+			row.setCellValue(Columns.get(ColumnEnumType.CONTACTTYPE),obj.getContactType().toString());
+			row.setCellValue(Columns.get(ColumnEnumType.CONTACTVALUE),obj.getContactValue());
+			row.setCellValue(Columns.get(ColumnEnumType.GROUPID), obj.getGroupId());
+			row.setCellValue(Columns.get(ColumnEnumType.PREFERRED), obj.getPreferred());
 			if(insertRow(row)) return true;
 		}
 		catch(DataAccessException dae){
@@ -140,11 +141,11 @@ public class ContactFactory extends NameIdGroupFactory {
 		newObj.setNameType(NameEnumType.CONTACT);
 		super.read(rset, newObj);
 		readGroup(rset, newObj);
-		newObj.setPreferred(rset.getBoolean("preferred"));
-		newObj.setDescription(rset.getString("description"));
-		newObj.setLocationType(LocationEnumType.valueOf(rset.getString("locationtype")));
-		newObj.setContactType(ContactEnumType.valueOf(rset.getString("contacttype")));
-		newObj.setContactValue(rset.getString("contactvalue"));
+		newObj.setPreferred(rset.getBoolean(Columns.get(ColumnEnumType.PREFERRED)));
+		newObj.setDescription(rset.getString(Columns.get(ColumnEnumType.DESCRIPTION)));
+		newObj.setLocationType(LocationEnumType.valueOf(rset.getString(Columns.get(ColumnEnumType.LOCATIONTYPE))));
+		newObj.setContactType(ContactEnumType.valueOf(rset.getString(Columns.get(ColumnEnumType.CONTACTTYPE))));
+		newObj.setContactValue(rset.getString(Columns.get(ColumnEnumType.CONTACTVALUE)));
 		
 		return newObj;
 	}
@@ -208,7 +209,7 @@ public class ContactFactory extends NameIdGroupFactory {
 		ProcessingInstructionType instruction = null;
 		if(startRecord >= 0 && recordCount >= 0){
 			instruction = new ProcessingInstructionType();
-			instruction.setOrderClause("name ASC");
+			instruction.setOrderClause(Columns.get(ColumnEnumType.NAME) + " ASC");
 			instruction.setPaginate(true);
 			instruction.setStartIndex(startRecord);
 			instruction.setRecordCount(recordCount);
@@ -231,10 +232,10 @@ public class ContactFactory extends NameIdGroupFactory {
 		List<QueryField> filters = new ArrayList<>();
 		QueryField searchFilters = new QueryField(SqlDataEnumType.NULL,"searchgroup",null);
 		searchFilters.setComparator(ComparatorEnumType.GROUP_OR);
-		QueryField nameFilter = new QueryField(SqlDataEnumType.VARCHAR,"name",searchValue);
+		QueryField nameFilter = new QueryField(SqlDataEnumType.VARCHAR,Columns.get(ColumnEnumType.NAME),searchValue);
 		nameFilter.setComparator(ComparatorEnumType.LIKE);
 		searchFilters.getFields().add(nameFilter);
-		QueryField firstNameFilter = new QueryField(SqlDataEnumType.VARCHAR,"firstname",searchValue);
+		QueryField firstNameFilter = new QueryField(SqlDataEnumType.VARCHAR,Columns.get(ColumnEnumType.FIRSTNAME),searchValue);
 		firstNameFilter.setComparator(ComparatorEnumType.LIKE);
 		searchFilters.getFields().add(firstNameFilter);
 		filters.add(searchFilters);

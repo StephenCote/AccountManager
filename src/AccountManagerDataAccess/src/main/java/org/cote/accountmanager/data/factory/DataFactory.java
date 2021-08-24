@@ -54,6 +54,7 @@ import org.cote.accountmanager.objects.DirectoryGroupType;
 import org.cote.accountmanager.objects.NameIdType;
 import org.cote.accountmanager.objects.ProcessingInstructionType;
 import org.cote.accountmanager.objects.UserType;
+import org.cote.accountmanager.objects.types.ColumnEnumType;
 import org.cote.accountmanager.objects.types.ComparatorEnumType;
 import org.cote.accountmanager.objects.types.CompressionEnumType;
 import org.cote.accountmanager.objects.types.FactoryEnumType;
@@ -172,7 +173,7 @@ public class DataFactory extends NameIdFactory {
 	@Override
 	protected void configureTableRestrictions(DataTable table){
 		if(table.getName().equalsIgnoreCase(this.primaryTableName)){
-
+			/// restrict any columns
 		}
 	}
 
@@ -209,7 +210,7 @@ public class DataFactory extends NameIdFactory {
 			for (int c = 0; c < table.getColumnSize(); c++)
 			{
 				DataColumnType column = table.getColumns().get(c);
-				if(column.getColumnName().equals("compressiontype") || column.getColumnName().equals("iscompressed") || column.getColumnName().equals("datastring") || column.getColumnName().equals("datablob")) continue;
+				if(column.getColumnName().equals(Columns.get(ColumnEnumType.COMPRESSIONTYPE)) || column.getColumnName().equals(Columns.get(ColumnEnumType.ISCOMPRESSED)) || column.getColumnName().equals(Columns.get(ColumnEnumType.DATASTRING)) || column.getColumnName().equals(Columns.get(ColumnEnumType.DATABLOB))) continue;
 				
 				if (table.getCanSelectColumn(column.getColumnName()))
 				{
@@ -253,28 +254,28 @@ public class DataFactory extends NameIdFactory {
 		if (newData.getBlob() && newData.getReadDataBytes()) throw new FactoryException("Cannot add blob data whose byte store has been read");
 		if (newData.getGroupId().compareTo(0L) == 0) throw new FactoryException("Cannot add new data without a group");
 
-		DataRow row = prepareAdd(newData, "data");
+		DataRow row = prepareAdd(newData, primaryTableName);
 		try{
-			row.setCellValue("description",newData.getDescription());
-			row.setCellValue("mimetype", newData.getMimeType());
+			row.setCellValue(Columns.get(ColumnEnumType.DESCRIPTION),newData.getDescription());
+			row.setCellValue(Columns.get(ColumnEnumType.MIMETYPE), newData.getMimeType());
 			
-			row.setCellValue("groupid", newData.getGroupId());
+			row.setCellValue(Columns.get(ColumnEnumType.GROUPID), newData.getGroupId());
 
 			
-			row.setCellValue("ispasswordprotected", newData.getPasswordProtected());
-			row.setCellValue("iscompressed",newData.getCompressed());
-			row.setCellValue("compressiontype", newData.getCompressionType().toString());
-			row.setCellValue("dimensions", newData.getDimensions());
-			row.setCellValue("size", newData.getSize());
-			row.setCellValue("rating", newData.getRating());
-			row.setCellValue("ispointer", newData.getPointer());
-			row.setCellValue("hash", newData.getDataHash());
-			row.setCellValue("createddate", newData.getCreatedDate());
-			row.setCellValue("modifieddate", newData.getModifiedDate());
-			row.setCellValue("expirationdate", newData.getExpiryDate());
-			row.setCellValue("isblob", newData.getBlob());
-			if(newData.getBlob()) row.setCellValue("datablob", newData.getDataBytesStore());
-			else row.setCellValue("datastring", newData.getShortData());
+			row.setCellValue(Columns.get(ColumnEnumType.ISPASSWORDPROTECTED), newData.getPasswordProtected());
+			row.setCellValue(Columns.get(ColumnEnumType.ISCOMPRESSED),newData.getCompressed());
+			row.setCellValue(Columns.get(ColumnEnumType.COMPRESSIONTYPE), newData.getCompressionType().toString());
+			row.setCellValue(Columns.get(ColumnEnumType.DIMENSIONS), newData.getDimensions());
+			row.setCellValue(Columns.get(ColumnEnumType.SIZE), newData.getSize());
+			row.setCellValue(Columns.get(ColumnEnumType.RATING), newData.getRating());
+			row.setCellValue(Columns.get(ColumnEnumType.ISPOINTER), newData.getPointer());
+			row.setCellValue(Columns.get(ColumnEnumType.HASH), newData.getDataHash());
+			row.setCellValue(Columns.get(ColumnEnumType.CREATEDDATE), newData.getCreatedDate());
+			row.setCellValue(Columns.get(ColumnEnumType.MODIFIEDDATE), newData.getModifiedDate());
+			row.setCellValue(Columns.get(ColumnEnumType.EXPIRATIONDATE), newData.getExpiryDate());
+			row.setCellValue(Columns.get(ColumnEnumType.ISBLOB), newData.getBlob());
+			if(newData.getBlob().booleanValue()) row.setCellValue(Columns.get(ColumnEnumType.DATABLOB), newData.getDataBytesStore());
+			else row.setCellValue(Columns.get(ColumnEnumType.DATASTRING), newData.getShortData());
 	
 			if (insertRow(row)) return true;
 		}
@@ -377,34 +378,34 @@ public class DataFactory extends NameIdFactory {
 	
 		newData.setDetailsOnly((instruction != null && instruction.getAlternateQuery()));
 		newData.setPopulated(!newData.getDetailsOnly());
-		newData.setMimeType(rset.getString("mimetype"));
+		newData.setMimeType(rset.getString(Columns.get(ColumnEnumType.MIMETYPE)));
 		
-		newData.setPasswordProtected(rset.getBoolean("ispasswordprotected"));
-		newData.setCompressed(rset.getBoolean("iscompressed"));
-		newData.setCompressionType(CompressionEnumType.valueOf(rset.getString("compressiontype")));
-		newData.setDescription(rset.getString("description"));
+		newData.setPasswordProtected(rset.getBoolean(Columns.get(ColumnEnumType.ISPASSWORDPROTECTED)));
+		newData.setCompressed(rset.getBoolean(Columns.get(ColumnEnumType.ISCOMPRESSED)));
+		newData.setCompressionType(CompressionEnumType.valueOf(rset.getString(Columns.get(ColumnEnumType.COMPRESSIONTYPE))));
+		newData.setDescription(rset.getString(Columns.get(ColumnEnumType.DESCRIPTION)));
 		
-		newData.setDimensions(rset.getString("dimensions"));
-		newData.setSize(rset.getInt("size"));
-		newData.setRating(rset.getDouble("rating"));
-		newData.setPointer(rset.getBoolean("ispointer"));
-		newData.setDataHash(rset.getString("hash"));
+		newData.setDimensions(rset.getString(Columns.get(ColumnEnumType.DIMENSIONS)));
+		newData.setSize(rset.getInt(Columns.get(ColumnEnumType.SIZE)));
+		newData.setRating(rset.getDouble(Columns.get(ColumnEnumType.RATING)));
+		newData.setPointer(rset.getBoolean(Columns.get(ColumnEnumType.ISPOINTER)));
+		newData.setDataHash(rset.getString(Columns.get(ColumnEnumType.HASH)));
 
-		newData.setCreatedDate(CalendarUtil.getXmlGregorianCalendar(rset.getTimestamp("createddate")));
+		newData.setCreatedDate(CalendarUtil.getXmlGregorianCalendar(rset.getTimestamp(Columns.get(ColumnEnumType.CREATEDDATE))));
 		
-		newData.setModifiedDate(CalendarUtil.getXmlGregorianCalendar(rset.getTimestamp("modifieddate")));
-		newData.setExpiryDate(CalendarUtil.getXmlGregorianCalendar(rset.getTimestamp("expirationdate")));
+		newData.setModifiedDate(CalendarUtil.getXmlGregorianCalendar(rset.getTimestamp(Columns.get(ColumnEnumType.MODIFIEDDATE))));
+		newData.setExpiryDate(CalendarUtil.getXmlGregorianCalendar(rset.getTimestamp(Columns.get(ColumnEnumType.EXPIRATIONDATE))));
 
-		long groupId = rset.getLong("groupid");
-		newData.setBlob(rset.getBoolean("isblob"));
+		long groupId = rset.getLong(Columns.get(ColumnEnumType.GROUPID));
+		newData.setBlob(rset.getBoolean(Columns.get(ColumnEnumType.ISBLOB)));
 
-		if(!newData.getDetailsOnly()){
-			if(newData.getBlob()){
+		if(!newData.getDetailsOnly().booleanValue()){
+			if(newData.getBlob().booleanValue()){
 				
-				newData.setDataBytesStore(rset.getBytes("datablob"));
+				newData.setDataBytesStore(rset.getBytes(Columns.get(ColumnEnumType.DATABLOB)));
 			}
 			else{
-				newData.setShortData(rset.getString("datastring"));
+				newData.setShortData(rset.getString(Columns.get(ColumnEnumType.DATASTRING)));
 			}
 		}
 		
@@ -422,7 +423,7 @@ public class DataFactory extends NameIdFactory {
 		removeFromCache(data);
 		ProcessingInstructionType instruction = new ProcessingInstructionType();
 		instruction.setAlternateQuery(data.getDetailsOnly());
-		if(!data.getDetailsOnly() && data.getBlob() && data.getReadDataBytes()){
+		if(!data.getDetailsOnly() && data.getBlob() && data.getReadDataBytes().booleanValue()){
 			throw new FactoryException("Cannot update data whose byte store has been read");
 		}
         data.setModifiedDate(CalendarUtil.getXmlGregorianCalendar(new Date()));
@@ -449,7 +450,7 @@ public class DataFactory extends NameIdFactory {
 		if(instruction == null || !instruction.getAlternateQuery()){
 			fields.add(QueryFields.getFieldCompressed(useMap.getCompressed()));
 			fields.add(QueryFields.getFieldCompressionType(useMap.getCompressionType()));
-			if(useMap.getBlob()){
+			if(useMap.getBlob().booleanValue()){
 				fields.add(QueryFields.getFieldDataBlob(useMap.getDataBytesStore()));
 				fields.add(QueryFields.getFieldDataString(null));
 			}
@@ -485,14 +486,14 @@ public class DataFactory extends NameIdFactory {
 	public List<DataType>  getDataList(QueryField[] fields, boolean detailsOnly, long startRecord, int recordCount, long organizationId)  throws FactoryException, ArgumentException
 	{
 		ProcessingInstructionType instruction = new ProcessingInstructionType();
-		instruction.setOrderClause("name ASC");
+		instruction.setOrderClause(Columns.get(ColumnEnumType.NAME)+  " ASC");
 		return getDataList(fields, instruction, detailsOnly, startRecord,recordCount,organizationId);
 	}
 	public List<DataType>  getDataList(QueryField[] fields, ProcessingInstructionType instruction,boolean detailsOnly, long startRecord, int recordCount, long organizationId)  throws FactoryException, ArgumentException
 	{
 		/// If pagination not 
 		///
-		if (instruction != null && startRecord >= 0L && recordCount > 0 && !instruction.getPaginate())
+		if (instruction != null && startRecord >= 0L && recordCount > 0 && !instruction.getPaginate().booleanValue())
 		{
 			instruction.setPaginate(true);
 			instruction.setStartIndex(startRecord);
@@ -520,7 +521,7 @@ public class DataFactory extends NameIdFactory {
 			buff.append(dataIds[i]);
 			if ((i > 0 || dataIds.length == 1) && ((i % BulkFactories.bulkQueryLimit == 0) || i == dataIds.length - 1))
 			{
-				QueryField match = new QueryField(SqlDataEnumType.BIGINT, "id", buff.toString());
+				QueryField match = new QueryField(SqlDataEnumType.BIGINT, Columns.get(ColumnEnumType.ID), buff.toString());
 				match.setComparator(ComparatorEnumType.ANY);
 				List<DataType> tmpDataList = getDataList(new QueryField[] { match }, null, detailsOnly, organizationId);
 				outList.addAll(tmpDataList);

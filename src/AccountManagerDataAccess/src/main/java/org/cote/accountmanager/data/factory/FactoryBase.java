@@ -253,7 +253,7 @@ public abstract class FactoryBase {
 				}
 			}
 
-			String attributeClause = " INNER JOIN Attribute ATR on ATR." + Columns.get(ColumnEnumType.REFERENCEID) + " " + alias + ".id AND ATR." + Columns.get(ColumnEnumType.REFERENCETYPE) + " = '" + factoryType.toString() + "' AND ATR." + Columns.get(ColumnEnumType.ORGANIZATIONID) + " = " + alias + "." + Columns.get(ColumnEnumType.ORGANIZATIONID);
+			String attributeClause = " INNER JOIN Attribute ATR on ATR." + Columns.get(ColumnEnumType.REFERENCEID) + " = " + alias + "." + Columns.get(ColumnEnumType.ID) + " AND ATR." + Columns.get(ColumnEnumType.REFERENCETYPE) + " = '" + factoryType.toString() + "' AND ATR." + Columns.get(ColumnEnumType.ORGANIZATIONID) + " = " + alias + "." + Columns.get(ColumnEnumType.ORGANIZATIONID);
 			String tableClause = " FROM " + tableName + lockHint;
 			table.setSelectFullTemplate(buff.toString() + " #PAGE# " + tableClause);
 			table.setSelectFullAttributeTemplate(aliasBuff.toString() + " #PAGE# FROM " + tableName + " " + alias + " " + lockHint + attributeClause);

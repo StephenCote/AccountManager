@@ -47,6 +47,7 @@ import org.cote.accountmanager.objects.NameIdType;
 import org.cote.accountmanager.objects.OrganizationType;
 import org.cote.accountmanager.objects.ProcessingInstructionType;
 import org.cote.accountmanager.objects.UserType;
+import org.cote.accountmanager.objects.types.ColumnEnumType;
 import org.cote.accountmanager.objects.types.FactoryEnumType;
 import org.cote.accountmanager.objects.types.NameEnumType;
 import org.cote.accountmanager.objects.types.OrganizationEnumType;
@@ -67,8 +68,8 @@ public class OrganizationFactory extends NameIdFactory {
 	
 	@Override
 	protected void configureTableRestrictions(DataTable table){
-		if(table.getName().equalsIgnoreCase("organizations")){
-
+		if(table.getName().equalsIgnoreCase(primaryTableName)){
+			// restrict columns
 		}
 	}
 	
@@ -96,7 +97,6 @@ public class OrganizationFactory extends NameIdFactory {
 			KeyService.deleteKeys(organization.getId());
 			Connection conn = ConnectionFactory.getInstance().getConnection();
 			CONNECTION_TYPE connectionType = DBFactory.getConnectionType(conn);
-			logger.warn("TODO: Refactor this query to better handle tables without organization_id");
 			Statement stat = null;
 			ResultSet rset = null;
 			int delLimit = BulkFactories.bulkBatchSize;
@@ -105,7 +105,6 @@ public class OrganizationFactory extends NameIdFactory {
 			try {
 
 				String buildDeleteQuery = String.format("SELECT '%s DELETE FROM ' || tablename || ' WHERE organizationid = ?%s;' FROM pg_tables where schemaname = 'public' AND NOT tablename = 'audit' AND NOT tablename = 'devtable' AND NOT tablename = 'organizations' AND NOT tablename = 'objectreference' AND NOT tablename = 'objectscore' AND NOT tablename = 'objectdescription' AND NOT tablename = 'objectlocation' AND NOT tablename = 'objectdate'  AND NOT tablename = 'objectorderscore' AND NOT tablename = 'vaultkey';",limit1,limit2);
-				logger.debug(buildDeleteQuery);
 				stat = conn.createStatement();
 				rset = stat.executeQuery(buildDeleteQuery);
 				while(rset.next()){
@@ -113,8 +112,6 @@ public class OrganizationFactory extends NameIdFactory {
 					PreparedStatement pstat = null;
 					try{
 						pstat = conn.prepareStatement(delQuery);
-						
-						logger.debug(delQuery);
 						pstat.setLong(1, organization.getId());
 						int del = pstat.executeUpdate();
 						while(del >= delLimit){
@@ -188,9 +185,9 @@ public class OrganizationFactory extends NameIdFactory {
 
 		OrganizationType newMap = new OrganizationType();
 		newMap.setNameType(NameEnumType.ORGANIZATION);
-		newMap.setLogicalId(rset.getLong("logicalid"));
-		newMap.setReferenceId(rset.getLong("referenceid"));
-		newMap.setOrganizationType(OrganizationEnumType.valueOf(rset.getString("organizationtype")));
+		newMap.setLogicalId(rset.getLong(Columns.get(ColumnEnumType.LOGICALID)));
+		newMap.setReferenceId(rset.getLong(Columns.get(ColumnEnumType.REFERENCEID)));
+		newMap.setOrganizationType(OrganizationEnumType.valueOf(rset.getString(Columns.get(ColumnEnumType.ORGANIZATIONTYPE))));
 		return super.read(rset,  newMap);
 	}
 	public OrganizationType addOrganization(String orgName, OrganizationEnumType orgType, OrganizationType orgParent) throws FactoryException, ArgumentException
@@ -217,9 +214,9 @@ public class OrganizationFactory extends NameIdFactory {
 		OrganizationType newOrg = (OrganizationType)object;
 		DataRow row = prepareAdd(newOrg, "organizations");
 		try{
-			row.setCellValue("organizationtype", newOrg.getOrganizationType().toString());
-			row.setCellValue("logicalid", newOrg.getLogicalId());
-			row.setCellValue("referenceid", newOrg.getReferenceId());
+			row.setCellValue(Columns.get(ColumnEnumType.ORGANIZATIONTYPE), newOrg.getOrganizationType().toString());
+			row.setCellValue(Columns.get(ColumnEnumType.LOGICALID), newOrg.getLogicalId());
+			row.setCellValue(Columns.get(ColumnEnumType.REFERENCEID), newOrg.getReferenceId());
 			if(insertRow(row)){
 				newOrg = getByNameInParent(newOrg.getName(), newOrg.getParentId(),0L);
 				if(KeyService.newOrganizationAsymmetricKey(newOrg.getId(), true) == null){
