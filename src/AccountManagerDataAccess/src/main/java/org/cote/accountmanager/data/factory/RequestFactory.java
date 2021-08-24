@@ -26,6 +26,7 @@ import org.cote.accountmanager.objects.NameIdType;
 import org.cote.accountmanager.objects.ProcessingInstructionType;
 import org.cote.accountmanager.objects.UserType;
 import org.cote.accountmanager.objects.types.ActionEnumType;
+import org.cote.accountmanager.objects.types.ColumnEnumType;
 import org.cote.accountmanager.objects.types.FactoryEnumType;
 import org.cote.accountmanager.objects.types.NameEnumType;
 import org.cote.accountmanager.util.CalendarUtil;
@@ -115,7 +116,6 @@ public class RequestFactory  extends NameIdFactory {
 	public AccessRequestType newAccessRequest(UserType owner, ActionEnumType action, NameIdType requestor, NameIdType delegate, NameIdType targetObject, NameIdType entitlement, long parentId) throws ArgumentException
 	{
 		if (owner == null || owner.getId().compareTo(0L)==0) throw new ArgumentException("Invalid owner");
-		// if(entitlement == null) throw new ArgumentException("Invalid entitlement object");
 		
 		if(entitlement != null) {
 			if(entitlement.getNameType() == NameEnumType.PERMISSION && (targetObject == null || targetObject.getNameType() == NameEnumType.UNKNOWN)) throw new ArgumentException("Invalid target object");
@@ -160,22 +160,22 @@ public class RequestFactory  extends NameIdFactory {
 		AccessRequestType obj = (AccessRequestType)object;
 		DataRow row = prepareAdd(obj, this.primaryTableName);
 		try{
-			row.setCellValue("approvalstatus",obj.getApprovalStatus().toString());
-			row.setCellValue("actiontype",obj.getActionType().toString());
-			row.setCellValue("description", obj.getDescription());
-			row.setCellValue("createddate", obj.getCreatedDate());
-			row.setCellValue("modifieddate", obj.getModifiedDate());
-			row.setCellValue("expirationdate", obj.getExpiryDate());
+			row.setCellValue(Columns.get(ColumnEnumType.APPROVALSTATUS),obj.getApprovalStatus().toString());
+			row.setCellValue(Columns.get(ColumnEnumType.ACTIONTYPE),obj.getActionType().toString());
+			row.setCellValue(Columns.get(ColumnEnumType.DESCRIPTION), obj.getDescription());
+			row.setCellValue(Columns.get(ColumnEnumType.CREATEDDATE), obj.getCreatedDate());
+			row.setCellValue(Columns.get(ColumnEnumType.MODIFIEDDATE), obj.getModifiedDate());
+			row.setCellValue(Columns.get(ColumnEnumType.EXPIRATIONDATE), obj.getExpiryDate());
 
-			row.setCellValue("requestortype",obj.getRequestorType().toString());
-			row.setCellValue("requestorid",obj.getRequestorId());
-			row.setCellValue("delegatetype",obj.getDelegateType().toString());
-			row.setCellValue("delegateid",obj.getDelegateId());
+			row.setCellValue(Columns.get(ColumnEnumType.REQUESTORTYPE),obj.getRequestorType().toString());
+			row.setCellValue(Columns.get(ColumnEnumType.REQUESTORID),obj.getRequestorId());
+			row.setCellValue(Columns.get(ColumnEnumType.DELEGATETYPE),obj.getDelegateType().toString());
+			row.setCellValue(Columns.get(ColumnEnumType.DELEGATEID),obj.getDelegateId());
 
-			row.setCellValue("referencetype",obj.getReferenceType().toString());
-			row.setCellValue("referenceid",obj.getReferenceId());
-			row.setCellValue("entitlementtype",obj.getEntitlementType().toString());
-			row.setCellValue("entitlementid",obj.getEntitlementId());
+			row.setCellValue(Columns.get(ColumnEnumType.REFERENCETYPE),obj.getReferenceType().toString());
+			row.setCellValue(Columns.get(ColumnEnumType.REFERENCEID),obj.getReferenceId());
+			row.setCellValue(Columns.get(ColumnEnumType.ENTITLEMENTTYPE),obj.getEntitlementType().toString());
+			row.setCellValue(Columns.get(ColumnEnumType.ENTITLEMENTID),obj.getEntitlementId());
 		
 			if(insertRow(row)) return true;
 		}
@@ -191,24 +191,24 @@ public class RequestFactory  extends NameIdFactory {
 		AccessRequestType newApr = new AccessRequestType();
 		newApr.setNameType(NameEnumType.REQUEST);
 		super.read(rset, newApr);
-		newApr.setApprovalStatus(ApprovalResponseEnumType.valueOf(rset.getString("approvalstatus")));
-		newApr.setDelegateId(rset.getLong("delegateid"));
-		newApr.setDelegateType(ApproverEnumType.fromValue(rset.getString("delegatetype")));
+		newApr.setApprovalStatus(ApprovalResponseEnumType.valueOf(rset.getString(Columns.get(ColumnEnumType.APPROVALSTATUS))));
+		newApr.setDelegateId(rset.getLong(Columns.get(ColumnEnumType.DELEGATEID)));
+		newApr.setDelegateType(ApproverEnumType.fromValue(rset.getString(Columns.get(ColumnEnumType.DELEGATETYPE))));
 
-		newApr.setRequestorId(rset.getLong("requestorid"));
-		newApr.setRequestorType(ApproverEnumType.fromValue(rset.getString("requestortype")));
+		newApr.setRequestorId(rset.getLong(Columns.get(ColumnEnumType.REQUESTORID)));
+		newApr.setRequestorType(ApproverEnumType.fromValue(rset.getString(Columns.get(ColumnEnumType.REQUESTORTYPE))));
 
-		newApr.setDescription(rset.getString("description"));
+		newApr.setDescription(rset.getString(Columns.get(ColumnEnumType.DESCRIPTION)));
 		
-		newApr.setReferenceId(rset.getLong("referenceid"));
-		newApr.setReferenceType(FactoryEnumType.fromValue(rset.getString("referencetype")));
-		newApr.setActionType(ActionEnumType.fromValue(rset.getString("actiontype")));
-		newApr.setEntitlementId(rset.getLong("entitlementid"));
-		newApr.setEntitlementType(ApproverEnumType.valueOf(rset.getString("entitlementtype")));
+		newApr.setReferenceId(rset.getLong(Columns.get(ColumnEnumType.REFERENCEID)));
+		newApr.setReferenceType(FactoryEnumType.fromValue(rset.getString(Columns.get(ColumnEnumType.REFERENCETYPE))));
+		newApr.setActionType(ActionEnumType.fromValue(rset.getString(Columns.get(ColumnEnumType.ACTIONTYPE))));
+		newApr.setEntitlementId(rset.getLong(Columns.get(ColumnEnumType.ENTITLEMENTID)));
+		newApr.setEntitlementType(ApproverEnumType.valueOf(rset.getString(Columns.get(ColumnEnumType.ENTITLEMENTTYPE))));
 		
-		newApr.setCreatedDate(CalendarUtil.getXmlGregorianCalendar(rset.getTimestamp("createddate")));
-		newApr.setModifiedDate(CalendarUtil.getXmlGregorianCalendar(rset.getTimestamp("modifieddate")));
-		newApr.setExpiryDate(CalendarUtil.getXmlGregorianCalendar(rset.getTimestamp("expirationdate")));
+		newApr.setCreatedDate(CalendarUtil.getXmlGregorianCalendar(rset.getTimestamp(Columns.get(ColumnEnumType.CREATEDDATE))));
+		newApr.setModifiedDate(CalendarUtil.getXmlGregorianCalendar(rset.getTimestamp(Columns.get(ColumnEnumType.MODIFIEDDATE))));
+		newApr.setExpiryDate(CalendarUtil.getXmlGregorianCalendar(rset.getTimestamp(Columns.get(ColumnEnumType.EXPIRATIONDATE))));
 
 		
 		return newApr;
@@ -217,7 +217,7 @@ public class RequestFactory  extends NameIdFactory {
 	@Override
 	public void setFactoryFields(List<QueryField> fields, NameIdType map, ProcessingInstructionType instruction){
 		AccessRequestType useMap = (AccessRequestType)map;
-		/// logger.debug("Set status to " + useMap.getApprovalStatus().toString());
+
 		fields.add(QueryFields.getFieldApprovalStatus(useMap.getApprovalStatus()));
 		fields.add(QueryFields.getFieldRequestorId(useMap.getRequestorId()));
 		fields.add(QueryFields.getFieldRequestorType(useMap.getRequestorType()));
@@ -254,7 +254,7 @@ public class RequestFactory  extends NameIdFactory {
 			fields.add(QueryFields.getFieldRequestorType(ApproverEnumType.valueOf(requestor.getNameType().toString())));
 		}
 		if(delegate != null) {
-			fields.add(QueryFields.getFieldDelegateId(requestor.getId()));
+			fields.add(QueryFields.getFieldDelegateId(delegate.getId()));
 			fields.add(QueryFields.getFieldDelegateType(ApproverEnumType.valueOf(delegate.getNameType().toString())));
 		}
 		if(entitlement != null) {
@@ -272,7 +272,6 @@ public class RequestFactory  extends NameIdFactory {
 		ProcessingInstructionType pi = new ProcessingInstructionType();
 		pi.setPaginate(true);
 		pi.setStartIndex(0L);
-		/// left at (2) for some reason
 		pi.setRecordCount(0);
 		
 		return list(fields.toArray(new QueryField[0]), pi, organizationId);

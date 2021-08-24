@@ -56,6 +56,8 @@ import org.cote.accountmanager.objects.types.UserStatusEnumType;
 
 public class FactoryDefaults {
 	
+	public static final String HOME_OBJECT_NAME = "Home";
+	public static final String ROOT_OBJECT_NAME = "Root";
 	public static final String ROOT_USER_NAME = "Root";
 	public static final String ADMIN_USER_NAME = "Admin";
 	public static final String FEEDBACK_USER_NAME = "FeedbackUser";

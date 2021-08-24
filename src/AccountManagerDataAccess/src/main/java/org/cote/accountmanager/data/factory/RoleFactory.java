@@ -49,6 +49,7 @@ import org.cote.accountmanager.objects.PersonType;
 import org.cote.accountmanager.objects.ProcessingInstructionType;
 import org.cote.accountmanager.objects.UserRoleType;
 import org.cote.accountmanager.objects.UserType;
+import org.cote.accountmanager.objects.types.ColumnEnumType;
 import org.cote.accountmanager.objects.types.ComparatorEnumType;
 import org.cote.accountmanager.objects.types.FactoryEnumType;
 import org.cote.accountmanager.objects.types.NameEnumType;
@@ -87,7 +88,7 @@ public class RoleFactory extends NameIdFactory {
 	public <T> void populate(T obj) throws FactoryException, ArgumentException
 	{
 		BaseRoleType role = (BaseRoleType)obj;
-		if(role.getPopulated()) return;
+		if(role.getPopulated().booleanValue()) return;
 		role.setPopulated(true);
 		updateToCache(role);
 	}
@@ -140,8 +141,8 @@ public class RoleFactory extends NameIdFactory {
 	}
 	@Override
 	protected void configureTableRestrictions(DataTable table){
-		if(table.getName().equalsIgnoreCase("groups")){
-
+		if(table.getName().equalsIgnoreCase(primaryTableName)){
+			/// restrict columns
 		}
 	}
 	protected void addDefaultRoles(long organizationId) throws DataAccessException, FactoryException, ArgumentException
@@ -151,35 +152,35 @@ public class RoleFactory extends NameIdFactory {
 	}
 	public void addDefaultPersonRoles(long organizationId) throws DataAccessException, FactoryException, ArgumentException
 	{
-		UserType admin = Factories.getNameIdFactory(FactoryEnumType.USER).getByName("Admin", organizationId);
+		UserType admin = Factories.getNameIdFactory(FactoryEnumType.USER).getByName(FactoryDefaults.ADMIN_USER_NAME, organizationId);
 		
-		PersonRoleType rootRole = newPersonRole(admin,"Root");
+		PersonRoleType rootRole = newPersonRole(admin,FactoryDefaults.ROOT_OBJECT_NAME);
 		add(rootRole);
-		rootRole = getPersonRoleByName("Root", organizationId);
+		rootRole = getPersonRoleByName(FactoryDefaults.ROOT_OBJECT_NAME, organizationId);
 
-		getCreatePersonRole(admin,"Home", rootRole);
+		getCreatePersonRole(admin,FactoryDefaults.HOME_OBJECT_NAME, rootRole);
 
 	}
 	public void addDefaultAccountRoles(long organizationId) throws DataAccessException, FactoryException, ArgumentException
 	{
-		UserType admin = Factories.getNameIdFactory(FactoryEnumType.USER).getByName("Admin", organizationId);
+		UserType admin = Factories.getNameIdFactory(FactoryEnumType.USER).getByName(FactoryDefaults.ADMIN_USER_NAME, organizationId);
 		
-		AccountRoleType rootRole = newAccountRole(admin,"Root");
+		AccountRoleType rootRole = newAccountRole(admin,FactoryDefaults.ROOT_OBJECT_NAME);
 		add(rootRole);
-		rootRole = getAccountRoleByName("Root", organizationId);
+		rootRole = getAccountRoleByName(FactoryDefaults.ROOT_OBJECT_NAME, organizationId);
 
-		getCreateAccountRole(admin,"Home", rootRole);
+		getCreateAccountRole(admin,FactoryDefaults.HOME_OBJECT_NAME, rootRole);
 
 	}
 	public void addDefaultUserRoles(long organizationId) throws DataAccessException, FactoryException, ArgumentException
 	{
-		UserType admin = Factories.getNameIdFactory(FactoryEnumType.USER).getByName("Admin", organizationId);
+		UserType admin = Factories.getNameIdFactory(FactoryEnumType.USER).getByName(FactoryDefaults.ADMIN_USER_NAME, organizationId);
 		
-		UserRoleType rootRole = newUserRole(admin,"Root");
+		UserRoleType rootRole = newUserRole(admin,FactoryDefaults.ROOT_OBJECT_NAME);
 		add(rootRole);
-		rootRole = getUserRoleByName("Root", organizationId);
+		rootRole = getUserRoleByName(FactoryDefaults.ROOT_OBJECT_NAME, organizationId);
 
-		getCreateUserRole(admin,"Home", rootRole);
+		getCreateUserRole(admin,FactoryDefaults.HOME_OBJECT_NAME, rootRole);
 
 	}
 
@@ -241,10 +242,10 @@ public class RoleFactory extends NameIdFactory {
 	{
 		BaseRoleType newRole = (BaseRoleType)object;
 		if (newRole.getOrganizationId() == null || newRole.getOrganizationId() <= 0 || newRole.getOwnerId() <= 0) throw new FactoryException("Cannot add role to invalid organization, or without an OwnerId");
-		DataRow row = prepareAdd(newRole, "roles");
+		DataRow row = prepareAdd(newRole, primaryTableName);
 		try{
-			row.setCellValue("roletype", newRole.getRoleType().toString());
-			row.setCellValue("referenceid", newRole.getReferenceId());
+			row.setCellValue(Columns.get(ColumnEnumType.ROLETYPE), newRole.getRoleType().toString());
+			row.setCellValue(Columns.get(ColumnEnumType.REFERENCEID), newRole.getReferenceId());
 		}
 		catch(DataAccessException e){
 			throw new FactoryException(e.getMessage());
@@ -254,11 +255,11 @@ public class RoleFactory extends NameIdFactory {
 	
 	
 	public <T> T getRootRole(RoleEnumType type, long organizationId) throws FactoryException, ArgumentException {
-		return getCreateRole(Factories.getAdminUser(organizationId),"Root",type,null,organizationId);
+		return getCreateRole(Factories.getAdminUser(organizationId),FactoryDefaults.ROOT_OBJECT_NAME,type,null,organizationId);
 	}
 	@SuppressWarnings("unchecked")
 	public <T> T getHomeRole(RoleEnumType type, long organizationId) throws FactoryException, ArgumentException {
-		return getCreateRole(Factories.getAdminUser(organizationId),"Home",type,(T)getRootRole(type,organizationId),organizationId);
+		return getCreateRole(Factories.getAdminUser(organizationId),FactoryDefaults.HOME_OBJECT_NAME,type,(T)getRootRole(type,organizationId),organizationId);
 	}
 	@SuppressWarnings("unchecked")
 	public <T> T getUserRole(UserType user,RoleEnumType type, long organizationId) throws FactoryException, ArgumentException {
@@ -286,12 +287,12 @@ public class RoleFactory extends NameIdFactory {
 	
 	public PersonRoleType getRootPersonRoleType(long organizationId)  throws FactoryException, ArgumentException
 	{
-		return getPersonRoleByName("Root", organizationId);
+		return getPersonRoleByName(FactoryDefaults.ROOT_OBJECT_NAME, organizationId);
 	}
 	public PersonRoleType getHomePersonRole(long organizationId) throws FactoryException, ArgumentException
 	{
 
-		return getPersonRoleByName("Home", getRootPersonRoleType(organizationId), organizationId);
+		return getPersonRoleByName(FactoryDefaults.HOME_OBJECT_NAME, getRootPersonRoleType(organizationId), organizationId);
 	}
 	public PersonRoleType getPersonRole(PersonType account)  throws FactoryException, ArgumentException
 	{
@@ -315,12 +316,12 @@ public class RoleFactory extends NameIdFactory {
 	}
 	public AccountRoleType getRootAccountRoleType(long organizationId)  throws FactoryException, ArgumentException
 	{
-		return getAccountRoleByName("Root", organizationId);
+		return getAccountRoleByName(FactoryDefaults.ROOT_OBJECT_NAME, organizationId);
 	}
 	public AccountRoleType getHomeAccountRole(long organizationId) throws FactoryException, ArgumentException
 	{
 
-		return getAccountRoleByName("Home", getRootAccountRoleType(organizationId), organizationId);
+		return getAccountRoleByName(FactoryDefaults.HOME_OBJECT_NAME, getRootAccountRoleType(organizationId), organizationId);
 	}
 	public AccountRoleType getAccountRole(AccountType account)  throws FactoryException, ArgumentException
 	{
@@ -344,12 +345,12 @@ public class RoleFactory extends NameIdFactory {
 	}
 	public UserRoleType getRootUserRoleType(long organizationId)  throws FactoryException, ArgumentException
 	{
-		return getUserRoleByName("Root", organizationId);
+		return getUserRoleByName(FactoryDefaults.ROOT_OBJECT_NAME, organizationId);
 	}
 	public UserRoleType getHomeUserRole(long organizationId) throws FactoryException, ArgumentException
 	{
 
-		return getUserRoleByName("Home", getRootUserRoleType(organizationId), organizationId);
+		return getUserRoleByName(FactoryDefaults.HOME_OBJECT_NAME, getRootUserRoleType(organizationId), organizationId);
 	}
 	public UserRoleType getUserRole(UserType account)  throws FactoryException, ArgumentException
 	{
@@ -589,8 +590,8 @@ public class RoleFactory extends NameIdFactory {
 	@Override
 	protected NameIdType read(ResultSet rset, ProcessingInstructionType instruction) throws SQLException, FactoryException, ArgumentException
 	{
-		BaseRoleType role = newRole(RoleEnumType.valueOf(rset.getString("roletype")));
-		role.setReferenceId(rset.getLong("referenceid"));
+		BaseRoleType role = newRole(RoleEnumType.valueOf(rset.getString(Columns.get(ColumnEnumType.ROLETYPE))));
+		role.setReferenceId(rset.getLong(Columns.get(ColumnEnumType.REFERENCEID)));
 		return super.read(rset, role);
 	}
 	
@@ -622,7 +623,7 @@ public class RoleFactory extends NameIdFactory {
 	public <T> List<T>  getRoleList(QueryField[] fields, long startRecord, int recordCount, long organizationId)  throws FactoryException, ArgumentException
 	{
 		ProcessingInstructionType instruction = new ProcessingInstructionType();
-		instruction.setOrderClause("name ASC");
+		instruction.setOrderClause(Columns.get(ColumnEnumType.NAME) + " ASC");
 		return getRoleList(fields, instruction, startRecord,recordCount,organizationId);
 	}
 	public <T> List<T>  getRoleList(QueryField[] fields, ProcessingInstructionType instruction,long startRecord, int recordCount, long organizationId)  throws FactoryException, ArgumentException
@@ -676,7 +677,7 @@ public class RoleFactory extends NameIdFactory {
 		if(role.getParentId() > 1L){
 			path = getRolePath((BaseRoleType)getRoleById(role.getParentId(),role.getOrganizationId()));
 		}
-		if(role.getParentId().compareTo(0L) == 0 && role.getName().equals("Root")) return "";
+		if(role.getParentId().compareTo(0L) == 0 && role.getName().equals(FactoryDefaults.ROOT_OBJECT_NAME)) return "";
 		path = path + "/" + role.getName();
 		return path;
 	}
@@ -733,7 +734,7 @@ public class RoleFactory extends NameIdFactory {
 				parent = getRootRole(type,  organizationId);
 				continue;
 			}
-			if(seg.equals("Home") && parent != null && parent.getName().equals("Root") && parent.getParentId().compareTo(0L) == 0){
+			if(seg.equals(FactoryDefaults.HOME_OBJECT_NAME) && parent != null && parent.getName().equals(FactoryDefaults.ROOT_OBJECT_NAME) && parent.getParentId().compareTo(0L) == 0){
 				parent = getHomeRole(type, organizationId);
 				continue;
 			}

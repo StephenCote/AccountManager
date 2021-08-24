@@ -54,6 +54,7 @@ import org.cote.accountmanager.objects.PersonType;
 import org.cote.accountmanager.objects.ProcessingInstructionType;
 import org.cote.accountmanager.objects.UserParticipantType;
 import org.cote.accountmanager.objects.UserType;
+import org.cote.accountmanager.objects.types.ColumnEnumType;
 import org.cote.accountmanager.objects.types.ComparatorEnumType;
 import org.cote.accountmanager.objects.types.FactoryEnumType;
 import org.cote.accountmanager.objects.types.NameEnumType;
@@ -93,11 +94,7 @@ public class PersonFactory extends NameIdGroupFactory {
 			/// Nothing to do
 		}
 	}
-	@Override
-	public<T> void depopulate(T obj) throws FactoryException, ArgumentException
-	{
-		/// Nothing to do
-	}
+
 	@Override
 	public <T> void populate(T obj) throws FactoryException, ArgumentException
 	{
@@ -160,20 +157,20 @@ public class PersonFactory extends NameIdGroupFactory {
 
 
 		try{
-			row.setCellValue("birthdate",obj.getBirthDate());
-			row.setCellValue("description",obj.getDescription());
-			row.setCellValue("gender",obj.getGender());
-			row.setCellValue("firstname",obj.getFirstName());
-			row.setCellValue("middlename",obj.getMiddleName());
-			row.setCellValue("lastname",obj.getLastName());
-			row.setCellValue("alias",obj.getAlias());
-			row.setCellValue("prefix",obj.getPrefix());
-			row.setCellValue("suffix",obj.getSuffix());
-			row.setCellValue("title",obj.getTitle());
+			row.setCellValue(Columns.get(ColumnEnumType.BIRTHDATE),obj.getBirthDate());
+			row.setCellValue(Columns.get(ColumnEnumType.DESCRIPTION),obj.getDescription());
+			row.setCellValue(Columns.get(ColumnEnumType.GENDER),obj.getGender());
+			row.setCellValue(Columns.get(ColumnEnumType.FIRSTNAME),obj.getFirstName());
+			row.setCellValue(Columns.get(ColumnEnumType.MIDDLENAME),obj.getMiddleName());
+			row.setCellValue(Columns.get(ColumnEnumType.LASTNAME),obj.getLastName());
+			row.setCellValue(Columns.get(ColumnEnumType.ALIAS),obj.getAlias());
+			row.setCellValue(Columns.get(ColumnEnumType.PREFIX),obj.getPrefix());
+			row.setCellValue(Columns.get(ColumnEnumType.SUFFIX),obj.getSuffix());
+			row.setCellValue(Columns.get(ColumnEnumType.TITLE),obj.getTitle());
 			
-			row.setCellValue("contactinformationid", (obj.getContactInformation() != null ? obj.getContactInformation().getId() : 0));
+			row.setCellValue(Columns.get(ColumnEnumType.CONTACTINFORMATIONID), (obj.getContactInformation() != null ? obj.getContactInformation().getId() : 0));
 			
-			row.setCellValue("groupid", obj.getGroupId());
+			row.setCellValue(Columns.get(ColumnEnumType.GROUPID), obj.getGroupId());
 			
 			if (insertRow(row)){
 				PersonType cobj = (bulkMode ? obj : (PersonType)getByNameInGroup(obj.getName(), obj.getGroupId(),obj.getOrganizationId()));
@@ -192,7 +189,6 @@ public class PersonFactory extends NameIdGroupFactory {
 					if(cobj.getContactInformation() == null){
 						ContactInformationType cinfo = ((ContactInformationFactory)Factories.getFactory(FactoryEnumType.CONTACTINFORMATION)).newContactInformation(cobj);
 						cinfo.setOwnerId(cobj.getOwnerId());
-						logger.debug("Adding cinfo for person in org " + cobj.getOrganizationId());
 						cobj.setContactInformation(cinfo);
 					}
 					
@@ -256,16 +252,16 @@ public class PersonFactory extends NameIdGroupFactory {
 		super.read(rset, newObj);
 		readGroup(rset, newObj);
 	
-		newObj.setBirthDate(CalendarUtil.getXmlGregorianCalendar(rset.getTimestamp("birthdate")));
-		newObj.setDescription(rset.getString("description"));
-		newObj.setFirstName(rset.getString("firstname"));
-		newObj.setGender(rset.getString("gender"));
-		newObj.setMiddleName(rset.getString("middlename"));
-		newObj.setAlias(rset.getString("alias"));
-		newObj.setPrefix(rset.getString("prefix"));
-		newObj.setSuffix(rset.getString("suffix"));
-		newObj.setLastName(rset.getString("lastname"));
-		newObj.setTitle(rset.getString("title"));
+		newObj.setBirthDate(CalendarUtil.getXmlGregorianCalendar(rset.getTimestamp(Columns.get(ColumnEnumType.BIRTHDATE))));
+		newObj.setDescription(rset.getString(Columns.get(ColumnEnumType.DESCRIPTION)));
+		newObj.setFirstName(rset.getString(Columns.get(ColumnEnumType.FIRSTNAME)));
+		newObj.setGender(rset.getString(Columns.get(ColumnEnumType.GENDER)));
+		newObj.setMiddleName(rset.getString(Columns.get(ColumnEnumType.MIDDLENAME)));
+		newObj.setAlias(rset.getString(Columns.get(ColumnEnumType.ALIAS)));
+		newObj.setPrefix(rset.getString(Columns.get(ColumnEnumType.PREFIX)));
+		newObj.setSuffix(rset.getString(Columns.get(ColumnEnumType.SUFFIX)));
+		newObj.setLastName(rset.getString(Columns.get(ColumnEnumType.LASTNAME)));
+		newObj.setTitle(rset.getString(Columns.get(ColumnEnumType.TITLE)));
 		
 		return newObj;
 	}

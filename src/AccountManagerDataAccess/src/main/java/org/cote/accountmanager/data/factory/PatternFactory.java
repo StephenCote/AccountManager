@@ -49,6 +49,7 @@ import org.cote.accountmanager.objects.PatternEnumType;
 import org.cote.accountmanager.objects.PatternType;
 import org.cote.accountmanager.objects.ProcessingInstructionType;
 import org.cote.accountmanager.objects.UserType;
+import org.cote.accountmanager.objects.types.ColumnEnumType;
 import org.cote.accountmanager.objects.types.ComparatorEnumType;
 import org.cote.accountmanager.objects.types.FactoryEnumType;
 import org.cote.accountmanager.objects.types.NameEnumType;
@@ -57,7 +58,6 @@ import org.cote.accountmanager.objects.types.NameEnumType;
 
 public class PatternFactory extends NameIdGroupFactory {
 	
-	/// static{ org.cote.accountmanager.data.Factories.registerClass(FactoryEnumType.PATTERN, PatternFactory.class); }
 	public PatternFactory(){
 		super();
 		this.tableNames.add("pattern");
@@ -67,20 +67,16 @@ public class PatternFactory extends NameIdGroupFactory {
 	}
 	
 	protected void configureTableRestrictions(DataTable table){
-		if(table.getName().equalsIgnoreCase("pattern")){
-			/// table.setRestrictSelectColumn("logicalid", true);
+		if(table.getName().equalsIgnoreCase(primaryTableName)){
+			/// restrict table columns
 		}
 	}
-	@Override
-	public<T> void depopulate(T obj) throws FactoryException, ArgumentException
-	{
-		
-	}
+
 	@Override
 	public <T> void populate(T obj) throws FactoryException, ArgumentException
 	{
 		PatternType pattern = (PatternType)obj;
-		if(pattern.getPopulated()) return;
+		if(pattern.getPopulated().booleanValue()) return;
 		pattern.setFact(null);
 		pattern.setMatch(null);
 		pattern.setOperation(null);
@@ -111,18 +107,17 @@ public class PatternFactory extends NameIdGroupFactory {
 		PatternType obj = (PatternType)object;
 		if (obj.getGroupId().compareTo(0L) == 0) throw new FactoryException("Cannot add new Fact without a group");
 
-		DataRow row = prepareAdd(obj, "pattern");
+		DataRow row = prepareAdd(obj, primaryTableName);
 		try{
-			row.setCellValue("patterntype", obj.getPatternType().toString());
-			row.setCellValue("groupid", obj.getGroupId());
-			row.setCellValue("description", obj.getDescription());
-			//row.setCellValue("urn", obj.getUrn());
-			row.setCellValue("score", obj.getScore());
-			row.setCellValue("facturn", obj.getFactUrn());
-			row.setCellValue("operationurn", obj.getOperationUrn());
-			row.setCellValue("matchurn", obj.getMatchUrn());
-			row.setCellValue("comparator", obj.getComparator().toString());
-			row.setCellValue("logicalorder", obj.getLogicalOrder());
+			row.setCellValue(Columns.get(ColumnEnumType.PATTERNTYPE), obj.getPatternType().toString());
+			row.setCellValue(Columns.get(ColumnEnumType.GROUPID), obj.getGroupId());
+			row.setCellValue(Columns.get(ColumnEnumType.DESCRIPTION), obj.getDescription());
+			row.setCellValue(Columns.get(ColumnEnumType.SCORE), obj.getScore());
+			row.setCellValue(Columns.get(ColumnEnumType.FACTURN), obj.getFactUrn());
+			row.setCellValue(Columns.get(ColumnEnumType.OPERATIONURN), obj.getOperationUrn());
+			row.setCellValue(Columns.get(ColumnEnumType.MATCHURN), obj.getMatchUrn());
+			row.setCellValue(Columns.get(ColumnEnumType.COMPARATOR), obj.getComparator().toString());
+			row.setCellValue(Columns.get(ColumnEnumType.LOGICALORDER), obj.getLogicalOrder());
 			
 			if (insertRow(row)) return true;
 		}
@@ -142,15 +137,14 @@ public class PatternFactory extends NameIdGroupFactory {
 		newObj.setNameType(NameEnumType.PATTERN);
 		super.read(rset, newObj);
 		readGroup(rset, newObj);
-		newObj.setPatternType(PatternEnumType.valueOf(rset.getString("patterntype")));
-		//newObj.setUrn(rset.getString("urn"));
-		newObj.setScore(rset.getInt("score"));
-		newObj.setFactUrn(rset.getString("facturn"));
-		newObj.setOperationUrn(rset.getString("operationurn"));
-		newObj.setMatchUrn(rset.getString("matchurn"));
-		newObj.setComparator(ComparatorEnumType.valueOf(rset.getString("comparator")));
-		newObj.setDescription(rset.getString("description"));
-		newObj.setLogicalOrder(rset.getInt("logicalorder"));
+		newObj.setPatternType(PatternEnumType.valueOf(rset.getString(Columns.get(ColumnEnumType.PATTERNTYPE))));
+		newObj.setScore(rset.getInt(Columns.get(ColumnEnumType.SCORE)));
+		newObj.setFactUrn(rset.getString(Columns.get(ColumnEnumType.FACTURN)));
+		newObj.setOperationUrn(rset.getString(Columns.get(ColumnEnumType.OPERATIONURN)));
+		newObj.setMatchUrn(rset.getString(Columns.get(ColumnEnumType.MATCHURN)));
+		newObj.setComparator(ComparatorEnumType.valueOf(rset.getString(Columns.get(ColumnEnumType.COMPARATOR))));
+		newObj.setDescription(rset.getString(Columns.get(ColumnEnumType.DESCRIPTION)));
+		newObj.setLogicalOrder(rset.getInt(Columns.get(ColumnEnumType.LOGICALORDER)));
 		return newObj;
 	}
 	@Override
@@ -164,7 +158,6 @@ public class PatternFactory extends NameIdGroupFactory {
 	@Override
 	public void setFactoryFields(List<QueryField> fields, NameIdType map, ProcessingInstructionType instruction){
 		PatternType useMap = (PatternType)map;
-		//fields.add(QueryFields.getFieldUrn(useMap.getUrn()));
 		fields.add(QueryFields.getFieldScore(useMap.getScore()));
 		fields.add(QueryFields.getFieldFactUrn(useMap.getFactUrn()));
 		fields.add(QueryFields.getFieldMatchUrn(useMap.getMatchUrn()));
@@ -191,16 +184,7 @@ public class PatternFactory extends NameIdGroupFactory {
 	}
 	public int deletePatternsByIds(long[] ids, long organizationId) throws FactoryException
 	{
-		int deleted = deleteById(ids, organizationId);
-		if (deleted > 0)
-		{
-			/*
-			Factories.getPatternParticipationFactory().deleteParticipations(ids, organizationId);
-			Factory.DataParticipationFactoryInstance.DeleteParticipations(ids, organizationId);
-			Factory.TagParticipationFactoryInstance.DeleteParticipants(ids, organizationId);
-			*/
-		}
-		return deleted;
+		return deleteById(ids, organizationId);
 	}
 	public int deletePatternsInGroup(DirectoryGroupType group)  throws FactoryException
 	{

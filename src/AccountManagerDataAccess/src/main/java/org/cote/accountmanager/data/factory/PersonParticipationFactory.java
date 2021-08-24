@@ -305,7 +305,7 @@ public class PersonParticipationFactory extends ParticipationFactory {
 	}
 	
 	public List<PersonType> getPartnersFromParticipation(PersonType participation) throws ArgumentException{
-		List<PersonType> items = new ArrayList<PersonType>();
+		List<PersonType> items = new ArrayList<>();
 		try{
 			PersonParticipantType[] parts = getPartnerParticipations(participation).toArray(new PersonParticipantType[0]);
 			if(parts.length > 0){
@@ -319,7 +319,7 @@ public class PersonParticipationFactory extends ParticipationFactory {
 		return items;
 	}
 	public List<PersonType> getDependentsFromParticipation(PersonType participation) throws ArgumentException{
-		List<PersonType> items = new ArrayList<PersonType>();
+		List<PersonType> items = new ArrayList<>();
 		try{
 			PersonParticipantType[] parts = getDependentParticipations(participation).toArray(new PersonParticipantType[0]);
 			if(parts.length > 0){
@@ -347,7 +347,7 @@ public class PersonParticipationFactory extends ParticipationFactory {
 		return items;
 	}
 	public List<AccountType> getAccountsFromParticipation(PersonType participation) throws ArgumentException{
-		List<AccountType> items = new ArrayList<AccountType>();
+		List<AccountType> items = new ArrayList<>();
 		try{
 			AccountParticipantType[] parts = getAccountParticipations(participation).toArray(new AccountParticipantType[0]);
 			if(parts.length > 0){
@@ -361,7 +361,7 @@ public class PersonParticipationFactory extends ParticipationFactory {
 		return items;
 	}
 	public List<UserType> getUsersFromParticipation(PersonType participation) throws ArgumentException{
-		List<UserType> items = new ArrayList<UserType>();
+		List<UserType> items = new ArrayList<>();
 		try{
 			UserParticipantType[] parts = getUserParticipations(participation).toArray(new UserParticipantType[0]);
 			if(parts.length > 0){
@@ -397,16 +397,6 @@ public class PersonParticipationFactory extends ParticipationFactory {
 	}	
 	public List<NameIdType> getPersonParticipations(PersonType[] person, ParticipantEnumType participantType) throws FactoryException, ArgumentException
 	{
-		/*
-		if (person.length == 0) return new ArrayList<NameIdType>();
-		OrganizationType org = person[0].getOrganizationId();
-
-		List<QueryField> matches = new ArrayList<>();
-		matches.add(QueryFields.getFieldParticipantType(participantType));
-
-		matches.add(QueryFields.getFieldParticipationIds(person));
-		return getByField(matches.toArray(new QueryField[0]), org.getId());
-		*/
 		return getParticipations(person,participantType);
 	}
 

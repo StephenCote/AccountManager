@@ -69,8 +69,6 @@ import org.cote.accountmanager.util.CalendarUtil;
 public class PolicyFactory extends NameIdGroupFactory {
 	private DatatypeFactory dtFactory = null;
 	
-
-	/// static{ org.cote.accountmanager.data.Factories.registerClass(FactoryEnumType.POLICY, PolicyFactory.class); }
 	public PolicyFactory(){
 		super();
 		this.tableNames.add("policy");
@@ -95,14 +93,10 @@ public class PolicyFactory extends NameIdGroupFactory {
 	
 	protected void configureTableRestrictions(DataTable table){
 		if(table.getName().equalsIgnoreCase("policy")){
-			/// table.setRestrictSelectColumn("logicalid", true);
+			/// restrict columns
 		}
 	}
-	@Override
-	public<T> void depopulate(T obj) throws FactoryException, ArgumentException
-	{
-		
-	}
+
 	@Override
 	public <T> void populate(T obj) throws FactoryException, ArgumentException
 	{
