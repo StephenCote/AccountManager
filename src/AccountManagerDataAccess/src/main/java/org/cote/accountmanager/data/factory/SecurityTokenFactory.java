@@ -121,7 +121,7 @@ public class SecurityTokenFactory extends SpoolFactory {
 	{
 		SecuritySpoolType newToken = newSecurityToken(referenceId, organizationId);
 		newToken.setData(data);
-		if (addSecurityToken(newToken) == false) return null;
+		if (!addSecurityToken(newToken)) return null;
 		return newToken;
 		
 	}
@@ -169,11 +169,11 @@ public class SecurityTokenFactory extends SpoolFactory {
 		if (!isValid(newToken)) throw new FactoryException("Token is invalid");
 		/// Bulk insert note: prepareAdd and insertRow won't add the row to the local table row cache, so it must be added manually
 		///
-		DataRow row = prepareAdd(newToken, "spool");
-		getDataTable("spool").getRows().add(row);
+		DataRow row = prepareAdd(newToken, primaryTableName);
+		getDataTable(primaryTableName).getRows().add(row);
 		boolean ins = insertRow(row);
 		
-		writeSpool(this.primaryTableName);
+		writeSpool(primaryTableName);
 		return ins;
 	}
 	public boolean addSecurityTokens(SecuritySpoolType[] newTokens) throws FactoryException
@@ -184,14 +184,14 @@ public class SecurityTokenFactory extends SpoolFactory {
 			if (!isValid(newTokens[i])) throw new FactoryException("Token is invalid");
 			/// Bulk insert note: prepareAdd and insertRow won't add the row to the local table row cache, so it must be added manually
 			///
-			DataRow row = prepareAdd(newTokens[i], "spool");
-			getDataTable("spool").getRows().add(row);
+			DataRow row = prepareAdd(newTokens[i], primaryTableName);
+			getDataTable(primaryTableName).getRows().add(row);
 			boolean ins = insertRow(row);
 
 			if(!ins) error++;
 		}
 
-		writeSpool("spool");
+		writeSpool(primaryTableName);
 		return (error == 0);
 	}
 	

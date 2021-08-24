@@ -938,6 +938,8 @@
 			<enumeration value="AUDITRESULTDATA"></enumeration>
 			<enumeration value="AUDITRESULTTYPE"></enumeration>
 			<enumeration value="AUDITRETENTIONTYPE"></enumeration>
+			<enumeration value="USERTYPE"></enumeration>
+			<enumeration value="USERSTATUS"></enumeration>
     	</restriction>
     </simpleType>
 </schema>

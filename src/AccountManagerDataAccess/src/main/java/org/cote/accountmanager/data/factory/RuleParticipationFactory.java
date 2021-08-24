@@ -27,7 +27,7 @@ import org.cote.accountmanager.objects.types.FactoryEnumType;
 import org.cote.accountmanager.objects.types.ParticipationEnumType;
 
 public class RuleParticipationFactory extends AuthorizationParticipationFactory {
-	/// static{ org.cote.accountmanager.data.Factories.registerClass(FactoryEnumType.RULEPARTICIPATION, RuleParticipationFactory.class); }
+
 	public RuleParticipationFactory(){
 		super(ParticipationEnumType.RULE, "ruleparticipation");
 		this.haveAffect = true;

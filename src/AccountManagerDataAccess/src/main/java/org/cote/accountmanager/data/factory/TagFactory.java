@@ -50,6 +50,7 @@ import org.cote.accountmanager.objects.PersonTagType;
 import org.cote.accountmanager.objects.ProcessingInstructionType;
 import org.cote.accountmanager.objects.UserTagType;
 import org.cote.accountmanager.objects.UserType;
+import org.cote.accountmanager.objects.types.ColumnEnumType;
 import org.cote.accountmanager.objects.types.FactoryEnumType;
 import org.cote.accountmanager.objects.types.NameEnumType;
 import org.cote.accountmanager.objects.types.ParticipantEnumType;
@@ -70,9 +71,10 @@ public class TagFactory extends NameIdGroupFactory {
 		
 	}
 	
+	@Override
 	protected void configureTableRestrictions(DataTable table){
 		if(table.getName().equalsIgnoreCase(primaryTableName)){
-
+			// column restrictions
 		}
 
 	}
@@ -106,13 +108,13 @@ public class TagFactory extends NameIdGroupFactory {
 	public int deleteTagsByUser(UserType map) throws FactoryException, ArgumentException
 	{
 		List<NameIdType> tags = getByField(new QueryField[] { QueryFields.getFieldOwner(map.getId()) }, map.getOrganizationId());
-		List<Long> tag_ids = new ArrayList<>();
+		List<Long> tagIds = new ArrayList<>();
 		for (int i = 0; i < tags.size(); i++)
 		{
-			tag_ids.add(tags.get(i).getId());
+			tagIds.add(tags.get(i).getId());
 			removeFromCache(tags.get(i));
 		}
-		return deleteTagsByIds(convertLongList(tag_ids), map.getOrganizationId());
+		return deleteTagsByIds(convertLongList(tagIds), map.getOrganizationId());
 	}
 	public int deleteTagsByIds(long[] ids, long organizationId) throws FactoryException
 	{
@@ -124,10 +126,10 @@ public class TagFactory extends NameIdGroupFactory {
 	{
 		BaseTagType newTag = (BaseTagType)object;
 		if (newTag.getOrganizationId() <= 0L) throw new FactoryException("Cannot add tag to invalid organization");
-		DataRow row = prepareAdd(newTag, "tags");
+		DataRow row = prepareAdd(newTag, primaryTableName);
 		try{
-		row.setCellValue("groupid", newTag.getGroupId());
-		row.setCellValue("tagtype", newTag.getTagType().toString());
+			row.setCellValue(Columns.get(ColumnEnumType.GROUPID), newTag.getGroupId());
+			row.setCellValue(Columns.get(ColumnEnumType.TAGTYPE), newTag.getTagType().toString());
 		}
 		catch(DataAccessException e){
 			throw new FactoryException(e.getMessage());
@@ -190,23 +192,6 @@ public class TagFactory extends NameIdGroupFactory {
 		fields.add(QueryFields.getFieldGroup(useMap.getGroupId()));
 		fields.add(QueryFields.getFieldTagType(useMap.getTagType()));
 	}
-	/*
-	public DataTagType newDataTag(UserType owner,String tagName, long groupId) throws ArgumentException{
-		return newTag(owner,tagName, TagEnumType.DATA, groupId);
-	}
-	public AccountTagType newAccountTag(UserType owner,String tagName, long groupId) throws ArgumentException{
-		return newTag(owner,tagName, TagEnumType.ACCOUNT, groupId);
-	}
-	public UserTagType newUserTag(UserType owner,String tagName, long groupId) throws ArgumentException{
-		return newTag(owner,tagName, TagEnumType.USER, groupId);
-	}
-	public UserTagType newPersonTag(UserType owner,String tagName, long groupId) throws ArgumentException{
-		return newTag(owner,tagName, TagEnumType.PERSON, groupId);
-	}
-	public UserTagType newGroupTag(UserType owner,String tagName, long groupId) throws ArgumentException{
-		return newTag(owner,tagName, TagEnumType.GROUP, groupId);
-	}
-	*/
 
 	@SuppressWarnings("unchecked")
 	public <T> T newTag(UserType owner,String tagName, TagEnumType type, long groupId) throws ArgumentException
@@ -252,7 +237,7 @@ public class TagFactory extends NameIdGroupFactory {
 	{
 		BaseTagType newTag = null;
 		try{
-			newTag = newTag(TagEnumType.valueOf(rset.getString("tagtype")));
+			newTag = newTag(TagEnumType.valueOf(rset.getString(Columns.get(ColumnEnumType.TAGTYPE))));
 			super.read(rset, newTag);
 			readGroup(rset,newTag);
 		}

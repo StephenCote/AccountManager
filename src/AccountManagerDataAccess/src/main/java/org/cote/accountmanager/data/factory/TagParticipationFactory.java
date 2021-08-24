@@ -52,6 +52,7 @@ import org.cote.accountmanager.objects.PersonType;
 import org.cote.accountmanager.objects.ProcessingInstructionType;
 import org.cote.accountmanager.objects.UserParticipantType;
 import org.cote.accountmanager.objects.UserType;
+import org.cote.accountmanager.objects.types.ColumnEnumType;
 import org.cote.accountmanager.objects.types.ComparatorEnumType;
 import org.cote.accountmanager.objects.types.FactoryEnumType;
 import org.cote.accountmanager.objects.types.ParticipantEnumType;
@@ -124,9 +125,9 @@ public class TagParticipationFactory extends ParticipationFactory {
 		QueryField field = new QueryField(SqlDataEnumType.BIGINT,"participationid",buff.toString());
 		field.setComparator(ComparatorEnumType.ANY);
 		matches.add(field);
-		instruction.setHavingClause("count(participantid) = " + tags.length);
-		instruction.setGroupClause("participantid");
-		instruction.setOrderClause("participantid");
+		instruction.setHavingClause("count(" + Columns.get(ColumnEnumType.PARTICIPANTID) + ") = " + tags.length);
+		instruction.setGroupClause(Columns.get(ColumnEnumType.PARTICIPANTID));
+		instruction.setOrderClause(Columns.get(ColumnEnumType.PARTICIPANTID));
 
 		// Get a list of participantids 
 		//
@@ -135,7 +136,7 @@ public class TagParticipationFactory extends ParticipationFactory {
 		PreparedStatement statement = null;
 		ResultSet rset = null;
 		try{
-			String sql = assembleQueryString("SELECT participantid FROM " + dataTables.get(0).getName(),matches.toArray(new QueryField[0]),connectionType,instruction,org);
+			String sql = assembleQueryString("SELECT " + Columns.get(ColumnEnumType.PARTICIPANTID) + " FROM " + dataTables.get(0).getName(),matches.toArray(new QueryField[0]),connectionType,instruction,org);
 
 			logger.info("Tag Sql for type " + type.toString() + " and length " + tags.length + ": " + sql);
 			statement = connection.prepareStatement(sql);
@@ -188,8 +189,7 @@ public class TagParticipationFactory extends ParticipationFactory {
 		PreparedStatement statement = null;
 		ResultSet rset = null;
 		try{
-			String sql = String.format("SELECT count(participantid) FROM (SELECT participantid FROM %s WHERE participationid IN (%s) %s AND organizationid = %s GROUP BY participantid HAVING count(*) = %s ORDER BY participantid) as tc",this.primaryTableName,buff.toString(),partType,token,token);
-
+			String sql = String.format("SELECT count(%s) FROM (SELECT %s FROM %s WHERE %s IN (%s) %s AND %s = %s GROUP BY %s HAVING count(*) = %s ORDER BY %s) as tc",Columns.get(ColumnEnumType.PARTICIPANTID), Columns.get(ColumnEnumType.PARTICIPANTID), this.primaryTableName, Columns.get(ColumnEnumType.PARTICIPATIONID), buff.toString(),partType,Columns.get(ColumnEnumType.ORGANIZATIONID),token,Columns.get(ColumnEnumType.PARTICIPANTID),token,Columns.get(ColumnEnumType.PARTICIPANTID));
 			statement = connection.prepareStatement(sql);
 			int paramCount = 1;
 			if(type != ParticipantEnumType.UNKNOWN) statement.setString(paramCount++, type.toString());

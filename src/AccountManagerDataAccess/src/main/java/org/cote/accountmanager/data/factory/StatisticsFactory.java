@@ -41,6 +41,7 @@ import org.cote.accountmanager.objects.NameIdType;
 import org.cote.accountmanager.objects.ProcessingInstructionType;
 import org.cote.accountmanager.objects.StatisticsType;
 import org.cote.accountmanager.objects.UserType;
+import org.cote.accountmanager.objects.types.ColumnEnumType;
 import org.cote.accountmanager.objects.types.FactoryEnumType;
 import org.cote.accountmanager.objects.types.StatisticsEnumType;
 import org.cote.accountmanager.util.CalendarUtil;
@@ -48,27 +49,28 @@ import org.cote.accountmanager.util.CalendarUtil;
 public class StatisticsFactory extends NameIdFactory {
 	
 	
-	/// static{ org.cote.accountmanager.data.Factories.registerClass(FactoryEnumType.STATISTICS, StatisticsFactory.class); }
 	public StatisticsFactory(){
 		super();
 		this.scopeToOrganization = true;
 		this.hasParentId = false;
 		this.hasOwnerId = false;
 		this.hasName = false;
-		this.tableNames.add("statistics");
+		this.primaryTableName = "statistics";
+		this.tableNames.add(primaryTableName);
 		this.factoryType = FactoryEnumType.STATISTICS;
 	}
 	
+	@Override
 	protected void configureTableRestrictions(DataTable table){
-		if(table.getName().equalsIgnoreCase("statistics")){
-			/// table.setRestrictSelectColumn("logicalid", true);
+		if(table.getName().equalsIgnoreCase(primaryTableName)){
+			/// column restrictions
 		}
 	}
 	
 
 	public boolean deleteStatisticsByReferenceType(NameIdType map) throws FactoryException
 	{
-		int deleted = deleteByBigIntField("referenceid",new long[]{map.getId()},map.getOrganizationId());
+		int deleted = deleteByBigIntField(Columns.get(ColumnEnumType.REFERENCEID),new long[]{map.getId()},map.getOrganizationId());
 		return (deleted > 0);
 	}
 	@Override
@@ -88,18 +90,18 @@ public class StatisticsFactory extends NameIdFactory {
 	@Override
 	public <T> boolean add(T object) throws ArgumentException, FactoryException
 	{
-		StatisticsType new_info = (StatisticsType)object;
-		if (new_info.getReferenceId().compareTo(0L) == 0) throw new FactoryException("Cannot add statistics without a corresponding reference id");
-		if (new_info.getOrganizationId() <= 0L) throw new FactoryException("Cannot add statistics to invalid organization");
+		StatisticsType newInfo = (StatisticsType)object;
+		if (newInfo.getReferenceId().compareTo(0L) == 0) throw new FactoryException("Cannot add statistics without a corresponding reference id");
+		if (newInfo.getOrganizationId() <= 0L) throw new FactoryException("Cannot add statistics to invalid organization");
 
-		DataRow row = prepareAdd(new_info, "statistics");
+		DataRow row = prepareAdd(newInfo, primaryTableName);
 		try{
-			row.setCellValue("referenceid",new_info.getReferenceId());
-			row.setCellValue("createddate",new_info.getCreatedDate());
-			row.setCellValue("modifieddate",new_info.getModifiedDate());
-			row.setCellValue("accesseddate",new_info.getAccessedDate());
-			row.setCellValue("expirationdate",new_info.getExpirationDate());
-			row.setCellValue("statisticstype", new_info.getStatisticsType().toString());
+			row.setCellValue(Columns.get(ColumnEnumType.REFERENCEID),newInfo.getReferenceId());
+			row.setCellValue(Columns.get(ColumnEnumType.CREATEDDATE),newInfo.getCreatedDate());
+			row.setCellValue(Columns.get(ColumnEnumType.MODIFIEDDATE),newInfo.getModifiedDate());
+			row.setCellValue(Columns.get(ColumnEnumType.ACCESSEDDATE),newInfo.getAccessedDate());
+			row.setCellValue(Columns.get(ColumnEnumType.EXPIRATIONDATE),newInfo.getExpirationDate());
+			row.setCellValue(Columns.get(ColumnEnumType.STATISTICSTYPE), newInfo.getStatisticsType().toString());
 			if (insertRow(row)) return true;
 		}
 		catch(DataAccessException dae){
@@ -121,14 +123,15 @@ public class StatisticsFactory extends NameIdFactory {
 	{
 		return getStatisticsByReferenceId(map.getId(), StatisticsEnumType.DATA, map.getOrganizationId());
 	}
-	public StatisticsType getStatisticsByReferenceId(long reference_id, StatisticsEnumType type, long organizationId) throws FactoryException, ArgumentException
+	public StatisticsType getStatisticsByReferenceId(long referenceId, StatisticsEnumType type, long organizationId) throws FactoryException, ArgumentException
 	{
-		List<NameIdType> cinfo = getByField(new QueryField[]{QueryFields.getFieldReferenceId(reference_id),QueryFields.getFieldStatisticsType(type)},organizationId);
+		List<NameIdType> cinfo = getByField(new QueryField[]{QueryFields.getFieldReferenceId(referenceId),QueryFields.getFieldStatisticsType(type)},organizationId);
 		if (cinfo.size() > 0) return (StatisticsType)cinfo.get(0);
 		return null;
 	}
 
 	
+	@Override
 	public void setFactoryFields(List<QueryField> fields, NameIdType map, ProcessingInstructionType instruction){
 		StatisticsType useMap = (StatisticsType)map;
 		fields.add(QueryFields.getFieldAccessedDate(useMap.getAccessedDate()));
@@ -165,20 +168,21 @@ public class StatisticsFactory extends NameIdFactory {
 		cinfo.setAccessedDate(cinfo.getCreatedDate());
 		cinfo.setModifiedDate(cinfo.getCreatedDate());
 		cinfo.setExpirationDate(cinfo.getCreatedDate());
-		//cinfo.setOrganization(map.getOrganizationId());
 		cinfo.setOrganizationId(map.getOrganizationId());
 		cinfo.setStatisticsType(type);
 		return cinfo;
 	}
+	
+	@Override
 	protected NameIdType read(ResultSet rset, ProcessingInstructionType instruction) throws SQLException, FactoryException, ArgumentException
 	{
 		StatisticsType cinfo = new StatisticsType();
-		cinfo.setStatisticsType(StatisticsEnumType.valueOf(rset.getString("statisticstype")));
-		cinfo.setCreatedDate(CalendarUtil.getXmlGregorianCalendar(rset.getTimestamp("createddate")));
-		cinfo.setAccessedDate(CalendarUtil.getXmlGregorianCalendar(rset.getTimestamp("accesseddate")));
-		cinfo.setModifiedDate(CalendarUtil.getXmlGregorianCalendar(rset.getTimestamp("modifieddate")));
-		cinfo.setExpirationDate(CalendarUtil.getXmlGregorianCalendar(rset.getTimestamp("expirationdate")));
-		cinfo.setReferenceId(rset.getLong("referenceid"));
+		cinfo.setStatisticsType(StatisticsEnumType.valueOf(rset.getString(Columns.get(ColumnEnumType.STATISTICSTYPE))));
+		cinfo.setCreatedDate(CalendarUtil.getXmlGregorianCalendar(rset.getTimestamp(Columns.get(ColumnEnumType.CREATEDDATE))));
+		cinfo.setAccessedDate(CalendarUtil.getXmlGregorianCalendar(rset.getTimestamp(Columns.get(ColumnEnumType.ACCESSEDDATE))));
+		cinfo.setModifiedDate(CalendarUtil.getXmlGregorianCalendar(rset.getTimestamp(Columns.get(ColumnEnumType.MODIFIEDDATE))));
+		cinfo.setExpirationDate(CalendarUtil.getXmlGregorianCalendar(rset.getTimestamp(Columns.get(ColumnEnumType.EXPIRATIONDATE))));
+		cinfo.setReferenceId(rset.getLong(Columns.get(ColumnEnumType.REFERENCEID)));
 		return super.read(rset, cinfo);
 	}
 

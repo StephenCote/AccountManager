@@ -46,6 +46,7 @@ import org.cote.accountmanager.objects.ProcessingInstructionType;
 import org.cote.accountmanager.objects.StatisticsType;
 import org.cote.accountmanager.objects.UserSessionType;
 import org.cote.accountmanager.objects.UserType;
+import org.cote.accountmanager.objects.types.ColumnEnumType;
 import org.cote.accountmanager.objects.types.ComparatorEnumType;
 import org.cote.accountmanager.objects.types.FactoryEnumType;
 import org.cote.accountmanager.objects.types.NameEnumType;
@@ -78,15 +79,15 @@ public class UserFactory extends NameIdFactory {
 	public <T> void populate(T obj) throws FactoryException, ArgumentException
 	{
 		UserType user = (UserType)obj;
-		if(user.getPopulated() || !user.getDatabaseRecord()) return;
+		if(user.getPopulated().booleanValue() || !user.getDatabaseRecord().booleanValue()) return;
 		user.setContactInformation(((ContactInformationFactory)Factories.getFactory(FactoryEnumType.CONTACTINFORMATION)).getContactInformationForUser(user));
 		user.setHomeDirectory(((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getUserDirectory(user));
 		((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).denormalize(user.getHomeDirectory());
 		user.setStatistics(((StatisticsFactory)Factories.getFactory(FactoryEnumType.STATISTICS)).getStatistics(user));
 		user.setPopulated(true);
 		updateToCache(user);
-		return;
 	}
+	
 	@Override
 	public <T> boolean update(T object) throws FactoryException{
 		UserType user = (UserType)object;
@@ -110,10 +111,10 @@ public class UserFactory extends NameIdFactory {
 		return t.getName() + "-" + t.getAccountId() + "-" + t.getOrganizationId();
 	}
 
-
+	@Override
 	protected void configureTableRestrictions(DataTable table){
 		if(table.getName().equalsIgnoreCase(this.primaryTableName)){
-			table.setRestrictUpdateColumn("userid", true);
+			table.setRestrictUpdateColumn(Columns.get(ColumnEnumType.USERID), true);
 		}
 	}
 	
@@ -136,12 +137,12 @@ public class UserFactory extends NameIdFactory {
 		}
 		return (deleted > 0);
 	}
-	public UserType newUserForAccount(String name, AccountType account) throws FactoryException{
+	public UserType newUserForAccount(String name, AccountType account){
 		UserType user = newUser(name, UserEnumType.NORMAL, UserStatusEnumType.NORMAL, account.getOrganizationId());
 		user.setAccountId(account.getId());
 		return user;
 	}
-	public UserType newUserForAccount(String name, AccountType account, UserEnumType type, UserStatusEnumType status) throws FactoryException{
+	public UserType newUserForAccount(String name, AccountType account, UserEnumType type, UserStatusEnumType status){
 		UserType user = newUser(name, type, status, account.getOrganizationId());
 		user.setAccountId(account.getId());
 		return user;
@@ -189,10 +190,10 @@ public class UserFactory extends NameIdFactory {
 		}
 		DataRow row = prepareAdd(newUser, "users");
 		try{
-			row.setCellValue("userstatus", newUser.getUserStatus().toString());
-			row.setCellValue("usertype", newUser.getUserType().toString());
-			row.setCellValue("accountid", newUser.getAccountId());
-			row.setCellValue("userid",newUser.getUserId());
+			row.setCellValue(Columns.get(ColumnEnumType.USERSTATUS), newUser.getUserStatus().toString());
+			row.setCellValue(Columns.get(ColumnEnumType.USERTYPE), newUser.getUserType().toString());
+			row.setCellValue(Columns.get(ColumnEnumType.ACCOUNTID), newUser.getAccountId());
+			row.setCellValue(Columns.get(ColumnEnumType.USERID),newUser.getUserId());
 			if (insertRow(row)){
 				newUser = (bulkMode ? newUser : getByName(newUser.getName(), newUser.getOrganizationId()));
 				if(newUser == null) throw new FactoryException("Failed to retrieve new user object");
@@ -225,14 +226,14 @@ public class UserFactory extends NameIdFactory {
 					}
 				}
 				else{
-					if(((StatisticsFactory)Factories.getFactory(FactoryEnumType.STATISTICS)).add(stats) == false) throw new FactoryException("Failed to add statistics to new user #" + newUser.getId());
+					if(!((StatisticsFactory)Factories.getFactory(FactoryEnumType.STATISTICS)).add(stats)) throw new FactoryException("Failed to add statistics to new user #" + newUser.getId());
 					stats = ((StatisticsFactory)Factories.getFactory(FactoryEnumType.STATISTICS)).getStatistics(newUser);
 					if(stats == null) throw new FactoryException("Failed to retrieve statistics for user #" + newUser.getId());
-					if(((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).add(homeDir) == false) throw new FactoryException("Failed to add home directory for #" + newUser.getId());
+					if(!((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).add(homeDir)) throw new FactoryException("Failed to add home directory for #" + newUser.getId());
 					if(allotContactInfo){
 						ContactInformationType cinfo = ((ContactInformationFactory)Factories.getFactory(FactoryEnumType.CONTACTINFORMATION)).newContactInformation(newUser);
 						logger.debug("Adding cinfo for user in org " + newUser.getOrganizationId());
-						if(((ContactInformationFactory)Factories.getFactory(FactoryEnumType.CONTACTINFORMATION)).add(cinfo) == false) throw new FactoryException("Failed to assign contact information for user #" + newUser.getId());
+						if(!((ContactInformationFactory)Factories.getFactory(FactoryEnumType.CONTACTINFORMATION)).add(cinfo)) throw new FactoryException("Failed to assign contact information for user #" + newUser.getId());
 						cinfo = ((ContactInformationFactory)Factories.getFactory(FactoryEnumType.CONTACTINFORMATION)).getContactInformationForUser(newUser);
 						if(cinfo == null) throw new FactoryException("Failed to retrieve contact information for user #" + newUser.getId());
 						newUser.setContactInformation(cinfo);
@@ -259,10 +260,10 @@ public class UserFactory extends NameIdFactory {
 		UserType newUser = new UserType();
 		newUser.setDatabaseRecord(true);
 		newUser.setNameType(NameEnumType.USER);
-		newUser.setAccountId(rset.getLong("accountid"));
-		newUser.setUserId(rset.getString("userid"));
-		newUser.setUserStatus(UserStatusEnumType.valueOf(rset.getString("userstatus")));
-		newUser.setUserType(UserEnumType.valueOf(rset.getString("usertype")));
+		newUser.setAccountId(rset.getLong(Columns.get(ColumnEnumType.ACCOUNTID)));
+		newUser.setUserId(rset.getString(Columns.get(ColumnEnumType.USERID)));
+		newUser.setUserStatus(UserStatusEnumType.valueOf(rset.getString(Columns.get(ColumnEnumType.USERSTATUS))));
+		newUser.setUserType(UserEnumType.valueOf(rset.getString(Columns.get(ColumnEnumType.USERTYPE))));
 		return super.read(rset, newUser);
 	}
 	
@@ -277,14 +278,14 @@ public class UserFactory extends NameIdFactory {
 	public List<UserType>  getUserList(QueryField[] fields, long startRecord, int recordCount, long organizationId)  throws FactoryException, ArgumentException
 	{
 		ProcessingInstructionType instruction = new ProcessingInstructionType();
-		instruction.setOrderClause("name ASC");
+		instruction.setOrderClause(Columns.get(ColumnEnumType.NAME) + " ASC");
 		return getUserList(fields, instruction, startRecord,recordCount,organizationId);
 	}
 	public List<UserType>  getUserList(QueryField[] fields, ProcessingInstructionType instruction,long startRecord, int recordCount, long organizationId)  throws FactoryException, ArgumentException
 	{
 		/// If pagination not 
 		///
-		if (instruction != null && startRecord >= 0 && recordCount > 0 && instruction.getPaginate() == false)
+		if (instruction != null && startRecord >= 0 && recordCount > 0 && !instruction.getPaginate().booleanValue())
 		{
 			instruction.setPaginate(true);
 			instruction.setStartIndex(startRecord);

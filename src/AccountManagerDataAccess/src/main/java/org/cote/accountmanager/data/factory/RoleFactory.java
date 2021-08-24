@@ -658,7 +658,7 @@ public class RoleFactory extends NameIdFactory {
 			buff.append(roleIds[i]);
 			if ((i > 0 || roleIds.length == 1) && ((i % BulkFactories.bulkQueryLimit == 0) || i == roleIds.length - 1))
 			{
-				QueryField match = new QueryField(SqlDataEnumType.BIGINT, "id", buff.toString());
+				QueryField match = new QueryField(SqlDataEnumType.BIGINT, Columns.get(ColumnEnumType.ID), buff.toString());
 				match.setComparator(ComparatorEnumType.ANY);
 				List<BaseRoleType> tmpRoleList = getRoleList(new QueryField[] { match }, null, organizationId);
 				outList.addAll(tmpRoleList);
@@ -739,7 +739,7 @@ public class RoleFactory extends NameIdFactory {
 				continue;
 			}
 			if(user != null) per = getCreateRole(user, seg, type, (T)parent, organizationId);
-			else per = getRoleByName(seg, (BaseRoleType)parent, type, organizationId);
+			else per = getRoleByName(seg, parent, type, organizationId);
 			if(per == null) throw new ArgumentException("Failed to find role '" + seg + "' in " + (parent == null ? "Null Parent":parent.getName()) + " from path " + pathBase);
 			parent = (BaseRoleType)per;
 		}

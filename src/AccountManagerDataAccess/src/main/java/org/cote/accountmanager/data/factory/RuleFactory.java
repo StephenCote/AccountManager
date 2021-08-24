@@ -56,6 +56,7 @@ import org.cote.accountmanager.objects.ProcessingInstructionType;
 import org.cote.accountmanager.objects.RuleEnumType;
 import org.cote.accountmanager.objects.RuleType;
 import org.cote.accountmanager.objects.UserType;
+import org.cote.accountmanager.objects.types.ColumnEnumType;
 import org.cote.accountmanager.objects.types.FactoryEnumType;
 import org.cote.accountmanager.objects.types.NameEnumType;
 
@@ -68,21 +69,17 @@ public class RuleFactory extends NameIdGroupFactory {
 		super();
 		this.tableNames.add("rule");
 		this.hasObjectId = true;
-		
+		this.primaryTableName = "rule";
 		this.hasUrn = true;
 		factoryType = FactoryEnumType.RULE;
 	}
 	
 	protected void configureTableRestrictions(DataTable table){
-		if(table.getName().equalsIgnoreCase("rule")){
-			/// table.setRestrictSelectColumn("logicalid", true);
+		if(table.getName().equalsIgnoreCase(primaryTableName)){
+			/// restrict columns
 		}
 	}
-	@Override
-	public<T> void depopulate(T obj) throws FactoryException, ArgumentException
-	{
-		
-	}
+
 	@Override
 	public <T> void populate(T obj) throws FactoryException, ArgumentException
 	{
@@ -116,15 +113,14 @@ public class RuleFactory extends NameIdGroupFactory {
 		RuleType obj = (RuleType)object;
 		if (obj.getGroupId().compareTo(0L) == 0) throw new FactoryException("Cannot add new Fact without a group");
 
-		DataRow row = prepareAdd(obj, "rule");
+		DataRow row = prepareAdd(obj, primaryTableName);
 		try{
-			row.setCellValue("ruletype", obj.getRuleType().toString());
-			row.setCellValue("condition", obj.getCondition().toString());
-			row.setCellValue("groupid", obj.getGroupId());
-			row.setCellValue("description", obj.getDescription());
-			//row.setCellValue("urn", obj.getUrn());
-			row.setCellValue("score", obj.getScore());
-			row.setCellValue("logicalorder", obj.getLogicalOrder());
+			row.setCellValue(Columns.get(ColumnEnumType.RULETYPE), obj.getRuleType().toString());
+			row.setCellValue(Columns.get(ColumnEnumType.CONDITION), obj.getCondition().toString());
+			row.setCellValue(Columns.get(ColumnEnumType.GROUPID), obj.getGroupId());
+			row.setCellValue(Columns.get(ColumnEnumType.DESCRIPTION), obj.getDescription());
+			row.setCellValue(Columns.get(ColumnEnumType.SCORE), obj.getScore());
+			row.setCellValue(Columns.get(ColumnEnumType.LOGICALORDER), obj.getLogicalOrder());
 			if (insertRow(row)){
 				
 				RuleType cobj = (bulkMode ? obj : (RuleType)getByNameInGroup(obj.getName(), obj.getGroupId(),obj.getOrganizationId()));
@@ -161,12 +157,11 @@ public class RuleFactory extends NameIdGroupFactory {
 		newObj.setNameType(NameEnumType.RULE);
 		super.read(rset, newObj);
 		readGroup(rset, newObj);
-		newObj.setRuleType(RuleEnumType.valueOf(rset.getString("ruletype")));
-		newObj.setCondition(ConditionEnumType.valueOf(rset.getString("condition")));
-		//newObj.setUrn(rset.getString("urn"));
-		newObj.setScore(rset.getInt("score"));
-		newObj.setDescription(rset.getString("description"));
-		newObj.setLogicalOrder(rset.getInt("logicalorder"));
+		newObj.setRuleType(RuleEnumType.valueOf(rset.getString(Columns.get(ColumnEnumType.RULETYPE))));
+		newObj.setCondition(ConditionEnumType.valueOf(rset.getString(Columns.get(ColumnEnumType.CONDITION))));
+		newObj.setScore(rset.getInt(Columns.get(ColumnEnumType.SCORE)));
+		newObj.setDescription(rset.getString(Columns.get(ColumnEnumType.DESCRIPTION)));
+		newObj.setLogicalOrder(rset.getInt(Columns.get(ColumnEnumType.LOGICALORDER)));
 		return newObj;
 	}
 	@Override
@@ -218,7 +213,6 @@ public class RuleFactory extends NameIdGroupFactory {
 	@Override
 	public void setFactoryFields(List<QueryField> fields, NameIdType map, ProcessingInstructionType instruction){
 		RuleType useMap = (RuleType)map;
-		//fields.add(QueryFields.getFieldUrn(useMap.getUrn()));
 		fields.add(QueryFields.getFieldScore(useMap.getScore()));
 		fields.add(QueryFields.getFieldLogicalOrder(useMap.getLogicalOrder()));
 		fields.add(QueryFields.getFieldRuleType(useMap.getRuleType()));
@@ -247,11 +241,6 @@ public class RuleFactory extends NameIdGroupFactory {
 		if (deleted > 0)
 		{
 			Factories.getParticipationFactory(FactoryEnumType.RULEPARTICIPATION).deleteParticipations(ids, organizationId);
-			/*
-			Factories.getRuleParticipationFactory().deleteParticipations(ids, organization);
-			Factory.DataParticipationFactoryInstance.DeleteParticipations(ids, organization);
-			Factory.TagParticipationFactoryInstance.DeleteParticipants(ids, organization);
-			*/
 		}
 		return deleted;
 	}

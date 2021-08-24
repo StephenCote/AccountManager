@@ -50,6 +50,7 @@ import org.cote.accountmanager.objects.BaseSpoolType;
 import org.cote.accountmanager.objects.MessageSpoolType;
 import org.cote.accountmanager.objects.ProcessingInstructionType;
 import org.cote.accountmanager.objects.SecuritySpoolType;
+import org.cote.accountmanager.objects.types.ColumnEnumType;
 import org.cote.accountmanager.objects.types.FactoryEnumType;
 import org.cote.accountmanager.objects.types.SpoolBucketEnumType;
 import org.cote.accountmanager.objects.types.SpoolNameEnumType;
@@ -119,30 +120,30 @@ public abstract class SpoolFactory extends FactoryBase {
 		if(table == null) throw new FactoryException("Table doesn't exist:" + tableName);
 		DataRow row = table.newRow();
 		try{
-			row.setCellValue("guid", obj.getGuid());
-			row.setCellValue("parentguid", obj.getParentGuid());
-			row.setCellValue("spoolbucketname", obj.getSpoolBucketName().toString());
-			row.setCellValue("spoolbuckettype",obj.getSpoolBucketType().toString());
-			row.setCellValue("createddate", obj.getCreated());
-			row.setCellValue("expirationdate", obj.getExpiration());
-			row.setCellValue("expires", obj.getExpires());
-			row.setCellValue("name", obj.getName());
-			if(obj.getData() != null) row.setCellValue("spooldata", obj.getData());
-			row.setCellValue("spoolstatus", obj.getSpoolStatus().toString());
-			row.setCellValue("ownerid", obj.getOwnerId());
-			row.setCellValue("groupid", obj.getGroupId());
-			if(scopeToOrganization) row.setCellValue("organizationid", obj.getOrganizationId());
-			row.setCellValue("spoolvaluetype", obj.getValueType().toString());
-			row.setCellValue("credentialid", obj.getCredentialId());
-			row.setCellValue("referenceid", obj.getReferenceId());
-			row.setCellValue("referencetype", obj.getReferenceType().toString());
-			row.setCellValue("recipientid", obj.getRecipientId());
-			row.setCellValue("recipienttype", obj.getRecipientType().toString());
-			row.setCellValue("transportid", obj.getTransportId());
-			row.setCellValue("transporttype", obj.getTransportType().toString());
-			row.setCellValue("currentlevel", obj.getCurrentLevel());
-			row.setCellValue("endlevel", obj.getEndLevel());
-			row.setCellValue("classification", obj.getClassification());
+			row.setCellValue(Columns.get(ColumnEnumType.GUID), obj.getGuid());
+			row.setCellValue(Columns.get(ColumnEnumType.PARENTGUID), obj.getParentGuid());
+			row.setCellValue(Columns.get(ColumnEnumType.SPOOLBUCKETNAME), obj.getSpoolBucketName().toString());
+			row.setCellValue(Columns.get(ColumnEnumType.SPOOLBUCKETTYPE),obj.getSpoolBucketType().toString());
+			row.setCellValue(Columns.get(ColumnEnumType.CREATEDDATE), obj.getCreated());
+			row.setCellValue(Columns.get(ColumnEnumType.EXPIRATIONDATE), obj.getExpiration());
+			row.setCellValue(Columns.get(ColumnEnumType.EXPIRES), obj.getExpires());
+			row.setCellValue(Columns.get(ColumnEnumType.NAME), obj.getName());
+			if(obj.getData() != null) row.setCellValue(Columns.get(ColumnEnumType.SPOOLDATA), obj.getData());
+			row.setCellValue(Columns.get(ColumnEnumType.SPOOLSTATUS), obj.getSpoolStatus().toString());
+			row.setCellValue(Columns.get(ColumnEnumType.OWNERID), obj.getOwnerId());
+			row.setCellValue(Columns.get(ColumnEnumType.GROUPID), obj.getGroupId());
+			if(scopeToOrganization) row.setCellValue(Columns.get(ColumnEnumType.ORGANIZATIONID), obj.getOrganizationId());
+			row.setCellValue(Columns.get(ColumnEnumType.SPOOLVALUETYPE), obj.getValueType().toString());
+			row.setCellValue(Columns.get(ColumnEnumType.CREDENTIALID), obj.getCredentialId());
+			row.setCellValue(Columns.get(ColumnEnumType.REFERENCEID), obj.getReferenceId());
+			row.setCellValue(Columns.get(ColumnEnumType.REFERENCETYPE), obj.getReferenceType().toString());
+			row.setCellValue(Columns.get(ColumnEnumType.RECIPIENTID), obj.getRecipientId());
+			row.setCellValue(Columns.get(ColumnEnumType.RECIPIENTTYPE), obj.getRecipientType().toString());
+			row.setCellValue(Columns.get(ColumnEnumType.TRANSPORTID), obj.getTransportId());
+			row.setCellValue(Columns.get(ColumnEnumType.TRANSPORTTYPE), obj.getTransportType().toString());
+			row.setCellValue(Columns.get(ColumnEnumType.CURRENTLEVEL), obj.getCurrentLevel());
+			row.setCellValue(Columns.get(ColumnEnumType.ENDLEVEL), obj.getEndLevel());
+			row.setCellValue(Columns.get(ColumnEnumType.CLASSIFICATION), obj.getClassification());
 		}
 		catch(DataAccessException dae){
 			throw new FactoryException(dae.getMessage());
@@ -205,31 +206,31 @@ public abstract class SpoolFactory extends FactoryBase {
 
 	protected BaseSpoolType read(ResultSet rset, BaseSpoolType obj) throws SQLException
 	{
-		obj.setGuid(rset.getString("guid"));
-		obj.setParentGuid(rset.getString("parentguid"));
-		obj.setOwnerId(rset.getLong("ownerid"));
-		obj.setOrganizationId(rset.getLong("organizationid"));
-		obj.setGroupId(rset.getLong("groupid"));
+		obj.setGuid(rset.getString(Columns.get(ColumnEnumType.GUID)));
+		obj.setParentGuid(rset.getString(Columns.get(ColumnEnumType.PARENTGUID)));
+		obj.setOwnerId(rset.getLong(Columns.get(ColumnEnumType.OWNERID)));
+		obj.setOrganizationId(rset.getLong(Columns.get(ColumnEnumType.ORGANIZATIONID)));
+		obj.setGroupId(rset.getLong(Columns.get(ColumnEnumType.GROUPID)));
 
-		obj.setSpoolBucketName(SpoolNameEnumType.valueOf(rset.getString("spoolbucketname")));
-		obj.setSpoolBucketType(SpoolBucketEnumType.valueOf(rset.getString("spoolbuckettype")));
-		obj.setValueType(ValueEnumType.valueOf(rset.getString("spoolvaluetype")));
-		obj.setSpoolStatus(SpoolStatusEnumType.valueOf(rset.getString("spoolstatus")));
-		obj.setName(rset.getString("name"));
-		obj.setData(rset.getBytes("spooldata"));
-		obj.setCreated(CalendarUtil.getXmlGregorianCalendar(rset.getTimestamp("createddate")));
-		obj.setExpiration(CalendarUtil.getXmlGregorianCalendar(rset.getTimestamp("expirationdate")));
-		obj.setExpires(rset.getBoolean("expires"));
-		obj.setReferenceId(rset.getLong("referenceid"));
-		obj.setReferenceType(FactoryEnumType.valueOf(rset.getString("referencetype")));
-		obj.setRecipientId(rset.getLong("recipientid"));
-		obj.setRecipientType(FactoryEnumType.valueOf(rset.getString("recipienttype")));
-		obj.setTransportId(rset.getLong("transportid"));
-		obj.setTransportType(FactoryEnumType.valueOf(rset.getString("transporttype")));
-		obj.setCredentialId(rset.getLong("credentialid"));
-		obj.setCurrentLevel(rset.getInt("currentlevel"));
-		obj.setEndLevel(rset.getInt("endlevel"));
-		obj.setClassification(rset.getString("classification"));
+		obj.setSpoolBucketName(SpoolNameEnumType.valueOf(rset.getString(Columns.get(ColumnEnumType.SPOOLBUCKETNAME))));
+		obj.setSpoolBucketType(SpoolBucketEnumType.valueOf(rset.getString(Columns.get(ColumnEnumType.SPOOLBUCKETTYPE))));
+		obj.setValueType(ValueEnumType.valueOf(rset.getString(Columns.get(ColumnEnumType.SPOOLVALUETYPE))));
+		obj.setSpoolStatus(SpoolStatusEnumType.valueOf(rset.getString(Columns.get(ColumnEnumType.SPOOLSTATUS))));
+		obj.setName(rset.getString(Columns.get(ColumnEnumType.NAME)));
+		obj.setData(rset.getBytes(Columns.get(ColumnEnumType.SPOOLDATA)));
+		obj.setCreated(CalendarUtil.getXmlGregorianCalendar(rset.getTimestamp(Columns.get(ColumnEnumType.CREATEDDATE))));
+		obj.setExpiration(CalendarUtil.getXmlGregorianCalendar(rset.getTimestamp(Columns.get(ColumnEnumType.EXPIRATIONDATE))));
+		obj.setExpires(rset.getBoolean(Columns.get(ColumnEnumType.EXPIRES)));
+		obj.setReferenceId(rset.getLong(Columns.get(ColumnEnumType.REFERENCEID)));
+		obj.setReferenceType(FactoryEnumType.valueOf(rset.getString(Columns.get(ColumnEnumType.REFERENCETYPE))));
+		obj.setRecipientId(rset.getLong(Columns.get(ColumnEnumType.RECIPIENTID)));
+		obj.setRecipientType(FactoryEnumType.valueOf(rset.getString(Columns.get(ColumnEnumType.RECIPIENTTYPE))));
+		obj.setTransportId(rset.getLong(Columns.get(ColumnEnumType.TRANSPORTID)));
+		obj.setTransportType(FactoryEnumType.valueOf(rset.getString(Columns.get(ColumnEnumType.TRANSPORTTYPE))));
+		obj.setCredentialId(rset.getLong(Columns.get(ColumnEnumType.CREDENTIALID)));
+		obj.setCurrentLevel(rset.getInt(Columns.get(ColumnEnumType.CURRENTLEVEL)));
+		obj.setEndLevel(rset.getInt(Columns.get(ColumnEnumType.ENDLEVEL)));
+		obj.setClassification(rset.getString(Columns.get(ColumnEnumType.CLASSIFICATION)));
 		
 		return obj;
 	}
@@ -309,7 +310,7 @@ public abstract class SpoolFactory extends FactoryBase {
 	{
 		ProcessingInstructionType instruction = new ProcessingInstructionType();
 
-		instruction.setOrderClause("createddate ASC,name ASC");
+		instruction.setOrderClause(Columns.get(ColumnEnumType.CREATEDDATE) + " ASC," + Columns.get(ColumnEnumType.NAME) + " ASC");
 		instruction.setPaginate(true);
 		instruction.setRecordCount(recordCount);
 		instruction.setStartIndex(startIndex);

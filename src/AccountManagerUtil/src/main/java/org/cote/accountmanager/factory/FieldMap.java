@@ -265,6 +265,8 @@ public class FieldMap {
 		columnMap.put(ColumnEnumType.SEEDLENGTH, "seedlength");
 		columnMap.put(ColumnEnumType.PUBLICKEY, "publickey");
 		columnMap.put(ColumnEnumType.PRIVATEKEY, "privatekey");
+		columnMap.put(ColumnEnumType.USERTYPE, "usertype");
+		columnMap.put(ColumnEnumType.USERSTATUS, "userstatus");
    }
 	   
 	public static final Map<ColumnEnumType,String> Columns = Collections.unmodifiableMap(columnMap);

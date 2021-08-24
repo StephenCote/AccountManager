@@ -48,6 +48,7 @@ import org.cote.accountmanager.data.factory.DataFactory;
 import org.cote.accountmanager.data.factory.DataParticipationFactory;
 import org.cote.accountmanager.data.factory.FactFactory;
 import org.cote.accountmanager.data.factory.FactoryBase;
+import org.cote.accountmanager.data.factory.FactoryDefaults;
 import org.cote.accountmanager.data.factory.FunctionFactFactory;
 import org.cote.accountmanager.data.factory.FunctionFactory;
 import org.cote.accountmanager.data.factory.FunctionParticipationFactory;
@@ -355,7 +356,7 @@ public class Factories {
 	public static UserType getAdminUser(long organizationId){
 		UserType u = null;
 		try {
-			u = Factories.getNameIdFactory(FactoryEnumType.USER).getByName("Admin", organizationId);
+			u = Factories.getNameIdFactory(FactoryEnumType.USER).getByName(FactoryDefaults.ADMIN_USER_NAME, organizationId);
 		} catch (FactoryException | ArgumentException e) {
 			logger.error(e.getMessage());
 			logger.error(e);
@@ -365,7 +366,7 @@ public class Factories {
 	public static UserType getRootUser(){
 		UserType u = null;
 		try {
-			u = Factories.getNameIdFactory(FactoryEnumType.USER).getByName("Root", getSystemOrganization().getId());
+			u = Factories.getNameIdFactory(FactoryEnumType.USER).getByName(FactoryDefaults.ROOT_USER_NAME, getSystemOrganization().getId());
 		} catch (FactoryException | ArgumentException e) {
 			logger.error(e.getMessage());
 			logger.error(e);
@@ -496,7 +497,7 @@ public class Factories {
 
 		if(organizationId > 0L){
 			try{
-				UserType adminUser = Factories.getNameIdFactory(FactoryEnumType.USER).getByName("Admin", organizationId);
+				UserType adminUser = Factories.getNameIdFactory(FactoryEnumType.USER).getByName(FactoryDefaults.ADMIN_USER_NAME, organizationId);
 				if(adminUser != null){
 					outBool = true;
 				}

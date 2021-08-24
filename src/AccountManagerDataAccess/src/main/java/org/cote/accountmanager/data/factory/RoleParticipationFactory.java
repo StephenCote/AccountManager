@@ -61,44 +61,44 @@ public class RoleParticipationFactory extends ParticipationFactory {
 		permissionPrefix = "Role";
 		defaultPermissionType = PermissionEnumType.ROLE;
 	}
-	public boolean deleteRoleRoleParticipant(BaseRoleType role, BaseRoleType child_role) throws FactoryException, ArgumentException
+	public boolean deleteRoleRoleParticipant(BaseRoleType role, BaseRoleType childRole) throws FactoryException, ArgumentException
 	{
-		RoleParticipantType dp = getRoleRoleParticipant(role, child_role);
+		RoleParticipantType dp = getRoleRoleParticipant(role, childRole);
 		if (dp == null) return true;
 		return delete(dp);
 
 	}
-	public boolean deleteRoleParticipations(BaseRoleType child_role) throws FactoryException, ArgumentException
+	public boolean deleteRoleParticipations(BaseRoleType childRole) throws FactoryException, ArgumentException
 	{
 
-		List<RoleParticipantType> dp = getRoleRoleParticipants(child_role);
-		return deleteParticipants(dp.toArray(new RoleParticipantType[0]), child_role.getOrganizationId());
+		List<RoleParticipantType> dp = getRoleRoleParticipants(childRole);
+		return deleteParticipants(dp.toArray(new RoleParticipantType[0]), childRole.getOrganizationId());
 	}
 
-	public RoleParticipantType newRoleRoleParticipation(BaseRoleType role, BaseRoleType child_role) throws ArgumentException
+	public RoleParticipantType newRoleRoleParticipation(BaseRoleType role, BaseRoleType childRole) throws ArgumentException
 	{
-		return (RoleParticipantType)newParticipant(role, child_role, ParticipantEnumType.ROLE, null, AffectEnumType.UNKNOWN);
+		return (RoleParticipantType)newParticipant(role, childRole, ParticipantEnumType.ROLE, null, AffectEnumType.UNKNOWN);
 	}
 	
-	public List<BaseRoleType> getRoleRoles(BaseRoleType child_role)  throws FactoryException, ArgumentException
+	public List<BaseRoleType> getRoleRoles(BaseRoleType childRole)  throws FactoryException, ArgumentException
 	{
-		List<RoleParticipantType> list = getRoleRoleParticipants(child_role);
+		List<RoleParticipantType> list = getRoleRoleParticipants(childRole);
 
-		if (list.isEmpty()) return new ArrayList<BaseRoleType>();
+		if (list.isEmpty()) return new ArrayList<>();
 		QueryField match = QueryFields.getFieldParticipationIds(list.toArray(new RoleParticipantType[0]));
-		return ((RoleFactory)Factories.getFactory(FactoryEnumType.ROLE)).getRoles(match, child_role.getOrganizationId());
+		return ((RoleFactory)Factories.getFactory(FactoryEnumType.ROLE)).getRoles(match, childRole.getOrganizationId());
 	}
 	public List<BaseRoleType> getRolesInRole(BaseRoleType role)  throws FactoryException, ArgumentException
 	{
 		List<RoleParticipantType> ap = getRoleRoleParticipations(role);
 		return getRoleListFromParticipations(ap.toArray(new RoleParticipantType[0]), role.getOrganizationId());
 	}
-	public List<RoleParticipantType> getRoleRoleParticipants(BaseRoleType child_role)  throws FactoryException, ArgumentException
+	public List<RoleParticipantType> getRoleRoleParticipants(BaseRoleType childRole)  throws FactoryException, ArgumentException
 	{
 		List<QueryField> matches = new ArrayList<>();
 		matches.add(QueryFields.getFieldParticipantType(ParticipantEnumType.ROLE));
-		matches.add(QueryFields.getFieldParticipantId(child_role));
-		List<NameIdType> dtlist = getByField(matches.toArray(new QueryField[0]), child_role.getOrganizationId());
+		matches.add(QueryFields.getFieldParticipantId(childRole));
+		List<NameIdType> dtlist = getByField(matches.toArray(new QueryField[0]), childRole.getOrganizationId());
 		return convertList(dtlist);
 	}
 	public List<RoleParticipantType> getRoleRoleParticipations(BaseRoleType role)  throws FactoryException, ArgumentException
@@ -110,16 +110,16 @@ public class RoleParticipationFactory extends ParticipationFactory {
 		return convertList(list);
 	}
 
-	public RoleParticipantType getRoleRoleParticipant(BaseRoleType role, BaseRoleType child_role) throws FactoryException, ArgumentException
+	public RoleParticipantType getRoleRoleParticipant(BaseRoleType role, BaseRoleType childRole) throws FactoryException, ArgumentException
 	{
 
-		List<NameIdType> list = getByField(new QueryField[] { QueryFields.getFieldParticipantId(child_role), QueryFields.getFieldParticipantType(ParticipantEnumType.ROLE), QueryFields.getFieldParticipationId(role) }, role.getOrganizationId());
+		List<NameIdType> list = getByField(new QueryField[] { QueryFields.getFieldParticipantId(childRole), QueryFields.getFieldParticipantType(ParticipantEnumType.ROLE), QueryFields.getFieldParticipationId(role) }, role.getOrganizationId());
 		if (list.isEmpty()) return null;
 		return (RoleParticipantType)list.get(0);
 	}
-	public boolean getIsRoleInRole(BaseRoleType role, BaseRoleType child_role) throws FactoryException, ArgumentException
+	public boolean getIsRoleInRole(BaseRoleType role, BaseRoleType childRole) throws FactoryException, ArgumentException
 	{
-		return (getRoleRoleParticipant(role, child_role) != null);
+		return (getRoleRoleParticipant(role, childRole) != null);
 	}
 
 	// User
