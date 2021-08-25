@@ -23,6 +23,9 @@
  *******************************************************************************/
 package org.cote.accountmanager.util;
 
+import java.io.IOException;
+import java.io.StringWriter;
+import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.PrivateKey;
@@ -37,6 +40,11 @@ import javax.crypto.SecretKey;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.bouncycastle.crypto.params.AsymmetricKeyParameter;
+import org.bouncycastle.crypto.util.PrivateKeyInfoFactory;
+import org.bouncycastle.jcajce.provider.asymmetric.ec.BCECPrivateKey;
+import org.bouncycastle.util.io.pem.PemObject;
+import org.bouncycastle.util.io.pem.PemWriter;
 import org.cote.accountmanager.beans.SecurityBean;
 import org.cote.accountmanager.exceptions.FactoryException;
 import org.cote.accountmanager.factory.SecurityFactory;
@@ -232,12 +240,48 @@ public class SecurityUtil {
 	public static String serializeToXml(SecurityBean bean, boolean includePrivateKey, boolean includePublicKey, boolean includeCipher){
 		StringBuilder buff = new StringBuilder();
 		SecurityFactory sf = SecurityFactory.getSecurityFactory();
+		String spec = bean.getAsymmetricCipherKeySpec();
+
 		buff.append("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n<SecurityManager>");
-		if(includePublicKey){
-			buff.append("<public><key>" + BinaryUtil.toBase64Str(sf.serializePublicKeyToRSAXml(bean)) + "</key></public>");
-		}
-		if(includePrivateKey){
-			buff.append("<private><key>" + BinaryUtil.toBase64Str(sf.serializePrivateKeyToRSAXml(bean)) + "</key></private>");
+		
+		if(spec != null) {
+			if(spec.matches("RSA")) {
+				if(includePublicKey){
+					buff.append("<public><key>" + BinaryUtil.toBase64Str(sf.serializePublicKeyToRSAXml(bean)) + "</key></public>");
+				}
+				if(includePrivateKey){
+					buff.append("<private><key>" + BinaryUtil.toBase64Str(sf.serializePrivateKeyToRSAXml(bean)) + "</key></private>");
+				}
+			}
+			else if(spec.matches("ECDSA")) {
+				if(includePublicKey){
+					try {
+						StringWriter writer = new StringWriter();
+						PemWriter privateKeyWriter = new PemWriter(writer);
+						privateKeyWriter.writeObject(new PemObject("PUBLIC KEY", bean.getPublicKeyBytes()));
+						privateKeyWriter.close();
+						writer.close();
+						buff.append("<public><ec-key>" + BinaryUtil.toBase64Str(writer.toString()) + "</ec-key></public>");
+
+					}
+					catch(IOException e) {
+						logger.error(e);
+					}
+				}
+				if(includePrivateKey){
+					try {
+						StringWriter writer = new StringWriter();
+						PemWriter privateKeyWriter = new PemWriter(writer);
+						privateKeyWriter.writeObject(new PemObject("PRIVATE KEY", bean.getPrivateKeyBytes()));
+						privateKeyWriter.close();
+						writer.close();
+						buff.append("<private><ec-key>" + BinaryUtil.toBase64Str(writer.toString()) + "</ec-key></private>");
+					}
+					catch(IOException e) {
+						logger.error(e);
+					}
+				}
+			}
 		}
 		if(includeCipher){
 			buff.append("<cipher>" + (new String(sf.serializeCipher(bean))) + "</cipher>");

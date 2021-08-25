@@ -76,6 +76,7 @@
 				<attribute name="previousKeyId" type="long"
 					default="0">
 				</attribute>
+				<attribute name="curveName" type="string"></attribute>
 			</extension>
 		</complexContent>
 	</complexType>

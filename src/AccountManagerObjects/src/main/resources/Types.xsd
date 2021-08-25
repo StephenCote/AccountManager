@@ -942,6 +942,7 @@
 			<enumeration value="USERSTATUS"></enumeration>
 			<enumeration value="ENDDATE"></enumeration>
 			<enumeration value="NOTEID"></enumeration>
+			<enumeration value="CURVENAME"></enumeration>
     	</restriction>
     </simpleType>
 </schema>

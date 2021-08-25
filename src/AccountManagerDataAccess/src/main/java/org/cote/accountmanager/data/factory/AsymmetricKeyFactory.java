@@ -76,6 +76,7 @@ public class AsymmetricKeyFactory extends NameIdFactory {
 			table.setRestrictUpdateColumn(Columns.get(ColumnEnumType.OWNERID),true);
 			table.setRestrictUpdateColumn(Columns.get(ColumnEnumType.ORGANIZATIONKEY),true);
 			table.setRestrictUpdateColumn(Columns.get(ColumnEnumType.GLOBALKEY),true);
+			table.setRestrictUpdateColumn(Columns.get(ColumnEnumType.CURVENAME),true);
 
 		}
 	}
@@ -117,6 +118,7 @@ public class AsymmetricKeyFactory extends NameIdFactory {
 			row.setCellValue(Columns.get(ColumnEnumType.SYMMETRICKEYID),obj.getSymmetricKeyId());
 			row.setCellValue(Columns.get(ColumnEnumType.PUBLICKEY),obj.getPublicKeyBytes());
 			row.setCellValue(Columns.get(ColumnEnumType.PRIVATEKEY),obj.getPrivateKeyBytes());
+			row.setCellValue(Columns.get(ColumnEnumType.CURVENAME),obj.getCurveName());
 
 			
 			if(insertRow(row)) return true;
@@ -145,6 +147,7 @@ public class AsymmetricKeyFactory extends NameIdFactory {
 		newCred.setAsymmetricCipherKeySpec(rset.getString(Columns.get(ColumnEnumType.ASYMMETRICCIPHERKEYSPEC)));
 		newCred.setPublicKeyBytes(rset.getBytes(Columns.get(ColumnEnumType.PUBLICKEY)));
 		newCred.setPrivateKeyBytes(rset.getBytes(Columns.get(ColumnEnumType.PRIVATEKEY)));
+		newCred.setCurveName(rset.getString(Columns.get(ColumnEnumType.CURVENAME)));
 		return newCred;
 	}
 	

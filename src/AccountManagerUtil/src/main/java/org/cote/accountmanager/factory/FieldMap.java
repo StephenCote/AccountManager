@@ -269,6 +269,7 @@ public class FieldMap {
 		columnMap.put(ColumnEnumType.USERSTATUS, "userstatus");
 		columnMap.put(ColumnEnumType.ENDDATE, "enddate");
 		columnMap.put(ColumnEnumType.NOTEID, "noteid");
+		columnMap.put(ColumnEnumType.CURVENAME, "curvename");
    }
 	   
 	public static final Map<ColumnEnumType,String> Columns = Collections.unmodifiableMap(columnMap);

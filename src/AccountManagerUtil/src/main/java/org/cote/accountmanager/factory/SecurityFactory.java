@@ -23,7 +23,10 @@
  *******************************************************************************/
 package org.cote.accountmanager.factory;
 
+import java.io.IOException;
+import java.io.StringReader;
 import java.math.BigInteger;
+import java.nio.charset.StandardCharsets;
 import java.security.AlgorithmParameters;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
@@ -31,10 +34,15 @@ import java.security.KeyFactory;
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
 import java.security.NoSuchAlgorithmException;
+import java.security.NoSuchProviderException;
 import java.security.PrivateKey;
 import java.security.PublicKey;
+import java.security.SecureRandom;
 import java.security.Security;
+import java.security.interfaces.ECPrivateKey;
+import java.security.interfaces.ECPublicKey;
 import java.security.interfaces.RSAPrivateKey;
+
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.InvalidParameterSpecException;
 import java.security.spec.KeySpec;
@@ -53,6 +61,18 @@ import javax.crypto.spec.SecretKeySpec;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.bouncycastle.asn1.ASN1ObjectIdentifier;
+import org.bouncycastle.asn1.x9.X962NamedCurves;
+import org.bouncycastle.crypto.AsymmetricCipherKeyPair;
+import org.bouncycastle.crypto.generators.ECKeyPairGenerator;
+import org.bouncycastle.crypto.params.ECDomainParameters;
+import org.bouncycastle.crypto.params.ECKeyGenerationParameters;
+import org.bouncycastle.crypto.params.ECPublicKeyParameters;
+import org.bouncycastle.crypto.util.PublicKeyFactory;
+import org.bouncycastle.jce.ECNamedCurveTable;
+import org.bouncycastle.jce.spec.ECParameterSpec;
+import org.bouncycastle.util.io.pem.PemObject;
+import org.bouncycastle.util.io.pem.PemReader;
 import org.cote.accountmanager.beans.SecurityBean;
 import org.cote.accountmanager.util.BinaryUtil;
 import org.cote.accountmanager.util.SecurityUtil;
@@ -62,12 +82,17 @@ import org.w3c.dom.Document;
 public class SecurityFactory {
 	public static final Logger logger = LogManager.getLogger(SecurityFactory.class);
 
+	/*
+	 * https://github.com/bcgit/bc-java/wiki/Support-for-ECDSA,-ECGOST-Curves
+	 */
+	
 	/// 2017/06/22 - this fixed salt is largely deprecated since 2015/06, but there's still one reference needing removal
 	///
 	private final static byte[] defaultSalt = new byte[]{
 			110,41,-1,-64,-107,14,1,68,-127,-93,-110,-23,-73,-113,-98,-62
 	};
 	private static SecurityFactory securityFactory = null;
+	private static SecureRandom secureRandom = null;
 	public static SecurityFactory getSecurityFactory(){
 		if(securityFactory != null)
 				return securityFactory;
@@ -77,7 +102,7 @@ public class SecurityFactory {
 
 	public SecurityFactory(){
 		Security.addProvider(new org.bouncycastle.jce.provider.BouncyCastleProvider());
-		
+		secureRandom = new SecureRandom();
 	}
 
 	public byte[] serializeCipher(SecurityBean bean){
@@ -149,6 +174,7 @@ public class SecurityFactory {
 		} catch (NoSuchAlgorithmException | InvalidKeySpecException | NoSuchPaddingException | InvalidKeyException | InvalidAlgorithmParameterException | InvalidParameterSpecException e) {
 			logger.error(e.getMessage());
 			logger.error(e);
+			e.printStackTrace();
 		}  
 	}
 	public void setSecretKey(SecurityBean bean, byte[] key, byte[] iv, boolean encryptedCipher){
@@ -212,6 +238,44 @@ public class SecurityFactory {
 		}
 		bean.setPublicKey(pubKey);
 	}
+	public void setECDSAPublicKey(SecurityBean bean, byte[] ecdsaKey) {
+		try {
+			String key = new String(ecdsaKey,StandardCharsets.UTF_8);
+			PemObject spki = new PemReader(new StringReader(key)).readPemObject();
+			if(spki == null) {
+				logger.error("Null Pem object");
+				return;
+			}
+			KeyFactory keyGen = KeyFactory.getInstance(bean.getAsymmetricCipherKeySpec());
+			PublicKey pubK = keyGen.generatePublic(new X509EncodedKeySpec(spki.getContent()));
+        	bean.setPublicKey(pubK);
+        	bean.setPublicKeyBytes(pubK.getEncoded());
+		}
+		catch(NoSuchAlgorithmException | InvalidKeySpecException | IOException e) {
+			logger.error(e.getMessage());
+			e.printStackTrace();
+		}
+	}
+	public void setECDSAPrivateKey(SecurityBean bean, byte[] ecdsaKey) {
+		
+		try {
+			String key = new String(ecdsaKey,StandardCharsets.UTF_8);
+			PemObject spki = new PemReader(new StringReader(key)).readPemObject();
+			if(spki == null) {
+				logger.error("Null Pem object");
+				return;
+			}
+			KeyFactory keyGen = KeyFactory.getInstance(bean.getAsymmetricCipherKeySpec());
+			PrivateKey privK = keyGen.generatePrivate(new PKCS8EncodedKeySpec(spki.getContent()));
+        	bean.setPrivateKey(privK);
+        	bean.setPrivateKeyBytes(privK.getEncoded());
+
+		}
+		catch(NoSuchAlgorithmException | InvalidKeySpecException | IOException e) {
+			logger.error(e.getMessage());
+			e.printStackTrace();
+		}
+	}
 	public void setRSAXMLPublicKey(SecurityBean bean, byte[] rsaKey){
 		bean.setPublicKeyBytes(rsaKey);
 		
@@ -260,9 +324,17 @@ public class SecurityFactory {
 		if(pubKey != null){
 			setRSAXMLPublicKey(bean, BinaryUtil.fromBase64(pubKey.getBytes()));
 		}
+		pubKey = XmlUtil.FindElementText(d.getDocumentElement(), "public", "ec-key");
+		if(pubKey != null){
+			setECDSAPublicKey(bean, BinaryUtil.fromBase64(pubKey.getBytes()));
+		}
 		String priKey = XmlUtil.FindElementText(d.getDocumentElement(), "private", "key");
 		if(priKey != null){
 			setRSAXMLPrivateKey(bean,BinaryUtil.fromBase64(priKey.getBytes()));
+		}
+		priKey = XmlUtil.FindElementText(d.getDocumentElement(), "private", "ec-key");
+		if(priKey != null){
+			setECDSAPrivateKey(bean,BinaryUtil.fromBase64(priKey.getBytes()));
 		}
 		String cipKey = XmlUtil.FindElementText(d.getDocumentElement(), "cipher", "key");
 		String cipIv = XmlUtil.FindElementText(d.getDocumentElement(), "cipher", "iv");
@@ -346,18 +418,25 @@ public class SecurityFactory {
 		boolean ret = false;
 		try{
 	        KeyPairGenerator keyGen = KeyPairGenerator.getInstance(bean.getAsymmetricCipherKeySpec());
-	        keyGen.initialize(bean.getKeySize());
+	        
+	        boolean bECD = bean.getAsymmetricCipherKeySpec().matches("ECDSA");
+	        if(bECD) {
+	        	ECParameterSpec ecSpec = ECNamedCurveTable.getParameterSpec(bean.getCurveName());
+	        	keyGen.initialize(ecSpec, secureRandom);
+	        }
+	        else keyGen.initialize(bean.getKeySize(), secureRandom);
         	KeyPair keyPair = keyGen.generateKeyPair();
         	bean.setPublicKey(keyPair.getPublic());
         	bean.setPrivateKey(keyPair.getPrivate());
 			/* the public key */
 			bean.setPublicKeyBytes(keyPair.getPublic().getEncoded());
 			bean.setPrivateKeyBytes(keyPair.getPrivate().getEncoded());
-
+	        
 			ret = true;
 		}
 		catch(Exception e){
 			logger.error(e);
+			e.printStackTrace();
 		}
 		return ret;
 	}

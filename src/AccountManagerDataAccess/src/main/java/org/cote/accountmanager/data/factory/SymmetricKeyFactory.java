@@ -81,6 +81,7 @@ public class SymmetricKeyFactory extends NameIdFactory {
 			table.setRestrictUpdateColumn(Columns.get(ColumnEnumType.ORGANIZATIONKEY),true);
 			table.setRestrictUpdateColumn(Columns.get(ColumnEnumType.GLOBALKEY),true);
 			table.setRestrictUpdateColumn(Columns.get(ColumnEnumType.ENCRYPTEDKEY), true);
+			table.setRestrictUpdateColumn(Columns.get(ColumnEnumType.CURVENAME), true);
 
 		}
 	}
@@ -121,7 +122,7 @@ public class SymmetricKeyFactory extends NameIdFactory {
 				row.setCellValue(Columns.get(ColumnEnumType.CIPHERIV),obj.getCipherIV());
 			}
 			row.setCellValue(Columns.get(ColumnEnumType.ENCRYPTEDKEY),obj.getEncryptCipherKey());
-
+			row.setCellValue(Columns.get(ColumnEnumType.CURVENAME),obj.getCurveName());
 			
 			if(insertRow(row)) return true;
 		}
@@ -157,7 +158,7 @@ public class SymmetricKeyFactory extends NameIdFactory {
 			newCred.setCipherKey(rset.getBytes(Columns.get(ColumnEnumType.CIPHERKEY)));
 			newCred.setCipherIV(rset.getBytes(Columns.get(ColumnEnumType.CIPHERIV)));
 		}
-
+		newCred.setCurveName(rset.getString(Columns.get(ColumnEnumType.CURVENAME)));
 		return newCred;
 	}
 	

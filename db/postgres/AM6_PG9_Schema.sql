@@ -95,6 +95,7 @@ CREATE TABLE asymmetrickeys (
 	GlobalKey boolean not null default false,
 	PrimaryKey boolean not null default false,
 	PreviousKeyId bigint not null default 0,
+	CurveName varchar(32),
 	PublicKey bytea,
 	PrivateKey bytea,
 	SymmetricKeyId bigint not null default 0
@@ -113,6 +114,7 @@ CREATE TABLE symmetrickeys (
 	PrimaryKey boolean not null default false,
 	EncryptedKey boolean not null default false,
 	PreviousKeyId bigint not null default 0,
+	CurveName varchar(32),
 	CipherKey bytea,
 	CipherIV bytea,
 	AsymmetricKeyId bigint not null default 0

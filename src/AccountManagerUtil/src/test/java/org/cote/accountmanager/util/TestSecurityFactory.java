@@ -26,6 +26,7 @@ package org.cote.accountmanager.util;
 import static org.junit.Assert.assertTrue;
 
 import java.math.BigInteger;
+import java.nio.charset.StandardCharsets;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
@@ -39,6 +40,8 @@ import javax.crypto.spec.IvParameterSpec;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.bouncycastle.jcajce.provider.asymmetric.ec.BCECPrivateKey;
+import org.bouncycastle.util.Arrays;
 import org.cote.accountmanager.beans.SecurityBean;
 import org.cote.accountmanager.exceptions.FactoryException;
 import org.cote.accountmanager.factory.SecurityFactory;
@@ -145,6 +148,33 @@ public class TestSecurityFactory {
 		logger.info(test_data + "='" + enc_str + "'");
 		byte[] dec = SecurityUtil.decipher(bean,enc);
 		logger.info((new String(dec)) + " = '" + enc_str + "'");
+	}
+	
+	@Test
+	public void testECDSAKeyPair() {
+		logger.info("Testing ECDSA");
+		SecurityFactory sf = SecurityFactory.getSecurityFactory();
+		SecurityBean bean = new SecurityBean();
+		//bean.setCipherKeySpec("ECDSA");
+		bean.setAsymmetricCipherKeySpec("ECDSA");
+		bean.setHashProvider("SHA256withECDSA");
+		bean.setCurveName("secp256r1");
+		boolean generated = sf.generateKeyPair(bean);
+		assertTrue("Failed to generate ECDSA Key Pair",generated);
+
+		String serialized = SecurityUtil.serializeToXml(bean, true, true, true);
+		SecurityBean bean2 = new SecurityBean();
+
+		bean2.setAsymmetricCipherKeySpec("ECDSA");
+		bean2.setHashProvider("SHA256withECDSA");
+		bean2.setCurveName("secp256r1");
+		try {
+		sf.importSecurityBean(bean2, serialized.getBytes(StandardCharsets.UTF_8), false);
+		}
+		catch(Exception e) {
+			e.printStackTrace();
+		}
+		assertTrue("Expected keys to match", Arrays.areEqual(bean2.getPublicKeyBytes(), bean.getPublicKeyBytes()));
 	}
 	
 	@Test

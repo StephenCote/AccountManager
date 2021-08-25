@@ -50,31 +50,36 @@
     			</dependencies>
 
   				<configuration>
-  					<skipTests>true</skipTests>
+  					<skipTests>false</skipTests>
 
 
   					<includes>
 						<include>**/Test*.java</include>
 					</includes>
 					<excludes>
-						<!-- NOTE: Most of these tests depend on external data that needs to be staged.  These need to be refactored -->
-						<exclude>**/TestJSON.java</exclude>
-						<exclude>**/TestGraphics.java</exclude>
-						<exclude>**/TestKeyStoreUtil.java</exclude>
-						<exclude>**/TestOpenSSLUtil.java</exclude>
+
 						<!-- 
 						<exclude>**/TestSecurityFactory.java</exclude>
+						-->
+						
 						<exclude>**/TestDataUtil.java</exclude>
 						<exclude>**/TestAMCode.java</exclude>
 						<exclude>**/TestText.java</exclude>
 						<exclude>**/TestWTPAType.java</exclude>
 						<exclude>**/TestDataType.java</exclude>
-						-->
-
+						
+						<!-- NOTE: Most of these tests depend on external data that needs to be staged.  These need to be refactored -->
+						<exclude>**/TestJSON.java</exclude>
+						<exclude>**/TestGraphics.java</exclude>
+						<exclude>**/TestKeyStoreUtil.java</exclude>
+						<exclude>**/TestOpenSSLUtil.java</exclude>
 					</excludes>
-					<systemPropertyVariables>
-      					<log4j.configuration>${project.build.directory}/test-classes/logging.properties</log4j.configuration>
-    				</systemPropertyVariables>
+					<systemProperties>
+						<property>
+							<name>log4j.configurationFile</name>
+							<value>log4j2-AccountManagerUtil.xml</value>
+						</property>
+					</systemProperties>
     			</configuration>
 			</plugin>
 			<plugin>
