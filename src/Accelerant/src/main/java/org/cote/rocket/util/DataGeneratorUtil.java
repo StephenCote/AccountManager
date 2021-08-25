@@ -159,7 +159,7 @@ public class DataGeneratorUtil {
 	
 
     
-	private Random rand = new Random();
+	private static Random rand = new Random();
 	
 
 	private DirectoryGroupType populationDir = null;
@@ -435,7 +435,7 @@ public class DataGeneratorUtil {
 	private List<QueryField> getRandomByGroup(DirectoryGroupType dir){
 		List<QueryField> fields = new ArrayList<>();
 		fields.add(QueryFields.getFieldGroup(dir.getId()));
-		QueryField f = new QueryField(SqlDataEnumType.DOUBLE, "random()",new Double(0.1));
+		QueryField f = new QueryField(SqlDataEnumType.DOUBLE, "random()",Double.valueOf(0.1));
 		f.setComparator(ComparatorEnumType.LESS_THAN);
 		fields.add(f);
 		return fields;
@@ -460,18 +460,17 @@ public class DataGeneratorUtil {
 	}
 
 	private String randomId(String sPref, int iLen){
-		Random r = new Random();
-		String id = sPref.substring(0,1) + TextUtil.padString(Integer.toString((int)(r.nextDouble()*(double)idBase)),iLen);
+
+		String id = sPref.substring(0,1) + TextUtil.padString(Integer.toString((int)(rand.nextDouble()*(double)idBase)),iLen);
 		while(idHash.contains(id)){
-			id = sPref + TextUtil.padString(Integer.toString((int)(r.nextDouble()*(double)idBase)),iLen);
+			id = sPref + TextUtil.padString(Integer.toString((int)(rand.nextDouble()*(double)idBase)),iLen);
 		} 
 		idHash.add(id);
 		return id;
 	}
 
 	public AccountType randomAccount(UserType user, DirectoryGroupType dir) throws FactoryException{
-		Random r = new Random();
-		String sType = DataGeneratorData.ACCOUNT_TYPES[r.nextInt(DataGeneratorData.ACCOUNT_TYPES.length)];
+		String sType = DataGeneratorData.ACCOUNT_TYPES[rand.nextInt(DataGeneratorData.ACCOUNT_TYPES.length)];
 		return ((AccountFactory)Factories.getFactory(FactoryEnumType.ACCOUNT)).newAccount(user, randomId(sType, 6), AccountEnumType.DEVELOPMENT, AccountStatusEnumType.REGISTERED, dir.getId());
 	}
 	
@@ -484,22 +483,20 @@ public class DataGeneratorUtil {
 		TradeType[] trades = getTrades().get("trades");
 		Map<String,String[]> names = getNames();
 		
-		Random r = new Random();
-		
-		long birthEpoch = System.currentTimeMillis() - (YEAR * r.nextInt(75));
+		long birthEpoch = System.currentTimeMillis() - (YEAR * rand.nextInt(75));
 		Date birthDate = new Date(birthEpoch);
 		person.setBirthDate(CalendarUtil.getXmlGregorianCalendar(birthDate));
 		person.setGender(isMale ? "male":"female");
 		
 		String[] firstNames = (isMale ? names.get("male") : names.get("female"));
-		String firstName = firstNames[r.nextInt(firstNames.length)];
-		String middleName = firstNames[r.nextInt(firstNames.length)];
-		String lastName = (preferredLastName != null ? preferredLastName : names.get("common")[r.nextInt(names.get("common").length)]);
+		String firstName = firstNames[rand.nextInt(firstNames.length)];
+		String middleName = firstNames[rand.nextInt(firstNames.length)];
+		String lastName = (preferredLastName != null ? preferredLastName : names.get("common")[rand.nextInt(names.get("common").length)]);
 		String name = firstName + " " + middleName + " " + lastName;
 		while(nameHash.contains(name)){
-			firstName = firstNames[r.nextInt(firstNames.length)];
-			middleName = firstNames[r.nextInt(firstNames.length)];
-			lastName = (preferredLastName != null ? preferredLastName : names.get("common")[r.nextInt(names.get("common").length)]);
+			firstName = firstNames[rand.nextInt(firstNames.length)];
+			middleName = firstNames[rand.nextInt(firstNames.length)];
+			lastName = (preferredLastName != null ? preferredLastName : names.get("common")[rand.nextInt(names.get("common").length)]);
 			name = firstName + " " + middleName + " " + lastName;
 		}
 		
@@ -511,9 +508,9 @@ public class DataGeneratorUtil {
 		AttributeType attr = new AttributeType();
 		attr.setName("trade");
 		attr.setDataType(SqlDataEnumType.VARCHAR);
-		attr.getValues().add(trades[r.nextInt(trades.length)].getName());
+		attr.getValues().add(trades[rand.nextInt(trades.length)].getName());
 		
-		if(Math.random() < .15) attr.getValues().add(trades[r.nextInt(trades.length)].getName());
+		if(Math.random() < .15) attr.getValues().add(trades[rand.nextInt(trades.length)].getName());
 		person.getAttributes().add(attr);
 		
 		AttributeType attr2 = new AttributeType();
@@ -526,7 +523,7 @@ public class DataGeneratorUtil {
 		attr2.getValues().add(alignment.toString());
 		person.getAttributes().add(attr2);
 		
-		String sType = DataGeneratorData.ACCOUNT_TYPES[r.nextInt(DataGeneratorData.ACCOUNT_TYPES.length)];
+		String sType = DataGeneratorData.ACCOUNT_TYPES[rand.nextInt(DataGeneratorData.ACCOUNT_TYPES.length)];
 		person.getAttributes().add(Factories.getAttributeFactory().newAttribute(person, "uid", randomId(sType,6)));
 		
 		nameHash.add(name);
@@ -538,7 +535,7 @@ public class DataGeneratorUtil {
 
 		/// limits the top n depth to these positional values
 		///
-		Random rand = new Random();
+
 		int[] iDepthLimits = new int[]{3, 5, 10, 20};
 		int iDefaultLimit = 7;
 		int iDepth = 0;
@@ -613,8 +610,8 @@ public class DataGeneratorUtil {
 			
 			int len = popCount;
 			if(randomizeSeedPopulation){
-				Random r = new Random();
-				len = r.nextInt(popCount);
+
+				len = rand.nextInt(popCount);
 			}
 			if(len == 0){
 				logger.error("Empty population");
@@ -861,7 +858,7 @@ public class DataGeneratorUtil {
 				logger.error("Expected at least three traits");
 				return root;
 			}
-			Random r = new Random();
+
 			for(int i = 0; i < locations.size();i++){
 				LocationType loc = locations.get(i);
 				String locName = Factories.getAttributeFactory().getAttributeValueByName(loc, "name");
@@ -902,13 +899,13 @@ public class DataGeneratorUtil {
 					event.setName("Construct " + locName);
 					Set<Long> tset = new HashSet<>();
 					for(int e = 0; e < 3; e++){
-						TraitType t = ts.get(r.nextInt(ts.size()));
+						TraitType t = ts.get(rand.nextInt(ts.size()));
 						if(tset.contains(t.getId())) continue;
 						tset.add(t.getId());
 						event.getEntryTraits().add(t);
 					}
 					for(int e = 0; e < 3; e++){
-						TraitType t = ts.get(r.nextInt(ts.size()));
+						TraitType t = ts.get(rand.nextInt(ts.size()));
 						if(tset.contains(t.getId())) continue;
 						tset.add(t.getId());
 						event.getExitTraits().add(t);

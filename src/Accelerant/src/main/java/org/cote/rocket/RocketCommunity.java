@@ -136,9 +136,10 @@ public class RocketCommunity implements ICommunityProvider {
 	private static final  CSVFormat csvFileFormat = CSVFormat.DEFAULT.withDelimiter('\t').withAllowMissingColumnNames(true).withQuote(null);
 	private boolean randomizeSeedPopulation = false;
 	private boolean organizePersonManagement = false;
-	
+	private Random localRandom = null;
 	public RocketCommunity(){
 		/// Public init
+		localRandom = new Random();
 	}
 	
 	public boolean isOrganizePersonManagement() {
@@ -163,10 +164,6 @@ public class RocketCommunity implements ICommunityProvider {
 	
 	public boolean addProjectArtifacts(UserType user, AuditEnumType auditType, String objectId){
 		boolean outBool = false;
-		/// TODO: Add AuthZ check
-		/// And refactor the API to avoid the duplication here
-		///
-		logger.warn("**** Refactor warning: Authorization check not yet in place");
 		try{
 			if(auditType == AuditEnumType.LIFECYCLE){
 				LifecycleType lc = BaseService.readByObjectId(auditType, objectId, user);
@@ -194,6 +191,8 @@ public class RocketCommunity implements ICommunityProvider {
 		AuditType audit = AuditService.beginAudit(ActionEnumType.ADD, LOCATION_FEATURES,AuditEnumType.USER, user.getUrn());
 		AuditService.targetAudit(audit, auditType, objectId);
 		NameIdDirectoryGroupType obj = null;
+		BufferedReader bir = null;
+		CSVParser csvFileParser = null;
 		try {
 			obj = ((INameIdFactory)Factories.getFactory(FactoryEnumType.valueOf(auditType.toString()))).getByObjectId(objectId, user.getOrganizationId());
 			if(obj == null){
@@ -218,8 +217,8 @@ public class RocketCommunity implements ICommunityProvider {
 			String path = locationPath + featuresFileName;
 			logger.info("Loading traits from " + path + " into " + locDir.getUrn());
 
-			BufferedReader bir = new BufferedReader(new InputStreamReader(new FileInputStream(path),StandardCharsets.UTF_8));
-			CSVParser csvFileParser = new CSVParser(bir, csvFileFormat);
+			bir = new BufferedReader(new InputStreamReader(new FileInputStream(path),StandardCharsets.UTF_8));
+			csvFileParser = new CSVParser(bir, csvFileFormat);
 			String sessionId = BulkFactories.getBulkFactory().newBulkSession();
 
 			for(CSVRecord record : csvFileParser){
@@ -231,7 +230,7 @@ public class RocketCommunity implements ICommunityProvider {
 				BulkFactories.getBulkFactory().createBulkEntry(sessionId, FactoryEnumType.TRAIT, trait);
 			}
 			csvFileParser.close();
-			bir.close();
+
 			BulkFactories.getBulkFactory().write(sessionId);
 			BulkFactories.getBulkFactory().close(sessionId);
 			
@@ -241,6 +240,14 @@ public class RocketCommunity implements ICommunityProvider {
 		} catch (FactoryException | ArgumentException | DataAccessException | IOException e) {
 			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 			AuditService.denyResult(audit, String.format(FactoryException.LOGICAL_EXCEPTION_MSG, e.getMessage()));
+		}
+		finally {
+			try {
+				if(csvFileParser != null) csvFileParser.close();
+				if(bir != null) bir.close();
+			} catch (IOException e) {
+				logger.error(e);
+			}
 		}
 		
 
@@ -252,6 +259,8 @@ public class RocketCommunity implements ICommunityProvider {
 		AuditType audit = AuditService.beginAudit(ActionEnumType.ADD, LOCATION_FEATURES,AuditEnumType.USER, user.getUrn());
 		AuditService.targetAudit(audit, AuditEnumType.LOCATION, objectId);
 		NameIdDirectoryGroupType obj = null;
+		BufferedReader bir = null;
+		CSVParser csvFileParser = null;
 		try {
 			obj = ((LifecycleFactory)Factories.getFactory(FactoryEnumType.valueOf(auditType.toString()))).getByObjectId(objectId, user.getOrganizationId());
 			if(obj == null){
@@ -276,8 +285,8 @@ public class RocketCommunity implements ICommunityProvider {
 			String path = locationPath + featuresFileName;
 			logger.info("Loading traits from " + path + " into " + locDir.getUrn());
 
-			BufferedReader bir = new BufferedReader(new InputStreamReader(new FileInputStream(path),StandardCharsets.UTF_8));
-			CSVParser csvFileParser = new CSVParser(bir, csvFileFormat);
+			bir = new BufferedReader(new InputStreamReader(new FileInputStream(path),StandardCharsets.UTF_8));
+			csvFileParser = new CSVParser(bir, csvFileFormat);
 
 			String sessionId = BulkFactories.getBulkFactory().newBulkSession();
 			
@@ -299,8 +308,7 @@ public class RocketCommunity implements ICommunityProvider {
 				location.setGeographyType(GeographyEnumType.PHYSICAL);
 				BulkFactories.getBulkFactory().createBulkEntry(sessionId, FactoryEnumType.LOCATION, location);
 			}
-			csvFileParser.close();
-			bir.close();
+
 			BulkFactories.getBulkFactory().write(sessionId);
 			BulkFactories.getBulkFactory().close(sessionId);
 			
@@ -311,6 +319,14 @@ public class RocketCommunity implements ICommunityProvider {
 			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 			AuditService.denyResult(audit, String.format(FactoryException.LOGICAL_EXCEPTION_MSG, e.getMessage()));
 		}
+		finally {
+			try {
+				if(csvFileParser != null) csvFileParser.close();
+				if(bir != null) bir.close();
+			} catch (IOException e) {
+				logger.error(e);
+			}
+		}
 		
 		return outBool;
 	}
@@ -320,6 +336,8 @@ public class RocketCommunity implements ICommunityProvider {
 		AuditType audit = AuditService.beginAudit(ActionEnumType.ADD, LOCATION_FEATURES,AuditEnumType.USER, user.getUrn());
 		AuditService.targetAudit(audit, AuditEnumType.LOCATION, objectId);
 		NameIdDirectoryGroupType obj = null;
+		BufferedReader bir = null;
+		CSVParser csvFileParser = null;
 		try {
 			obj = ((NameIdGroupFactory)Factories.getFactory(FactoryEnumType.valueOf(auditType.toString()))).getByObjectId(objectId, user.getOrganizationId());
 			if(obj == null){
@@ -344,8 +362,8 @@ public class RocketCommunity implements ICommunityProvider {
 			String path = locationPath + featuresFileName;
 			logger.info("Loading Admin1Codes from " + path + " into " + locDir.getUrn());
 			logger.info("Reading Admin 1 Codes");
-			BufferedReader bir = new BufferedReader(new InputStreamReader(new FileInputStream(path),StandardCharsets.UTF_8));
-			CSVParser csvFileParser = new CSVParser(bir, csvFileFormat);
+			bir = new BufferedReader(new InputStreamReader(new FileInputStream(path),StandardCharsets.UTF_8));
+			csvFileParser = new CSVParser(bir, csvFileFormat);
 
 			String sessionId = BulkFactories.getBulkFactory().newBulkSession();
 			locByCode.clear();
@@ -379,8 +397,7 @@ public class RocketCommunity implements ICommunityProvider {
 
 				
 			}
-			csvFileParser.close();
-			bir.close();
+
 			BulkFactories.getBulkFactory().write(sessionId);
 			BulkFactories.getBulkFactory().close(sessionId);
 			
@@ -391,6 +408,14 @@ public class RocketCommunity implements ICommunityProvider {
 			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 			AuditService.denyResult(audit, String.format(FactoryException.LOGICAL_EXCEPTION_MSG, e.getMessage()));
 		}
+		finally {
+			try {
+				if(csvFileParser != null) csvFileParser.close();
+				if(bir != null) bir.close();
+			} catch (IOException e) {
+				logger.error(e);
+			}
+		}
 		
 		return outBool;
 	}
@@ -400,6 +425,8 @@ public class RocketCommunity implements ICommunityProvider {
 		AuditType audit = AuditService.beginAudit(ActionEnumType.ADD, LOCATION_FEATURES,AuditEnumType.USER, user.getUrn());
 		AuditService.targetAudit(audit, AuditEnumType.LOCATION, objectId);
 		NameIdDirectoryGroupType obj = null;
+		CSVParser csvFileParser = null;
+		BufferedReader bir = null;
 		try {
 			obj = ((NameIdGroupFactory)Factories.getFactory(FactoryEnumType.valueOf(auditType.toString()))).getByObjectId(objectId, user.getOrganizationId());
 			if(obj == null){
@@ -419,13 +446,11 @@ public class RocketCommunity implements ICommunityProvider {
 				return outBool;
 			}
 			
-			
-
 			String path = locationPath + featuresFileName;
 			logger.info("Loading Admin2Codes from " + path + " into " + locDir.getUrn());
 			logger.info("Reading Admin 2 Codes");
-			BufferedReader bir = new BufferedReader(new InputStreamReader(new FileInputStream(path),StandardCharsets.UTF_8));
-			CSVParser csvFileParser = new CSVParser(bir, csvFileFormat);
+			bir = new BufferedReader(new InputStreamReader(new FileInputStream(path),StandardCharsets.UTF_8));
+			csvFileParser = new CSVParser(bir, csvFileFormat);
 
 			String sessionId = BulkFactories.getBulkFactory().newBulkSession();
 
@@ -485,8 +510,7 @@ public class RocketCommunity implements ICommunityProvider {
 				
 				
 			}
-			csvFileParser.close();
-			bir.close();
+
 			BulkFactories.getBulkFactory().write(sessionId);
 			BulkFactories.getBulkFactory().close(sessionId);
 			AuditService.permitResult(audit, "Loaded admin 2 codes");
@@ -495,6 +519,14 @@ public class RocketCommunity implements ICommunityProvider {
 		} catch (FactoryException | ArgumentException | DataAccessException | IOException e) {
 			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 			AuditService.denyResult(audit, String.format(FactoryException.LOGICAL_EXCEPTION_MSG, e.getMessage()));
+		}
+		finally {
+			try {
+				if(csvFileParser != null) csvFileParser.close();
+				if(bir != null) bir.close();
+			} catch (IOException e) {
+				logger.error(e);
+			}
 		}
 		
 		return outBool;
@@ -608,6 +640,7 @@ public class RocketCommunity implements ICommunityProvider {
 				BulkFactories.getBulkFactory().write(sessionId);
 				BulkFactories.getBulkFactory().close(sessionId);
 				bir.close();
+				csvFileParser.close();
 			}
 			
 			
@@ -1429,7 +1462,7 @@ public class RocketCommunity implements ICommunityProvider {
 	}
 	public boolean generateCommunityProjectApplication(UserType user, String communityId, String projectId, String appName, boolean usePermissions, boolean useGroups, int seed, int max, double distribution, String dictionaryPath, String namesPath){
 		boolean outBool = false;
-		Random r = new Random();
+		
 		AuditType audit = AuditService.beginAudit(ActionEnumType.ADD, "Generate Application",AuditEnumType.USER, user.getUrn());
 		AuditService.targetAudit(audit, AuditEnumType.PROJECT, projectId);
 		if(!createCommunityProjectApplication(user, communityId, projectId, appName)) {
@@ -1497,7 +1530,7 @@ public class RocketCommunity implements ICommunityProvider {
 				/// alternately, if only permissions are specified they are directly assigned to accounts
 				if(groups.length > 0){
 					for(int a = 0; a < groups.length;a++){
-						if(distribution < 1.0 && r.nextDouble() > distribution) continue;
+						if(distribution < 1.0 && localRandom.nextDouble() > distribution) continue;
 						GroupParticipantType part = ((GroupParticipationFactory)Factories.getFactory(FactoryEnumType.GROUPPARTICIPATION)).newGroupGroupParticipation(newDir, groups[a], p, AffectEnumType.GRANT_PERMISSION);
 						BulkFactories.getBulkFactory().createBulkEntry(sessionId, FactoryEnumType.GROUPPARTICIPATION, part);
 					}
@@ -1524,14 +1557,14 @@ public class RocketCommunity implements ICommunityProvider {
 					((IParticipationFactory)Factories.getBulkFactory(FactoryEnumType.PERSONPARTICIPATION)).add(part);
 					
 					for(BaseGroupType g : groups){
-						if(distribution < 1.0 && r.nextDouble() > distribution) continue;
+						if(distribution < 1.0 && localRandom.nextDouble() > distribution) continue;
 						AccountParticipantType aPart = ((GroupParticipationFactory)Factories.getFactory(FactoryEnumType.GROUPPARTICIPATION)).newAccountGroupParticipation(g, acct);
 						BulkFactories.getBulkFactory().createBulkEntry(sessionId, FactoryEnumType.GROUPPARTICIPATION, aPart);
 					}
 					
 					if(groups.length == 0) {
 						for(BasePermissionType pe : permissions){
-							if(distribution < 1.0 && r.nextDouble() > distribution) continue;
+							if(distribution < 1.0 && localRandom.nextDouble() > distribution) continue;
 							AccountParticipantType pPart = ((GroupParticipationFactory)Factories.getFactory(FactoryEnumType.GROUPPARTICIPATION)).newAccountGroupParticipation(newDir, acct, pe, AffectEnumType.GRANT_PERMISSION);
 							BulkFactories.getBulkFactory().createBulkEntry(sessionId, FactoryEnumType.GROUPPARTICIPATION, pPart);
 						}
@@ -1626,8 +1659,6 @@ public class RocketCommunity implements ICommunityProvider {
 			int count = ((EventFactory)Factories.getFactory(FactoryEnumType.EVENT)).countInGroup(dutil.getEventsDir());
 
 			for(int i = count; i < epochSize; i++){
-				// boolean modeled = (count >= (2+i));
-				// if(modeled) continue;
 				logger.info("MODEL Epoch " + (i + 1));
 				dutil.generateEpoch(sessionId, epochEvolutions,1);
 			}
