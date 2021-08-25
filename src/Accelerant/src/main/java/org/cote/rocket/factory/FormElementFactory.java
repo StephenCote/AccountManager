@@ -45,6 +45,7 @@ import org.cote.accountmanager.objects.DirectoryGroupType;
 import org.cote.accountmanager.objects.NameIdType;
 import org.cote.accountmanager.objects.ProcessingInstructionType;
 import org.cote.accountmanager.objects.UserType;
+import org.cote.accountmanager.objects.types.ColumnEnumType;
 import org.cote.accountmanager.objects.types.FactoryEnumType;
 import org.cote.accountmanager.objects.types.NameEnumType;
 import org.cote.propellant.objects.FormElementType;
@@ -58,28 +59,24 @@ import org.cote.rocket.query.QueryFields;
 
 public class FormElementFactory extends NameIdGroupFactory {
 	
-	/// static{ org.cote.accountmanager.data.Factories.registerClass(FactoryEnumType.FORMELEMENT, FormElementFactory.class); }
 	public FormElementFactory(){
 		super();
-		this.tableNames.add("formelement");
+		this.primaryTableName = "formelement";
+		this.tableNames.add(primaryTableName);
 		factoryType = FactoryEnumType.FORMELEMENT;
 	}
 
 	protected void configureTableRestrictions(DataTable table){
-		if(table.getName().equalsIgnoreCase("formelement")){
-			/// table.setRestrictSelectColumn("logicalid", true);
+		if(table.getName().equalsIgnoreCase(primaryTableName)){
+			/// restrict columns
 		}
 	}
-	@Override
-	public<T> void depopulate(T obj) throws FactoryException, ArgumentException
-	{
-		
-	}
+
 	@Override
 	public <T> void populate(T obj) throws FactoryException, ArgumentException
 	{
 		FormElementType formElement = (FormElementType)obj;
-		if(formElement.getPopulated()) return;
+		if(formElement.getPopulated().booleanValue()) return;
 		formElement.getElementValues().clear();
 		formElement.getElementValues().addAll(((FormElementParticipationFactory)Factories.getFactory(FactoryEnumType.FORMELEMENTPARTICIPATION)).getFormElementValuesFromParticipation(formElement));
 		formElement.setPopulated(true);
@@ -87,6 +84,7 @@ public class FormElementFactory extends NameIdGroupFactory {
 	}
 	
 	
+	@SuppressWarnings("unchecked")
 	@Override
 	public <T> T clone(T source) throws FactoryException{
 		FormElementType el = (FormElementType)source;
@@ -109,12 +107,10 @@ public class FormElementFactory extends NameIdGroupFactory {
 	public FormElementType newFormElement(UserType user, long groupId) throws ArgumentException
 	{
 		if (user == null || !user.getDatabaseRecord()) throw new ArgumentException("Invalid owner");
-		//if(form == null || form.getId() <= 0) throw new ArgumentException("Invalid form");
 		FormElementType obj = new FormElementType();
 		obj.setOrganizationId(user.getOrganizationId());
 		obj.setOwnerId(user.getId());
 		obj.setGroupId(groupId);
-		//obj.setForm(form);
 		obj.setElementType(ElementEnumType.UNKNOWN);
 		obj.setNameType(NameEnumType.FORMELEMENT);
 		return obj;
@@ -144,8 +140,8 @@ public class FormElementFactory extends NameIdGroupFactory {
 		FormType form = getDefaultValuesForm(formElement);
 		if(form == null) throw new DataAccessException("Failed to retrieve default values form");
 		
-		int add_count =0;
-		int rem_count = 0;
+		int addCount =0;
+		int remCount = 0;
 		/// Create a map of existing values
 		Set<Long> valSet = new HashSet<>();
 		Map<Long,FormElementValueType> valMap = new HashMap<Long,FormElementValueType>();
@@ -175,7 +171,7 @@ public class FormElementFactory extends NameIdGroupFactory {
 				nval.setTextValue(val.getTextValue());
 				nval.setBinaryId(val.getBinaryId());
 				if(((FormElementValueFactory)Factories.getFactory(FactoryEnumType.FORMELEMENTVALUE)).add(nval)){
-					add_count++;
+					addCount++;
 					val = ((FormElementValueFactory)Factories.getFactory(FactoryEnumType.FORMELEMENTVALUE)).getByNameInGroup(val.getName(),form, formElement);
 					/// replace the value with the new version
 					///
@@ -192,7 +188,7 @@ public class FormElementFactory extends NameIdGroupFactory {
 		/// Purge remaining values
 		long[] ids = ArrayUtils.toPrimitive(valSet.toArray(new Long[0]));
 		((FormElementValueFactory)Factories.getFactory(FactoryEnumType.FORMELEMENTVALUE)).deleteFormElementValuesByIds(ids, formElement.getOrganizationId());
-		if(ids.length > 0) rem_count++;
+		if(ids.length > 0) remCount++;
 		
 		// Re-populate element:
 		// Note: The values are coming from the default form, not the participation
@@ -201,7 +197,7 @@ public class FormElementFactory extends NameIdGroupFactory {
 		formElement.getElementValues().clear();
 		formElement.getElementValues().addAll(((FormElementValueFactory)Factories.getFactory(FactoryEnumType.FORMELEMENTVALUE)).getByFormElement(form, formElement));
 		
-		if(add_count > 0 || rem_count > 0){
+		if(addCount > 0 || remCount > 0){
 			((FormFactory)Factories.getFactory(FactoryEnumType.FORM)).clearCache();
 			((FormElementFactory)Factories.getFactory(FactoryEnumType.FORMELEMENT)).clearCache();
 			((FormParticipationFactory)Factories.getFactory(FactoryEnumType.FORMPARTICIPATION)).clearCache();
@@ -217,16 +213,15 @@ public class FormElementFactory extends NameIdGroupFactory {
 		FormElementType obj = (FormElementType)object;
 		if (obj.getGroupId() == null) throw new FactoryException("Cannot add new FormElement without a group");
 
-		DataRow row = prepareAdd(obj, "formelement");
+		DataRow row = prepareAdd(obj, primaryTableName);
 		try{
-			//row.setCellValue("formid", obj.getForm().getId());
-			row.setCellValue("elementtype",obj.getElementType().toString());
-			row.setCellValue("elementname",obj.getElementName());
-			row.setCellValue("elementlabel",obj.getElementLabel());
-			row.setCellValue("description",obj.getDescription());
-			row.setCellValue("groupid", obj.getGroupId());
-			if(obj.getElementTemplate() != null) row.setCellValue("elementtemplateid", obj.getElementTemplate().getId());
-			if(obj.getValidationRule() != null) row.setCellValue("validationruleid",obj.getValidationRule().getId());
+			row.setCellValue(Columns.get(ColumnEnumType.ELEMENTTYPE),obj.getElementType().toString());
+			row.setCellValue(Columns.get(ColumnEnumType.ELEMENTNAME),obj.getElementName());
+			row.setCellValue(Columns.get(ColumnEnumType.ELEMENTLABEL),obj.getElementLabel());
+			row.setCellValue(Columns.get(ColumnEnumType.DESCRIPTION),obj.getDescription());
+			row.setCellValue(Columns.get(ColumnEnumType.GROUPID), obj.getGroupId());
+			if(obj.getElementTemplate() != null) row.setCellValue(Columns.get(ColumnEnumType.ELEMENTTEMPLATEID), obj.getElementTemplate().getId());
+			if(obj.getValidationRule() != null) row.setCellValue(Columns.get(ColumnEnumType.VALIDATIONRULEID),obj.getValidationRule().getId());
 
 			if (insertRow(row)){
 				
@@ -243,7 +238,6 @@ public class FormElementFactory extends NameIdGroupFactory {
 					cobj.getElementValues().clear();
 					cobj.getElementValues().addAll(obj.getElementValues());
 					updateDefaultFormElementValues(cobj);
-					///System.out.println("Adding element values #" + cobj.getElementValues().size());
 
 					return true;
 				}
@@ -269,16 +263,15 @@ public class FormElementFactory extends NameIdGroupFactory {
 		newObj.setNameType(NameEnumType.FORMELEMENT);
 		super.read(rset, newObj);
 		readGroup(rset, newObj);
-		newObj.setElementLabel(rset.getString("elementlabel"));
-		newObj.setElementName(rset.getString("elementname"));
-		long view_id = rset.getLong("elementtemplateid");
-		if(view_id > 0) newObj.setElementTemplate((NoteType)((NoteFactory)Factories.getFactory(FactoryEnumType.NOTE)).getById(view_id, newObj.getOrganizationId()));
+		newObj.setElementLabel(rset.getString(Columns.get(ColumnEnumType.ELEMENTLABEL)));
+		newObj.setElementName(rset.getString(Columns.get(ColumnEnumType.ELEMENTNAME)));
+		long viewId = rset.getLong(Columns.get(ColumnEnumType.ELEMENTTEMPLATEID));
+		if(viewId > 0) newObj.setElementTemplate((NoteType)((NoteFactory)Factories.getFactory(FactoryEnumType.NOTE)).getById(viewId, newObj.getOrganizationId()));
 
-		//newObj.setForm((FormType)((FormFactory)Factories.getFactory(FactoryEnumType.FORM)).getById(rset.getInt("formid"),newObj.getOrganizationId()));
-		long rule_id = rset.getLong("validationruleid");
-		if(rule_id > 0) newObj.setValidationRule((ValidationRuleType)((ValidationRuleFactory)Factories.getFactory(FactoryEnumType.VALIDATIONRULE)).getById(rule_id,newObj.getOrganizationId()));
-		newObj.setDescription(rset.getString("description"));
-		newObj.setElementType(ElementEnumType.valueOf(rset.getString("elementtype")));
+		long ruleId = rset.getLong(Columns.get(ColumnEnumType.VALIDATIONRULEID));
+		if(ruleId > 0) newObj.setValidationRule((ValidationRuleType)((ValidationRuleFactory)Factories.getFactory(FactoryEnumType.VALIDATIONRULE)).getById(ruleId,newObj.getOrganizationId()));
+		newObj.setDescription(rset.getString(Columns.get(ColumnEnumType.DESCRIPTION)));
+		newObj.setElementType(ElementEnumType.valueOf(rset.getString(Columns.get(ColumnEnumType.ELEMENTTYPE))));
 		return newObj;
 	}
 	@Override

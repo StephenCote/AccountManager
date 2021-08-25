@@ -38,6 +38,7 @@ import org.cote.accountmanager.objects.DirectoryGroupType;
 import org.cote.accountmanager.objects.NameIdType;
 import org.cote.accountmanager.objects.ProcessingInstructionType;
 import org.cote.accountmanager.objects.UserType;
+import org.cote.accountmanager.objects.types.ColumnEnumType;
 import org.cote.accountmanager.objects.types.FactoryEnumType;
 import org.cote.accountmanager.objects.types.NameEnumType;
 import org.cote.propellant.objects.FormType;
@@ -52,28 +53,25 @@ import org.cote.rocket.query.QueryFields;
 
 public class RequirementFactory extends NameIdGroupFactory {
 	
-	/// static{ org.cote.accountmanager.data.Factories.registerClass(FactoryEnumType.REQUIREMENT, RequirementFactory.class); }
 	public RequirementFactory(){
 		super();
-		this.tableNames.add("requirement");
+		this.primaryTableName = "requirement";
+		this.tableNames.add(primaryTableName);
 		factoryType = FactoryEnumType.REQUIREMENT;
 	}
 	
+	@Override
 	protected void configureTableRestrictions(DataTable table){
-		if(table.getName().equalsIgnoreCase("requirement")){
-			/// table.setRestrictSelectColumn("logicalid", true);
+		if(table.getName().equalsIgnoreCase(primaryTableName)){
+			/// restrict columns
 		}
 	}
-	@Override
-	public<T> void depopulate(T obj) throws FactoryException, ArgumentException
-	{
-		
-	}
+
 	@Override
 	public <T> void populate(T obj) throws FactoryException, ArgumentException
 	{
 		RequirementType req = (RequirementType)obj;
-		if(req.getPopulated()) return;
+		if(req.getPopulated().booleanValue()) return;
 		
 		req.setPopulated(true);
 		updateToCache(req);
@@ -101,17 +99,17 @@ public class RequirementFactory extends NameIdGroupFactory {
 
 		DataRow row = prepareAdd(obj, "requirement");
 		try{
-			row.setCellValue("requirementtype", obj.getRequirementType().toString());
-			row.setCellValue("requirementstatus", obj.getRequirementStatus().toString());
-			row.setCellValue("groupid", obj.getGroupId());
-			if(obj.getDescription() != null) row.setCellValue("description", obj.getDescription());
-			if(obj.getRequirementId() != null) row.setCellValue("requirementid",obj.getRequirementId());
-			if(obj.getNote() != null) row.setCellValue("noteid", obj.getNote().getId());
-			else row.setCellValue("noteid",0);
-			if(obj.getForm() != null) row.setCellValue("formid",obj.getForm().getId());
-			else row.setCellValue("formid",0);
-			row.setCellValue("priority",obj.getPriority().toString());
-			row.setCellValue("logicalorder", obj.getLogicalOrder());
+			row.setCellValue(Columns.get(ColumnEnumType.REQUIREMENTTYPE), obj.getRequirementType().toString());
+			row.setCellValue(Columns.get(ColumnEnumType.REQUIREMENTSTATUS), obj.getRequirementStatus().toString());
+			row.setCellValue(Columns.get(ColumnEnumType.GROUPID), obj.getGroupId());
+			if(obj.getDescription() != null) row.setCellValue(Columns.get(ColumnEnumType.DESCRIPTION), obj.getDescription());
+			if(obj.getRequirementId() != null) row.setCellValue(Columns.get(ColumnEnumType.REQUIREMENTID),obj.getRequirementId());
+			if(obj.getNote() != null) row.setCellValue(Columns.get(ColumnEnumType.NOTEID), obj.getNote().getId());
+			else row.setCellValue(Columns.get(ColumnEnumType.NOTEID),0);
+			if(obj.getForm() != null) row.setCellValue(Columns.get(ColumnEnumType.FORMID),obj.getForm().getId());
+			else row.setCellValue(Columns.get(ColumnEnumType.FORMID),0);
+			row.setCellValue(Columns.get(ColumnEnumType.PRIORITY),obj.getPriority().toString());
+			row.setCellValue(Columns.get(ColumnEnumType.LOGICALORDER), obj.getLogicalOrder());
 			if (insertRow(row)) return true;
 		}
 		catch(DataAccessException dae){
@@ -130,15 +128,15 @@ public class RequirementFactory extends NameIdGroupFactory {
 		newObj.setNameType(NameEnumType.REQUIREMENT);
 		super.read(rset, newObj);
 		readGroup(rset, newObj);
-		newObj.setRequirementType(RequirementEnumType.valueOf(rset.getString("requirementtype")));
-		newObj.setRequirementStatus(RequirementStatusEnumType.valueOf(rset.getString("requirementstatus")));
-		newObj.setDescription(rset.getString("description"));
-		newObj.setPriority(PriorityEnumType.valueOf(rset.getString("priority")));
-		newObj.setLogicalOrder(rset.getInt("logicalorder"));
-		newObj.setRequirementId(rset.getString("requirementid"));
-		long noteId = rset.getLong("noteid");
+		newObj.setRequirementType(RequirementEnumType.valueOf(rset.getString(Columns.get(ColumnEnumType.REQUIREMENTTYPE))));
+		newObj.setRequirementStatus(RequirementStatusEnumType.valueOf(rset.getString(Columns.get(ColumnEnumType.REQUIREMENTSTATUS))));
+		newObj.setDescription(rset.getString(Columns.get(ColumnEnumType.DESCRIPTION)));
+		newObj.setPriority(PriorityEnumType.valueOf(rset.getString(Columns.get(ColumnEnumType.PRIORITY))));
+		newObj.setLogicalOrder(rset.getInt(Columns.get(ColumnEnumType.LOGICALORDER)));
+		newObj.setRequirementId(rset.getString(Columns.get(ColumnEnumType.REQUIREMENTID)));
+		long noteId = rset.getLong(Columns.get(ColumnEnumType.NOTEID));
 		if(noteId > 0) newObj.setNote((NoteType)((NoteFactory)Factories.getFactory(FactoryEnumType.NOTE)).getById(noteId,  newObj.getOrganizationId()));
-		long formId = rset.getLong("formid");
+		long formId = rset.getLong(Columns.get(ColumnEnumType.FORMID));
 		if(formId > 0) newObj.setForm((FormType)((FormFactory)Factories.getFactory(FactoryEnumType.FORM)).getById(formId, newObj.getOrganizationId()));
 		return newObj;
 	}
@@ -160,8 +158,8 @@ public class RequirementFactory extends NameIdGroupFactory {
 		fields.add(QueryFields.getFieldPriority(useMap.getPriority()));
 		fields.add(QueryFields.getFieldLogicalOrder(useMap.getLogicalOrder()));
 		fields.add(QueryFields.getFieldRequirementId(useMap.getRequirementId()));
-		fields.add(QueryFields.getBigIntField("noteid", (useMap.getNote() != null ? useMap.getNote().getId() : 0)));
-		fields.add(QueryFields.getBigIntField("formid", (useMap.getForm() != null ? useMap.getForm().getId() : 0)));
+		fields.add(QueryFields.getBigIntField(Columns.get(ColumnEnumType.NOTEID), (useMap.getNote() != null ? useMap.getNote().getId() : 0)));
+		fields.add(QueryFields.getBigIntField(Columns.get(ColumnEnumType.FORMID), (useMap.getForm() != null ? useMap.getForm().getId() : 0)));
 	}
 	public int deleteRequirementsByUser(UserType user) throws FactoryException
 	{
@@ -179,15 +177,7 @@ public class RequirementFactory extends NameIdGroupFactory {
 	}
 	public int deleteRequirementsByIds(long[] ids, long organizationId) throws FactoryException
 	{
-		int deleted = deleteById(ids, organizationId);
-		if (deleted > 0)
-		{
-			/*
-			Factory.DataParticipationFactoryInstance.DeleteParticipations(ids, organizationId);
-			Factory.TagParticipationFactoryInstance.DeleteParticipants(ids, organizationId);
-			*/
-		}
-		return deleted;
+		return deleteById(ids, organizationId);
 	}
 	public int deleteRequirementsInGroup(DirectoryGroupType group)  throws FactoryException
 	{

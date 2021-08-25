@@ -47,6 +47,7 @@ import org.cote.accountmanager.objects.DirectoryGroupType;
 import org.cote.accountmanager.objects.NameIdType;
 import org.cote.accountmanager.objects.ProcessingInstructionType;
 import org.cote.accountmanager.objects.UserType;
+import org.cote.accountmanager.objects.types.ColumnEnumType;
 import org.cote.accountmanager.objects.types.FactoryEnumType;
 import org.cote.accountmanager.objects.types.NameEnumType;
 import org.cote.propellant.objects.LifecycleType;
@@ -54,10 +55,10 @@ import org.cote.rocket.BulkFactories;
 import org.cote.rocket.Factories;
 public class LifecycleFactory extends NameIdGroupFactory {
 	
-	/// static{ org.cote.accountmanager.data.Factories.registerClass(FactoryEnumType.LIFECYCLE, LifecycleFactory.class); }
 	public LifecycleFactory(){
 		super();
-		this.tableNames.add("lifecycle");
+		this.primaryTableName = "lifecycle";
+		this.tableNames.add(primaryTableName);
 		factoryType = FactoryEnumType.LIFECYCLE;
 		this.hasObjectId = true;
 	}
@@ -71,9 +72,10 @@ public class LifecycleFactory extends NameIdGroupFactory {
 			);
 	}
 	
+	@Override
 	protected void configureTableRestrictions(DataTable table){
-		if(table.getName().equalsIgnoreCase("lifecycle")){
-			/// table.setRestrictSelectColumn("logicalid", true);
+		if(table.getName().equalsIgnoreCase(primaryTableName)){
+			/// restrict columns
 		}
 	}
 
@@ -95,10 +97,10 @@ public class LifecycleFactory extends NameIdGroupFactory {
 		LifecycleType obj = (LifecycleType)object;
 		if (obj.getGroupId() == null) throw new FactoryException("Cannot add new lifecycle without a group");
 
-		DataRow row = prepareAdd(obj, "lifecycle");
+		DataRow row = prepareAdd(obj, primaryTableName);
 		try{
-			row.setCellValue("description",obj.getDescription());
-			row.setCellValue("groupid", obj.getGroupId());
+			row.setCellValue(Columns.get(ColumnEnumType.DESCRIPTION),obj.getDescription());
+			row.setCellValue(Columns.get(ColumnEnumType.GROUPID), obj.getGroupId());
 			if (insertRow(row)){
 				LifecycleType cobj = (bulkMode ? obj : (LifecycleType)getByNameInGroup(obj.getName(), ((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getDirectoryById(obj.getGroupId(), obj.getOrganizationId())));
 				if(cobj == null) throw new DataAccessException("Failed to retrieve new object");
@@ -128,10 +130,7 @@ public class LifecycleFactory extends NameIdGroupFactory {
 				return true;
 			}
 		}
-		catch(DataAccessException dae){
-			throw new FactoryException(dae.getMessage());
-		} catch (ArgumentException e) {
-			
+		catch(DataAccessException | ArgumentException e) {
 			throw new FactoryException(e.getMessage());
 		}
 		return false;
@@ -158,7 +157,7 @@ public class LifecycleFactory extends NameIdGroupFactory {
 	{
 		LifecycleType cycle = (LifecycleType)obj;
 
-		if(cycle.getPopulated()) return;
+		if(cycle.getPopulated().booleanValue()) return;
 		cycle.getSchedules().addAll(((LifecycleParticipationFactory)Factories.getFactory(FactoryEnumType.LIFECYCLEPARTICIPATION)).getSchedulesFromParticipation(cycle));
 		cycle.getBudgets().addAll(((LifecycleParticipationFactory)Factories.getFactory(FactoryEnumType.LIFECYCLEPARTICIPATION)).getBudgetsFromParticipation(cycle));
 		cycle.getGoals().addAll(((LifecycleParticipationFactory)Factories.getFactory(FactoryEnumType.LIFECYCLEPARTICIPATION)).getGoalsFromParticipation(cycle));
@@ -175,7 +174,7 @@ public class LifecycleFactory extends NameIdGroupFactory {
 		newObj.setNameType(NameEnumType.LIFECYCLE);
 		super.read(rset, newObj);
 		readGroup(rset, newObj);
-		newObj.setDescription(rset.getString("description"));
+		newObj.setDescription(rset.getString(Columns.get(ColumnEnumType.DESCRIPTION)));
 		return newObj;
 	}
 	@Override
@@ -184,7 +183,7 @@ public class LifecycleFactory extends NameIdGroupFactory {
 		LifecycleType data = (LifecycleType)object;
 
 		boolean outBool = false;
-		if(data.getPopulated() == false){
+		if(!data.getPopulated()){
 			logger.warn("Updating unpopulated lifecycle '" + data.getName() + "' may result in unexpected data loss");
 		}
 		removeFromCache(data);
@@ -198,14 +197,13 @@ public class LifecycleFactory extends NameIdGroupFactory {
 				for(int i = 0; i < maps.length;i++) set.add(maps[i].getParticipantId());
 				
 				for(int i = 0; i < data.getBudgets().size();i++){
-					if(set.contains(data.getBudgets().get(i).getId())== false){
+					if(!set.contains(data.getBudgets().get(i).getId())){
 						((LifecycleParticipationFactory)Factories.getFactory(FactoryEnumType.LIFECYCLEPARTICIPATION)).add(((LifecycleParticipationFactory)Factories.getFactory(FactoryEnumType.LIFECYCLEPARTICIPATION)).newBudgetParticipation(data,data.getBudgets().get(i)));
 					}
 					else{
 						set.remove(data.getBudgets().get(i).getId());
 					}
 				}
-//				System.out.println("Net delete budget parts: " + set.size());
 				((LifecycleParticipationFactory)Factories.getFactory(FactoryEnumType.LIFECYCLEPARTICIPATION)).deleteParticipantsForParticipation(ArrayUtils.toPrimitive(set.toArray(new Long[0])), data, data.getOrganizationId());
 				
 				/// Goals
@@ -214,14 +212,13 @@ public class LifecycleFactory extends NameIdGroupFactory {
 				for(int i = 0; i < maps.length;i++) set.add(maps[i].getParticipantId());
 				
 				for(int i = 0; i < data.getGoals().size();i++){
-					if(set.contains(data.getGoals().get(i).getId())== false){
+					if(!set.contains(data.getGoals().get(i).getId())){
 						((LifecycleParticipationFactory)Factories.getFactory(FactoryEnumType.LIFECYCLEPARTICIPATION)).add(((LifecycleParticipationFactory)Factories.getFactory(FactoryEnumType.LIFECYCLEPARTICIPATION)).newGoalParticipation(data,data.getGoals().get(i)));
 					}
 					else{
 						set.remove(data.getGoals().get(i).getId());
 					}
 				}
-//				System.out.println("Net delete goal parts: " + set.size());
 				((LifecycleParticipationFactory)Factories.getFactory(FactoryEnumType.LIFECYCLEPARTICIPATION)).deleteParticipantsForParticipation(ArrayUtils.toPrimitive(set.toArray(new Long[0])), data, data.getOrganizationId());
 
 				/// Schedules
@@ -230,14 +227,13 @@ public class LifecycleFactory extends NameIdGroupFactory {
 				for(int i = 0; i < maps.length;i++) set.add(maps[i].getParticipantId());
 				
 				for(int i = 0; i < data.getSchedules().size();i++){
-					if(set.contains(data.getSchedules().get(i).getId())== false){
+					if(!set.contains(data.getSchedules().get(i).getId())){
 						((LifecycleParticipationFactory)Factories.getFactory(FactoryEnumType.LIFECYCLEPARTICIPATION)).add(((LifecycleParticipationFactory)Factories.getFactory(FactoryEnumType.LIFECYCLEPARTICIPATION)).newScheduleParticipation(data,data.getSchedules().get(i)));
 					}
 					else{
 						set.remove(data.getSchedules().get(i).getId());
 					}
 				}
-//				System.out.println("Net delete Schedule parts: " + set.size());
 				((LifecycleParticipationFactory)Factories.getFactory(FactoryEnumType.LIFECYCLEPARTICIPATION)).deleteParticipantsForParticipation(ArrayUtils.toPrimitive(set.toArray(new Long[0])), data, data.getOrganizationId());
 
 				/// Projects
@@ -246,14 +242,13 @@ public class LifecycleFactory extends NameIdGroupFactory {
 				for(int i = 0; i < maps.length;i++) set.add(maps[i].getParticipantId());
 				
 				for(int i = 0; i < data.getProjects().size();i++){
-					if(set.contains(data.getProjects().get(i).getId())== false){
+					if(!set.contains(data.getProjects().get(i).getId())){
 						((LifecycleParticipationFactory)Factories.getFactory(FactoryEnumType.LIFECYCLEPARTICIPATION)).add(((LifecycleParticipationFactory)Factories.getFactory(FactoryEnumType.LIFECYCLEPARTICIPATION)).newProjectParticipation(data,data.getProjects().get(i)));
 					}
 					else{
 						set.remove(data.getProjects().get(i).getId());
 					}
 				}
-//				System.out.println("Net delete Project parts: " + set.size());
 				((LifecycleParticipationFactory)Factories.getFactory(FactoryEnumType.LIFECYCLEPARTICIPATION)).deleteParticipantsForParticipation(ArrayUtils.toPrimitive(set.toArray(new Long[0])), data, data.getOrganizationId());
 
 				outBool = true;
@@ -282,7 +277,6 @@ public class LifecycleFactory extends NameIdGroupFactory {
 	{
 		NameIdType obj = (NameIdType)object;
 		removeFromCache(obj);
-		//int deleted = deleteById(obj.getId(), obj.getOrganizationId());
 		int deleted = deleteLifecyclesByIds(new long[]{obj.getId()},obj.getOrganizationId());
 		return (deleted > 0);
 	}
@@ -292,10 +286,6 @@ public class LifecycleFactory extends NameIdGroupFactory {
 		if (deleted > 0)
 		{
 			((LifecycleParticipationFactory)Factories.getFactory(FactoryEnumType.LIFECYCLEPARTICIPATION)).deleteParticipations(ids, organizationId);
-			/*
-			Factory.DataParticipationFactoryInstance.DeleteParticipations(ids, organizationId);
-			Factory.TagParticipationFactoryInstance.DeleteParticipants(ids, organizationId);
-			*/
 		}
 		return deleted;
 	}

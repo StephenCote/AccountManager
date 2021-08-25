@@ -74,7 +74,8 @@ public class PermissionFactory extends NameIdFactory {
 		this.hasName = true;
 		this.hasObjectId = true;
 		this.hasUrn = true;
-		this.tableNames.add("permissions");
+		this.primaryTableName = "permissions";
+		this.tableNames.add(primaryTableName);
 		this.factoryType = FactoryEnumType.PERMISSION;
 		systemRoleNameReader = RoleService.ROLE_PERMISSION_READERS;
 		systemRoleNameAdministrator = RoleService.ROLE_PERMISSION_ADMINISTRATORS;

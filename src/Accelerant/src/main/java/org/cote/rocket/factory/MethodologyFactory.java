@@ -46,6 +46,7 @@ import org.cote.accountmanager.objects.DirectoryGroupType;
 import org.cote.accountmanager.objects.NameIdType;
 import org.cote.accountmanager.objects.ProcessingInstructionType;
 import org.cote.accountmanager.objects.UserType;
+import org.cote.accountmanager.objects.types.ColumnEnumType;
 import org.cote.accountmanager.objects.types.FactoryEnumType;
 import org.cote.accountmanager.objects.types.NameEnumType;
 import org.cote.propellant.objects.MethodologyType;
@@ -54,28 +55,25 @@ import org.cote.rocket.Factories;
 import org.cote.rocket.query.QueryFields;
 public class MethodologyFactory extends NameIdGroupFactory {
 	
-	/// static{ org.cote.accountmanager.data.Factories.registerClass(FactoryEnumType.METHODOLOGY, MethodologyFactory.class); }
 	public MethodologyFactory(){
 		super();
-		this.tableNames.add("methodology");
+		this.primaryTableName = "methodology";
+		this.tableNames.add(primaryTableName);
 		factoryType = FactoryEnumType.METHODOLOGY;
 	}
 	
+	@Override
 	protected void configureTableRestrictions(DataTable table){
 		if(table.getName().equalsIgnoreCase("methodology")){
-			/// table.setRestrictSelectColumn("logicalid", true);
+			/// restrict columns
 		}
 	}
-	@Override
-	public<T> void depopulate(T obj) throws FactoryException, ArgumentException
-	{
-		
-	}
+
 	@Override
 	public <T> void populate(T obj) throws FactoryException, ArgumentException
 	{
 		MethodologyType methodology = (MethodologyType)obj;
-		if(methodology.getPopulated()) return;
+		if(methodology.getPopulated().booleanValue()) return;
 
 		methodology.getBudgets().addAll(((MethodologyParticipationFactory)Factories.getFactory(FactoryEnumType.METHODOLOGYPARTICIPATION)).getBudgetsFromParticipation(methodology));
 		methodology.getProcesses().addAll(((MethodologyParticipationFactory)Factories.getFactory(FactoryEnumType.METHODOLOGYPARTICIPATION)).getProcessesFromParticipation(methodology));
@@ -102,11 +100,11 @@ public class MethodologyFactory extends NameIdGroupFactory {
 		MethodologyType obj = (MethodologyType)object;
 		if (obj.getGroupId() == null) throw new FactoryException("Cannot add new Methodology without a group");
 
-		DataRow row = prepareAdd(obj, "methodology");
+		DataRow row = prepareAdd(obj, primaryTableName);
 		try{
 
-			row.setCellValue("description", obj.getDescription());
-			row.setCellValue("groupid", obj.getGroupId());
+			row.setCellValue(Columns.get(ColumnEnumType.DESCRIPTION), obj.getDescription());
+			row.setCellValue(Columns.get(ColumnEnumType.GROUPID), obj.getGroupId());
 			if (insertRow(row)){
 				MethodologyType cobj = (bulkMode ? obj : (MethodologyType)getByNameInGroup(obj.getName(), ((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getDirectoryById(obj.getGroupId(), obj.getOrganizationId())));
 				if(cobj == null) throw new DataAccessException("Failed to retrieve new object");
@@ -127,10 +125,7 @@ public class MethodologyFactory extends NameIdGroupFactory {
 				return true;
 			}
 		}
-		catch(DataAccessException dae){
-			throw new FactoryException(dae.getMessage());
-		}
-		catch(ArgumentException ae){
+		catch(DataAccessException | ArgumentException ae){
 			throw new FactoryException(ae.getMessage());
 		}
 		return false;
@@ -146,7 +141,7 @@ public class MethodologyFactory extends NameIdGroupFactory {
 		newObj.setNameType(NameEnumType.METHODOLOGY);
 		super.read(rset, newObj);
 		readGroup(rset, newObj);
-		newObj.setDescription(rset.getString("description"));
+		newObj.setDescription(rset.getString(Columns.get(ColumnEnumType.DESCRIPTION)));
 		return newObj;
 	}
 	@Override
@@ -165,14 +160,14 @@ public class MethodologyFactory extends NameIdGroupFactory {
 				for(int i = 0; i < maps.length;i++) set.add(maps[i].getParticipantId());
 				
 				for(int i = 0; i < data.getBudgets().size();i++){
-					if(set.contains(data.getBudgets().get(i).getId())== false){
+					if(!set.contains(data.getBudgets().get(i).getId())){
 						((MethodologyParticipationFactory)Factories.getFactory(FactoryEnumType.METHODOLOGYPARTICIPATION)).add(((MethodologyParticipationFactory)Factories.getFactory(FactoryEnumType.METHODOLOGYPARTICIPATION)).newBudgetParticipation(data,data.getBudgets().get(i)));
 					}
 					else{
 						set.remove(data.getBudgets().get(i).getId());
 					}
 				}
-//				System.out.println("Net delete budget parts: " + set.size());
+
 				((MethodologyParticipationFactory)Factories.getFactory(FactoryEnumType.METHODOLOGYPARTICIPATION)).deleteParticipantsForParticipation(ArrayUtils.toPrimitive(set.toArray(new Long[0])), data, data.getOrganizationId());
 				
 				/// Processs
@@ -181,17 +176,15 @@ public class MethodologyFactory extends NameIdGroupFactory {
 				for(int i = 0; i < maps.length;i++) set.add(maps[i].getParticipantId());
 				
 				for(int i = 0; i < data.getProcesses().size();i++){
-					if(set.contains(data.getProcesses().get(i).getId())== false){
+					if(!set.contains(data.getProcesses().get(i).getId())){
 						((MethodologyParticipationFactory)Factories.getFactory(FactoryEnumType.METHODOLOGYPARTICIPATION)).add(((MethodologyParticipationFactory)Factories.getFactory(FactoryEnumType.METHODOLOGYPARTICIPATION)).newProcessParticipation(data,data.getProcesses().get(i)));
 					}
 					else{
 						set.remove(data.getProcesses().get(i).getId());
 					}
 				}
-//				System.out.println("Net delete Process parts: " + set.size());
 				((MethodologyParticipationFactory)Factories.getFactory(FactoryEnumType.METHODOLOGYPARTICIPATION)).deleteParticipantsForParticipation(ArrayUtils.toPrimitive(set.toArray(new Long[0])), data, data.getOrganizationId());
 
-				
 				outBool = true;
 			}
 			catch(ArgumentException ae){
@@ -228,10 +221,6 @@ public class MethodologyFactory extends NameIdGroupFactory {
 		if (deleted > 0)
 		{
 			((MethodologyParticipationFactory)Factories.getFactory(FactoryEnumType.METHODOLOGYPARTICIPATION)).deleteParticipations(ids, organizationId);
-			/*
-			Factory.DataParticipationFactoryInstance.DeleteParticipations(ids, organizationId);
-			Factory.TagParticipationFactoryInstance.DeleteParticipants(ids, organizationId);
-			*/
 		}
 		return deleted;
 	}

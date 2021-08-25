@@ -44,6 +44,7 @@ import org.cote.accountmanager.objects.DirectoryGroupType;
 import org.cote.accountmanager.objects.NameIdType;
 import org.cote.accountmanager.objects.ProcessingInstructionType;
 import org.cote.accountmanager.objects.UserType;
+import org.cote.accountmanager.objects.types.ColumnEnumType;
 import org.cote.accountmanager.objects.types.FactoryEnumType;
 import org.cote.accountmanager.objects.types.NameEnumType;
 import org.cote.propellant.objects.ValidationRuleType;
@@ -53,30 +54,27 @@ import org.cote.rocket.Factories;
 import org.cote.rocket.query.QueryFields;
 public class ValidationRuleFactory extends NameIdGroupFactory {
 	
-	/// static{ org.cote.accountmanager.data.Factories.registerClass(FactoryEnumType.VALIDATIONRULE, ValidationRuleFactory.class); }
 	public ValidationRuleFactory(){
 		super();
 		this.hasParentId = false;
-		this.tableNames.add("validationrule");
+		this.primaryTableName = "validationrule";
+		this.tableNames.add(primaryTableName);
 		factoryType = FactoryEnumType.VALIDATIONRULE;
 	}
 
+	@Override
 	protected void configureTableRestrictions(DataTable table){
-		if(table.getName().equalsIgnoreCase("validationrule")){
-			/// table.setRestrictSelectColumn("logicalid", true);
+		if(table.getName().equalsIgnoreCase(primaryTableName)){
+			/// restrict columns
 		}
 	}
-	@Override
-	public<T> void depopulate(T obj) throws FactoryException, ArgumentException
-	{
-		
-	}
+
 	@Override
 	public <T> void populate(T obj) throws FactoryException, ArgumentException
 	{
 
 		ValidationRuleType rule = (ValidationRuleType)obj;
-		if(rule.getPopulated()) return;
+		if(rule.getPopulated().booleanValue()) return;
 		rule.getRules().addAll(((ValidationRuleParticipationFactory)Factories.getFactory(FactoryEnumType.VALIDATIONRULEPARTICIPATION)).getValidationRulesFromParticipation(rule));
 		rule.setPopulated(true);
 		updateToCache(rule);
@@ -100,19 +98,18 @@ public class ValidationRuleFactory extends NameIdGroupFactory {
 		ValidationRuleType obj = (ValidationRuleType)object;
 		if (obj.getGroupId() == null) throw new FactoryException("Cannot add new ValidationRule without a group");
 
-		DataRow row = prepareAdd(obj, "validationrule");
+		DataRow row = prepareAdd(obj, primaryTableName);
 		try{
-			row.setCellValue("allownull", obj.getAllowNull());
-			row.setCellValue("expression", obj.getExpression());
-			row.setCellValue("errormessage", obj.getErrorMessage());
-			row.setCellValue("isruleset", obj.getIsRuleSet());
-			row.setCellValue("isreplacementrule", obj.getIsReplacementRule());
-			row.setCellValue("replacementvalue", obj.getReplacementValue());
-			row.setCellValue("description",obj.getDescription());
-			row.setCellValue("expression", obj.getExpression());
-			row.setCellValue("groupid", obj.getGroupId());
-			row.setCellValue("comparison", obj.getComparison());
-			row.setCellValue("validationtype", obj.getValidationType().toString());
+			row.setCellValue(Columns.get(ColumnEnumType.ALLOWNULL), obj.getAllowNull());
+			row.setCellValue(Columns.get(ColumnEnumType.EXPRESSION), obj.getExpression());
+			row.setCellValue(Columns.get(ColumnEnumType.ERRORMESSAGE), obj.getErrorMessage());
+			row.setCellValue(Columns.get(ColumnEnumType.ISRULESET), obj.getIsRuleSet());
+			row.setCellValue(Columns.get(ColumnEnumType.ISREPLACEMENTRULE), obj.getIsReplacementRule());
+			row.setCellValue(Columns.get(ColumnEnumType.REPLACEMENTVALUE), obj.getReplacementValue());
+			row.setCellValue(Columns.get(ColumnEnumType.DESCRIPTION),obj.getDescription());
+			row.setCellValue(Columns.get(ColumnEnumType.GROUPID), obj.getGroupId());
+			row.setCellValue(Columns.get(ColumnEnumType.COMPARISON), obj.getComparison());
+			row.setCellValue(Columns.get(ColumnEnumType.VALIDATIONTYPE), obj.getValidationType().toString());
 			if (insertRow(row)){
 				try{
 					ValidationRuleType cobj = (bulkMode ? obj : (ValidationRuleType)getByNameInGroup(obj.getName(), ((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getDirectoryById(obj.getGroupId(), obj.getOrganizationId())));
@@ -150,15 +147,15 @@ public class ValidationRuleFactory extends NameIdGroupFactory {
 		newObj.setNameType(NameEnumType.VALIDATIONRULE);
 		super.read(rset, newObj);
 		readGroup(rset, newObj);
-		newObj.setAllowNull(rset.getBoolean("allownull"));
-		newObj.setDescription(rset.getString("description"));
-		newObj.setValidationType(ValidationEnumType.valueOf(rset.getString("validationtype")));
-		newObj.setExpression(rset.getString("expression"));
-		newObj.setIsRuleSet(rset.getBoolean("isruleset"));
-		newObj.setIsReplacementRule(rset.getBoolean("isreplacementrule"));
-		newObj.setReplacementValue(rset.getString("replacementvalue"));
-		newObj.setComparison(rset.getBoolean("comparison"));
-		newObj.setErrorMessage(rset.getString("errormessage"));
+		newObj.setAllowNull(rset.getBoolean(Columns.get(ColumnEnumType.ALLOWNULL)));
+		newObj.setDescription(rset.getString(Columns.get(ColumnEnumType.DESCRIPTION)));
+		newObj.setValidationType(ValidationEnumType.valueOf(rset.getString(Columns.get(ColumnEnumType.VALIDATIONTYPE))));
+		newObj.setExpression(rset.getString(Columns.get(ColumnEnumType.EXPRESSION)));
+		newObj.setIsRuleSet(rset.getBoolean(Columns.get(ColumnEnumType.ISRULESET)));
+		newObj.setIsReplacementRule(rset.getBoolean(Columns.get(ColumnEnumType.ISREPLACEMENTRULE)));
+		newObj.setReplacementValue(rset.getString(Columns.get(ColumnEnumType.REPLACEMENTVALUE)));
+		newObj.setComparison(rset.getBoolean(Columns.get(ColumnEnumType.COMPARISON)));
+		newObj.setErrorMessage(rset.getString(Columns.get(ColumnEnumType.ERRORMESSAGE)));
 		return newObj;
 	}
 	@Override
@@ -176,14 +173,13 @@ public class ValidationRuleFactory extends NameIdGroupFactory {
 			for(int i = 0; i < maps.length;i++) set.add(maps[i].getParticipantId());
 			
 			for(int i = 0; i < data.getRules().size();i++){
-				if(set.contains(data.getRules().get(i).getId())== false){
+				if(!set.contains(data.getRules().get(i).getId())){
 					((ValidationRuleParticipationFactory)Factories.getFactory(FactoryEnumType.VALIDATIONRULEPARTICIPATION)).add(((ValidationRuleParticipationFactory)Factories.getFactory(FactoryEnumType.VALIDATIONRULEPARTICIPATION)).newValidationRuleParticipation(data,data.getRules().get(i)));
 				}
 				else{
 					set.remove(data.getRules().get(i).getId());
 				}
 			}
-//			System.out.println("Net delete ValidationRule parts: " + set.size());
 			((ValidationRuleParticipationFactory)Factories.getFactory(FactoryEnumType.VALIDATIONRULEPARTICIPATION)).deleteParticipantsForParticipation(ArrayUtils.toPrimitive(set.toArray(new Long[0])), data, data.getOrganizationId());
 			
 			((FormFactory)Factories.getFactory(FactoryEnumType.FORM)).clearCache();
@@ -232,10 +228,6 @@ public class ValidationRuleFactory extends NameIdGroupFactory {
 		if (deleted > 0)
 		{
 			((ValidationRuleParticipationFactory)Factories.getFactory(FactoryEnumType.VALIDATIONRULEPARTICIPATION)).deleteParticipations(ids, organizationId);
-			/*
-			Factory.DataParticipationFactoryInstance.DeleteParticipations(ids, organizationId);
-			Factory.TagParticipationFactoryInstance.DeleteParticipants(ids, organizationId);
-			*/
 		}
 		return deleted;
 	}

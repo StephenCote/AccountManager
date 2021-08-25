@@ -29,7 +29,6 @@ import org.cote.accountmanager.objects.types.ParticipationEnumType;
 
 
 public class ProcessParticipationFactory extends AccelerantParticipationFactory {
-	/// static{ org.cote.accountmanager.data.Factories.registerClass(FactoryEnumType.PROCESSPARTICIPATION, ProcessParticipationFactory.class); }
 	public ProcessParticipationFactory(){
 		super(ParticipationEnumType.PROCESS, "processparticipation");
 		this.haveAffect = true;

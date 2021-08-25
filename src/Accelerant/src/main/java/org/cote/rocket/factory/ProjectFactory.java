@@ -47,6 +47,7 @@ import org.cote.accountmanager.objects.DirectoryGroupType;
 import org.cote.accountmanager.objects.NameIdType;
 import org.cote.accountmanager.objects.ProcessingInstructionType;
 import org.cote.accountmanager.objects.UserType;
+import org.cote.accountmanager.objects.types.ColumnEnumType;
 import org.cote.accountmanager.objects.types.FactoryEnumType;
 import org.cote.accountmanager.objects.types.NameEnumType;
 import org.cote.propellant.objects.ProjectType;
@@ -58,17 +59,18 @@ import org.cote.rocket.query.QueryFields;
 
 public class ProjectFactory extends NameIdGroupFactory {
 	
-	/// static{ org.cote.accountmanager.data.Factories.registerClass(FactoryEnumType.PROJECT, ProjectFactory.class); }
 	public ProjectFactory(){
 		super();
-		this.tableNames.add("project");
+		this.primaryTableName = "project";
+		this.tableNames.add(primaryTableName);
 		factoryType = FactoryEnumType.PROJECT;
 		this.hasObjectId = true;
 	}
 	
+	@Override
 	protected void configureTableRestrictions(DataTable table){
-		if(table.getName().equalsIgnoreCase("project")){
-			/// table.setRestrictSelectColumn("logicalid", true);
+		if(table.getName().equalsIgnoreCase(primaryTableName)){
+			/// restrict columns
 		}
 	}
 	@Override
@@ -91,7 +93,7 @@ public class ProjectFactory extends NameIdGroupFactory {
 	public <T> void populate(T obj) throws FactoryException, ArgumentException
 	{
 		ProjectType project = (ProjectType)obj;
-		if(project.getPopulated()) return;
+		if(project.getPopulated().booleanValue()) return;
 		
 		project.getBlueprints().addAll(((ProjectParticipationFactory)Factories.getFactory(FactoryEnumType.PROJECTPARTICIPATION)).getModelsFromParticipation(project));
 		project.getRequirements().addAll(((ProjectParticipationFactory)Factories.getFactory(FactoryEnumType.PROJECTPARTICIPATION)).getRequirementsFromParticipation(project));
@@ -122,11 +124,11 @@ public class ProjectFactory extends NameIdGroupFactory {
 		ProjectType obj = (ProjectType)object;
 		if (obj.getGroupId() == null) throw new FactoryException("Cannot add new Project without a group");
 
-		DataRow row = prepareAdd(obj, "project");
+		DataRow row = prepareAdd(obj, primaryTableName);
 		try{
-			row.setCellValue("description", obj.getDescription());
-			row.setCellValue("groupid", obj.getGroupId());
-			if(obj.getSchedule() != null) row.setCellValue("scheduleid", obj.getSchedule().getId()); 
+			row.setCellValue(Columns.get(ColumnEnumType.DESCRIPTION), obj.getDescription());
+			row.setCellValue(Columns.get(ColumnEnumType.GROUPID), obj.getGroupId());
+			if(obj.getSchedule() != null) row.setCellValue(Columns.get(ColumnEnumType.SCHEDULEID), obj.getSchedule().getId()); 
 			if (insertRow(row)){
 				try{
 					ProjectType cobj = (bulkMode ? obj : (ProjectType)getByNameInGroup(obj.getName(), ((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getDirectoryById(obj.getGroupId(), obj.getOrganizationId())));
@@ -189,10 +191,10 @@ public class ProjectFactory extends NameIdGroupFactory {
 		newObj.setNameType(NameEnumType.PROJECT);
 		super.read(rset, newObj);
 		readGroup(rset, newObj);
-		newObj.setDescription(rset.getString("description"));
-		long schedule_id = rset.getLong("scheduleid");
-		///logger.info("TEST: " + schedule_id);
-		if(schedule_id > 0L) newObj.setSchedule((ScheduleType)((ScheduleFactory)Factories.getFactory(FactoryEnumType.SCHEDULE)).getById(schedule_id, newObj.getOrganizationId()));
+		newObj.setDescription(rset.getString(Columns.get(ColumnEnumType.DESCRIPTION)));
+		long scheduleId = rset.getLong(Columns.get(ColumnEnumType.SCHEDULEID));
+
+		if(scheduleId > 0L) newObj.setSchedule((ScheduleType)((ScheduleFactory)Factories.getFactory(FactoryEnumType.SCHEDULE)).getById(scheduleId, newObj.getOrganizationId()));
 		return newObj;
 	}
 	@Override
@@ -208,14 +210,13 @@ public class ProjectFactory extends NameIdGroupFactory {
 				for(int i = 0; i < maps.length;i++) set.add(maps[i].getParticipantId());
 				
 				for(int i = 0; i < data.getModules().size();i++){
-					if(set.contains(data.getModules().get(i).getId())== false){
+					if(!set.contains(data.getModules().get(i).getId())){
 						((ProjectParticipationFactory)Factories.getFactory(FactoryEnumType.PROJECTPARTICIPATION)).add(((ProjectParticipationFactory)Factories.getFactory(FactoryEnumType.PROJECTPARTICIPATION)).newModuleParticipation(data,data.getModules().get(i)));
 					}
 					else{
 						set.remove(data.getModules().get(i).getId());
 					}
 				}
-//				System.out.println("Net delete Module parts: " + set.size());
 				((ProjectParticipationFactory)Factories.getFactory(FactoryEnumType.PROJECTPARTICIPATION)).deleteParticipantsForParticipation(ArrayUtils.toPrimitive(set.toArray(new Long[0])), data, data.getOrganizationId());
 				
 				/// Stages
@@ -224,14 +225,13 @@ public class ProjectFactory extends NameIdGroupFactory {
 				for(int i = 0; i < maps.length;i++) set.add(maps[i].getParticipantId());
 				
 				for(int i = 0; i < data.getStages().size();i++){
-					if(set.contains(data.getStages().get(i).getId())== false){
+					if(!set.contains(data.getStages().get(i).getId())){
 						((ProjectParticipationFactory)Factories.getFactory(FactoryEnumType.PROJECTPARTICIPATION)).add(((ProjectParticipationFactory)Factories.getFactory(FactoryEnumType.PROJECTPARTICIPATION)).newStageParticipation(data,data.getStages().get(i)));
 					}
 					else{
 						set.remove(data.getStages().get(i).getId());
 					}
 				}
-//				System.out.println("Net delete Stage parts: " + set.size());
 				((ProjectParticipationFactory)Factories.getFactory(FactoryEnumType.PROJECTPARTICIPATION)).deleteParticipantsForParticipation(ArrayUtils.toPrimitive(set.toArray(new Long[0])), data, data.getOrganizationId());
 
 				/// Blueprints
@@ -240,16 +240,14 @@ public class ProjectFactory extends NameIdGroupFactory {
 				for(int i = 0; i < maps.length;i++) set.add(maps[i].getParticipantId());
 				
 				for(int i = 0; i < data.getBlueprints().size();i++){
-					if(set.contains(data.getBlueprints().get(i).getId())== false){
+					if(!set.contains(data.getBlueprints().get(i).getId())){
 						((ProjectParticipationFactory)Factories.getFactory(FactoryEnumType.PROJECTPARTICIPATION)).add(((ProjectParticipationFactory)Factories.getFactory(FactoryEnumType.PROJECTPARTICIPATION)).newModelParticipation(data,data.getBlueprints().get(i)));
 					}
 					else{
 						set.remove(data.getBlueprints().get(i).getId());
 					}
 				}
-//				System.out.println("Net delete Blueprint parts: " + set.size());
 				((ProjectParticipationFactory)Factories.getFactory(FactoryEnumType.PROJECTPARTICIPATION)).deleteParticipantsForParticipation(ArrayUtils.toPrimitive(set.toArray(new Long[0])), data, data.getOrganizationId());
-
 				
 				/// Requirements
 				set.clear();
@@ -257,16 +255,14 @@ public class ProjectFactory extends NameIdGroupFactory {
 				for(int i = 0; i < maps.length;i++) set.add(maps[i].getParticipantId());
 				
 				for(int i = 0; i < data.getRequirements().size();i++){
-					if(set.contains(data.getRequirements().get(i).getId())== false){
+					if(!set.contains(data.getRequirements().get(i).getId())){
 						((ProjectParticipationFactory)Factories.getFactory(FactoryEnumType.PROJECTPARTICIPATION)).add(((ProjectParticipationFactory)Factories.getFactory(FactoryEnumType.PROJECTPARTICIPATION)).newRequirementParticipation(data,data.getRequirements().get(i)));
 					}
 					else{
 						set.remove(data.getRequirements().get(i).getId());
 					}
 				}
-//				System.out.println("Net delete Requirement parts: " + set.size());
 				((ProjectParticipationFactory)Factories.getFactory(FactoryEnumType.PROJECTPARTICIPATION)).deleteParticipantsForParticipation(ArrayUtils.toPrimitive(set.toArray(new Long[0])), data, data.getOrganizationId());
-				
 				
 				/// Dependencies
 				set.clear();
@@ -274,14 +270,13 @@ public class ProjectFactory extends NameIdGroupFactory {
 				for(int i = 0; i < maps.length;i++) set.add(maps[i].getParticipantId());
 				
 				for(int i = 0; i < data.getDependencies().size();i++){
-					if(set.contains(data.getDependencies().get(i).getId())== false){
+					if(!set.contains(data.getDependencies().get(i).getId())){
 						((ProjectParticipationFactory)Factories.getFactory(FactoryEnumType.PROJECTPARTICIPATION)).add(((ProjectParticipationFactory)Factories.getFactory(FactoryEnumType.PROJECTPARTICIPATION)).newDependencyParticipation(data,data.getDependencies().get(i)));
 					}
 					else{
 						set.remove(data.getDependencies().get(i).getId());
 					}
 				}
-//				System.out.println("Net delete Dependency parts: " + set.size());
 				((ProjectParticipationFactory)Factories.getFactory(FactoryEnumType.PROJECTPARTICIPATION)).deleteParticipantsForParticipation(ArrayUtils.toPrimitive(set.toArray(new Long[0])), data, data.getOrganizationId());
 				
 				/// Artifacts
@@ -290,14 +285,13 @@ public class ProjectFactory extends NameIdGroupFactory {
 				for(int i = 0; i < maps.length;i++) set.add(maps[i].getParticipantId());
 				
 				for(int i = 0; i < data.getArtifacts().size();i++){
-					if(set.contains(data.getArtifacts().get(i).getId())== false){
+					if(!set.contains(data.getArtifacts().get(i).getId())){
 						((ProjectParticipationFactory)Factories.getFactory(FactoryEnumType.PROJECTPARTICIPATION)).add(((ProjectParticipationFactory)Factories.getFactory(FactoryEnumType.PROJECTPARTICIPATION)).newArtifactParticipation(data,data.getArtifacts().get(i)));
 					}
 					else{
 						set.remove(data.getArtifacts().get(i).getId());
 					}
 				}
-//				System.out.println("Net delete Artifact parts: " + set.size());
 				((ProjectParticipationFactory)Factories.getFactory(FactoryEnumType.PROJECTPARTICIPATION)).deleteParticipantsForParticipation(ArrayUtils.toPrimitive(set.toArray(new Long[0])), data, data.getOrganizationId());
 				
 			}
@@ -336,10 +330,6 @@ public class ProjectFactory extends NameIdGroupFactory {
 		if (deleted > 0)
 		{
 			((ProjectParticipationFactory)Factories.getFactory(FactoryEnumType.PROJECTPARTICIPATION)).deleteParticipations(ids, organizationId);
-			/*
-			Factory.DataParticipationFactoryInstance.DeleteParticipations(ids, organizationId);
-			Factory.TagParticipationFactoryInstance.DeleteParticipants(ids, organizationId);
-			*/
 		}
 		return deleted;
 	}

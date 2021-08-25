@@ -29,7 +29,6 @@ import org.cote.accountmanager.objects.types.ParticipationEnumType;
 
 
 public class ValidationRuleParticipationFactory extends AccelerantParticipationFactory {
-	/// static{ org.cote.accountmanager.data.Factories.registerClass(FactoryEnumType.VALIDATIONRULEPARTICIPATION, ValidationRuleParticipationFactory.class); }
 	public ValidationRuleParticipationFactory(){
 		super(ParticipationEnumType.VALIDATIONRULE, "validationruleparticipation");
 		this.haveAffect = true;

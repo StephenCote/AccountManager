@@ -40,6 +40,7 @@ import org.cote.accountmanager.objects.DirectoryGroupType;
 import org.cote.accountmanager.objects.NameIdType;
 import org.cote.accountmanager.objects.ProcessingInstructionType;
 import org.cote.accountmanager.objects.UserType;
+import org.cote.accountmanager.objects.types.ColumnEnumType;
 import org.cote.accountmanager.objects.types.FactoryEnumType;
 import org.cote.accountmanager.objects.types.NameEnumType;
 import org.cote.accountmanager.util.CalendarUtil;
@@ -52,30 +53,25 @@ import org.cote.rocket.query.QueryFields;
 
 public class ArtifactFactory extends NameIdGroupFactory {
 	
-	/// static{ org.cote.accountmanager.data.Factories.registerClass(FactoryEnumType.ARTIFACT, ArtifactFactory.class); }
 	public ArtifactFactory(){
 		super();
-		this.tableNames.add("artifact");
+		this.primaryTableName = "artifact";
+		this.tableNames.add(primaryTableName);
 		factoryType = FactoryEnumType.ARTIFACT;
 	}
 	
 	protected void configureTableRestrictions(DataTable table){
-		if(table.getName().equalsIgnoreCase("artifact")){
-			/// table.setRestrictSelectColumn("logicalid", true);
+		if(table.getName().equalsIgnoreCase(primaryTableName)){
+			/// restrict columns
 		}
 	}
 	
 	@Override
-	public<T> void depopulate(T obj) throws FactoryException, ArgumentException
-	{
-		
-	}
-	@Override
 	public <T> void populate(T obj) throws FactoryException, ArgumentException
 	{
 		ArtifactType artifact = (ArtifactType)obj;
-		if(artifact.getPopulated()) return;
-		List<NameIdType> arts = new ArrayList<NameIdType>();
+		if(artifact.getPopulated().booleanValue()) return;
+		List<NameIdType> arts = new ArrayList<>();
 		if(artifact.getNextTransitionId() > 0L){
 			arts = ((ArtifactFactory)Factories.getFactory(FactoryEnumType.ARTIFACT)).getById(artifact.getNextTransitionId(), artifact.getOrganizationId());
 			if(arts.size() > 0) artifact.setNextTransition((ArtifactType)arts.get(0));
@@ -117,10 +113,9 @@ public class ArtifactFactory extends NameIdGroupFactory {
 	public void mapBulkIds(NameIdType map){
 		super.mapBulkIds(map);
 		ArtifactType ait = (ArtifactType)map;
-		Long tmpId = 0L;
 		if(ait.getArtifactDataId().compareTo(0L) < 0){
-			tmpId = BulkFactories.getBulkFactory().getMappedId(ait.getArtifactDataId());
-			if(tmpId.compareTo(0L) > 0) ait.setArtifactDataId(tmpId.longValue());
+			Long tmpId = BulkFactories.getBulkFactory().getMappedId(ait.getArtifactDataId());
+			if(tmpId.compareTo(0L) > 0) ait.setArtifactDataId(tmpId);
 		}
 	}
 	@Override
@@ -129,15 +124,15 @@ public class ArtifactFactory extends NameIdGroupFactory {
 		ArtifactType obj = (ArtifactType)object;
 		if (obj.getGroupId() == null) throw new FactoryException("Cannot add new Artifact without a group");
 
-		DataRow row = prepareAdd(obj, "artifact");
+		DataRow row = prepareAdd(obj, primaryTableName);
 		try{
-			row.setCellValue("artifactdataid", obj.getArtifactDataId());
-			row.setCellValue("previoustransitionid",obj.getPreviousTransitionId());
-			row.setCellValue("nexttransitionid",obj.getNextTransitionId());
-			row.setCellValue("artifacttype", obj.getArtifactType().toString());
-			row.setCellValue("groupid", obj.getGroupId());
-			row.setCellValue("description", obj.getDescription());
-			row.setCellValue("createddate", obj.getCreatedDate());
+			row.setCellValue(Columns.get(ColumnEnumType.ARTIFACTDATAID), obj.getArtifactDataId());
+			row.setCellValue(Columns.get(ColumnEnumType.PREVIOUSTRANSITIONID),obj.getPreviousTransitionId());
+			row.setCellValue(Columns.get(ColumnEnumType.NEXTTRANSITIONID),obj.getNextTransitionId());
+			row.setCellValue(Columns.get(ColumnEnumType.ARTIFACTTYPE), obj.getArtifactType().toString());
+			row.setCellValue(Columns.get(ColumnEnumType.GROUPID), obj.getGroupId());
+			row.setCellValue(Columns.get(ColumnEnumType.DESCRIPTION), obj.getDescription());
+			row.setCellValue(Columns.get(ColumnEnumType.CREATEDDATE), obj.getCreatedDate());
 			if (insertRow(row)) return true;
 		}
 		catch(DataAccessException dae){
@@ -156,12 +151,12 @@ public class ArtifactFactory extends NameIdGroupFactory {
 		newObj.setNameType(NameEnumType.ARTIFACT);
 		super.read(rset, newObj);
 		readGroup(rset, newObj);
-		newObj.setArtifactDataId(rset.getLong("artifactdataid"));
-		newObj.setCreatedDate(CalendarUtil.getXmlGregorianCalendar(rset.getTimestamp("createddate")));
-		newObj.setArtifactType(ArtifactEnumType.valueOf(rset.getString("artifacttype")));
-		newObj.setNextTransitionId(rset.getLong("nexttransitionid"));
-		newObj.setPreviousTransitionId(rset.getLong("previoustransitionid"));
-		newObj.setDescription(rset.getString("description"));
+		newObj.setArtifactDataId(rset.getLong(Columns.get(ColumnEnumType.ARTIFACTDATAID)));
+		newObj.setCreatedDate(CalendarUtil.getXmlGregorianCalendar(rset.getTimestamp(Columns.get(ColumnEnumType.CREATEDDATE))));
+		newObj.setArtifactType(ArtifactEnumType.valueOf(rset.getString(Columns.get(ColumnEnumType.ARTIFACTTYPE))));
+		newObj.setNextTransitionId(rset.getLong(Columns.get(ColumnEnumType.NEXTTRANSITIONID)));
+		newObj.setPreviousTransitionId(rset.getLong(Columns.get(ColumnEnumType.PREVIOUSTRANSITIONID)));
+		newObj.setDescription(rset.getString(Columns.get(ColumnEnumType.DESCRIPTION)));
 		return newObj;
 	}
 	@Override

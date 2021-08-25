@@ -46,6 +46,7 @@ import org.cote.accountmanager.objects.DirectoryGroupType;
 import org.cote.accountmanager.objects.NameIdType;
 import org.cote.accountmanager.objects.ProcessingInstructionType;
 import org.cote.accountmanager.objects.UserType;
+import org.cote.accountmanager.objects.types.ColumnEnumType;
 import org.cote.accountmanager.objects.types.FactoryEnumType;
 import org.cote.accountmanager.objects.types.NameEnumType;
 import org.cote.propellant.objects.ProcessType;
@@ -55,28 +56,25 @@ import org.cote.rocket.query.QueryFields;
 
 public class ProcessFactory extends NameIdGroupFactory {
 	
-	/// static{ org.cote.accountmanager.data.Factories.registerClass(FactoryEnumType.PROCESS, ProcessFactory.class); }
 	public ProcessFactory(){
 		super();
-		this.tableNames.add("process");
+		this.primaryTableName = "process";
+		this.tableNames.add(primaryTableName);
 		factoryType = FactoryEnumType.PROCESS;
 	}
 	
+	@Override
 	protected void configureTableRestrictions(DataTable table){
-		if(table.getName().equalsIgnoreCase("process")){
-			/// table.setRestrictSelectColumn("logicalid", true);
+		if(table.getName().equalsIgnoreCase(primaryTableName)){
+			/// restrict columns
 		}
 	}
-	@Override
-	public<T> void depopulate(T obj) throws FactoryException, ArgumentException
-	{
-		
-	}
+
 	@Override
 	public <T> void populate(T obj) throws FactoryException, ArgumentException
 	{
 		ProcessType process = (ProcessType)obj;
-		if(process.getPopulated()) return;
+		if(process.getPopulated().booleanValue()) return;
 
 		process.getBudgets().addAll(((ProcessParticipationFactory)Factories.getFactory(FactoryEnumType.PROCESSPARTICIPATION)).getBudgetsFromParticipation(process));
 		process.getSteps().addAll(((ProcessParticipationFactory)Factories.getFactory(FactoryEnumType.PROCESSPARTICIPATION)).getProcessStepsFromParticipation(process));
@@ -103,12 +101,12 @@ public class ProcessFactory extends NameIdGroupFactory {
 		ProcessType obj = (ProcessType)object;
 		if (obj.getGroupId() == null) throw new FactoryException("Cannot add new Process without a group");
 
-		DataRow row = prepareAdd(obj, "process");
+		DataRow row = prepareAdd(obj, primaryTableName);
 		try{
-			row.setCellValue("iterates",obj.getIterates());
-			row.setCellValue("logicalorder",obj.getLogicalOrder());
-			row.setCellValue("description", obj.getDescription());
-			row.setCellValue("groupid", obj.getGroupId());
+			row.setCellValue(Columns.get(ColumnEnumType.ITERATES),obj.getIterates());
+			row.setCellValue(Columns.get(ColumnEnumType.LOGICALORDER),obj.getLogicalOrder());
+			row.setCellValue(Columns.get(ColumnEnumType.DESCRIPTION), obj.getDescription());
+			row.setCellValue(Columns.get(ColumnEnumType.GROUPID), obj.getGroupId());
 			if (insertRow(row)){
 				ProcessType cobj = (bulkMode ? obj : (ProcessType)getByNameInGroup(obj.getName(), ((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getDirectoryById(obj.getGroupId(), obj.getOrganizationId())));
 				if(cobj == null) throw new DataAccessException("Failed to retrieve new object");
@@ -129,10 +127,7 @@ public class ProcessFactory extends NameIdGroupFactory {
 				return true;
 			}
 		}
-		catch(DataAccessException dae){
-			throw new FactoryException(dae.getMessage());
-		}
-		catch(ArgumentException ae){
+		catch(DataAccessException | ArgumentException ae){
 			throw new FactoryException(ae.getMessage());
 		}
 		return false;
@@ -148,9 +143,9 @@ public class ProcessFactory extends NameIdGroupFactory {
 		newObj.setNameType(NameEnumType.PROCESS);
 		super.read(rset, newObj);
 		readGroup(rset, newObj);
-		newObj.setIterates(rset.getBoolean("iterates"));
-		newObj.setDescription(rset.getString("description"));
-		newObj.setLogicalOrder(rset.getInt("logicalorder"));
+		newObj.setIterates(rset.getBoolean(Columns.get(ColumnEnumType.ITERATES)));
+		newObj.setDescription(rset.getString(Columns.get(ColumnEnumType.DESCRIPTION)));
+		newObj.setLogicalOrder(rset.getInt(Columns.get(ColumnEnumType.LOGICALORDER)));
 
 		return newObj;
 	}
@@ -170,14 +165,13 @@ public class ProcessFactory extends NameIdGroupFactory {
 				for(int i = 0; i < maps.length;i++) set.add(maps[i].getParticipantId());
 				
 				for(int i = 0; i < data.getBudgets().size();i++){
-					if(set.contains(data.getBudgets().get(i).getId())== false){
+					if(!set.contains(data.getBudgets().get(i).getId())){
 						((ProcessParticipationFactory)Factories.getFactory(FactoryEnumType.PROCESSPARTICIPATION)).add(((ProcessParticipationFactory)Factories.getFactory(FactoryEnumType.PROCESSPARTICIPATION)).newBudgetParticipation(data,data.getBudgets().get(i)));
 					}
 					else{
 						set.remove(data.getBudgets().get(i).getId());
 					}
 				}
-//				System.out.println("Net delete budget parts: " + set.size());
 				((ProcessParticipationFactory)Factories.getFactory(FactoryEnumType.PROCESSPARTICIPATION)).deleteParticipantsForParticipation(ArrayUtils.toPrimitive(set.toArray(new Long[0])), data, data.getOrganizationId());
 				
 				/// ProcessSteps
@@ -186,16 +180,14 @@ public class ProcessFactory extends NameIdGroupFactory {
 				for(int i = 0; i < maps.length;i++) set.add(maps[i].getParticipantId());
 				
 				for(int i = 0; i < data.getSteps().size();i++){
-					if(set.contains(data.getSteps().get(i).getId())== false){
+					if(!set.contains(data.getSteps().get(i).getId())){
 						((ProcessParticipationFactory)Factories.getFactory(FactoryEnumType.PROCESSPARTICIPATION)).add(((ProcessParticipationFactory)Factories.getFactory(FactoryEnumType.PROCESSPARTICIPATION)).newProcessStepParticipation(data,data.getSteps().get(i)));
 					}
 					else{
 						set.remove(data.getSteps().get(i).getId());
 					}
 				}
-//				System.out.println("Net delete ProcessStep parts: " + set.size());
 				((ProcessParticipationFactory)Factories.getFactory(FactoryEnumType.PROCESSPARTICIPATION)).deleteParticipantsForParticipation(ArrayUtils.toPrimitive(set.toArray(new Long[0])), data, data.getOrganizationId());
-
 				
 				outBool = true;
 			}
@@ -234,10 +226,6 @@ public class ProcessFactory extends NameIdGroupFactory {
 		if (deleted > 0)
 		{
 			((ProcessParticipationFactory)Factories.getFactory(FactoryEnumType.PROCESSPARTICIPATION)).deleteParticipations(ids, organizationId);
-			/*
-			Factory.DataParticipationFactoryInstance.DeleteParticipations(ids, organizationId);
-			Factory.TagParticipationFactoryInstance.DeleteParticipants(ids, organizationId);
-			*/
 		}
 		return deleted;
 	}

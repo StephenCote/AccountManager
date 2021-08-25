@@ -48,6 +48,7 @@ import org.cote.accountmanager.objects.DirectoryGroupType;
 import org.cote.accountmanager.objects.NameIdType;
 import org.cote.accountmanager.objects.ProcessingInstructionType;
 import org.cote.accountmanager.objects.UserType;
+import org.cote.accountmanager.objects.types.ColumnEnumType;
 import org.cote.accountmanager.objects.types.FactoryEnumType;
 import org.cote.accountmanager.objects.types.NameEnumType;
 import org.cote.propellant.objects.WorkType;
@@ -58,16 +59,17 @@ import org.cote.rocket.query.QueryFields;
 
 public class WorkFactory extends NameIdGroupFactory {
 	
-	/// static{ org.cote.accountmanager.data.Factories.registerClass(FactoryEnumType.WORK, WorkFactory.class); }
 	public WorkFactory(){
 		super();
-		this.tableNames.add("work");
+		this.primaryTableName = "work";
+		this.tableNames.add(primaryTableName);
 		factoryType = FactoryEnumType.WORK;
 	}
 	
+	@Override
 	protected void configureTableRestrictions(DataTable table){
-		if(table.getName().equalsIgnoreCase("work")){
-			/// table.setRestrictSelectColumn("logicalid", true);
+		if(table.getName().equalsIgnoreCase(primaryTableName)){
+			/// restrict columns
 		}
 	}
 	@Override
@@ -89,7 +91,7 @@ public class WorkFactory extends NameIdGroupFactory {
 	{
 
 		WorkType work = (WorkType)obj;
-		if(work.getPopulated()) return;
+		if(work.getPopulated().booleanValue()) return;
 
 		work.getArtifacts().addAll(((WorkParticipationFactory)Factories.getFactory(FactoryEnumType.WORKPARTICIPATION)).getArtifactsFromParticipation(work));
 		work.getResources().addAll(((WorkParticipationFactory)Factories.getFactory(FactoryEnumType.WORKPARTICIPATION)).getResourcesFromParticipation(work));
@@ -118,11 +120,11 @@ public class WorkFactory extends NameIdGroupFactory {
 		WorkType obj = (WorkType)object;
 		if (obj.getGroupId() == null) throw new FactoryException("Cannot add new Work without a group");
 
-		DataRow row = prepareAdd(obj, "work");
+		DataRow row = prepareAdd(obj, primaryTableName);
 		try{
-			row.setCellValue("logicalorder",obj.getLogicalOrder());
-			row.setCellValue("description", obj.getDescription());
-			row.setCellValue("groupid", obj.getGroupId());
+			row.setCellValue(Columns.get(ColumnEnumType.LOGICALORDER),obj.getLogicalOrder());
+			row.setCellValue(Columns.get(ColumnEnumType.DESCRIPTION), obj.getDescription());
+			row.setCellValue(Columns.get(ColumnEnumType.GROUPID), obj.getGroupId());
 			if (insertRow(row)){
 				try{
 					WorkType cobj = (bulkMode ? obj : (WorkType)getByNameInGroup(obj.getName(), ((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getDirectoryById(obj.getGroupId(), obj.getOrganizationId())));
@@ -175,8 +177,8 @@ public class WorkFactory extends NameIdGroupFactory {
 		newObj.setNameType(NameEnumType.WORK);
 		super.read(rset, newObj);
 		readGroup(rset, newObj);
-		newObj.setDescription(rset.getString("description"));
-		newObj.setLogicalOrder(rset.getInt("logicalorder"));
+		newObj.setDescription(rset.getString(Columns.get(ColumnEnumType.DESCRIPTION)));
+		newObj.setLogicalOrder(rset.getInt(Columns.get(ColumnEnumType.LOGICALORDER)));
 		return newObj;
 	}
 	@Override
@@ -194,7 +196,7 @@ public class WorkFactory extends NameIdGroupFactory {
 				for(int i = 0; i < maps.length;i++) set.add(maps[i].getParticipantId());
 				
 				for(int i = 0; i < data.getResources().size();i++){
-					if(set.contains(data.getResources().get(i).getId())== false){
+					if(!set.contains(data.getResources().get(i).getId())){
 						part = ((WorkParticipationFactory)Factories.getFactory(FactoryEnumType.WORKPARTICIPATION)).newResourceParticipation(data,data.getResources().get(i));
 						if(bulkMode) BulkFactories.getBulkFactory().createBulkEntry(null, FactoryEnumType.WORKPARTICIPATION, part);
 						else ((WorkParticipationFactory)Factories.getFactory(FactoryEnumType.WORKPARTICIPATION)).add(part);
@@ -205,7 +207,6 @@ public class WorkFactory extends NameIdGroupFactory {
 					}
 				}
 				delIds.addAll(Arrays.asList(set.toArray(new Long[0])));
-				///if(set.size() > 0) ((WorkParticipationFactory)Factories.getFactory(FactoryEnumType.WORKPARTICIPATION)).deleteParticipantsForParticipation(ArrayUtils.toPrimitive(set.toArray(new Long[0])), data, data.getOrganizationId());
 				
 				/// Tasks
 				set.clear();
@@ -213,7 +214,7 @@ public class WorkFactory extends NameIdGroupFactory {
 				for(int i = 0; i < maps.length;i++) set.add(maps[i].getParticipantId());
 				
 				for(int i = 0; i < data.getTasks().size();i++){
-					if(set.contains(data.getTasks().get(i).getId())== false){
+					if(!set.contains(data.getTasks().get(i).getId())){
 						part = ((WorkParticipationFactory)Factories.getFactory(FactoryEnumType.WORKPARTICIPATION)).newTaskParticipation(data,data.getTasks().get(i));
 						if(bulkMode) BulkFactories.getBulkFactory().createBulkEntry(null, FactoryEnumType.WORKPARTICIPATION, part);
 						else ((WorkParticipationFactory)Factories.getFactory(FactoryEnumType.WORKPARTICIPATION)).add(part);
@@ -224,7 +225,6 @@ public class WorkFactory extends NameIdGroupFactory {
 					}
 				}
 				delIds.addAll(Arrays.asList(set.toArray(new Long[0])));
-				///if(set.size() > 0) ((WorkParticipationFactory)Factories.getFactory(FactoryEnumType.WORKPARTICIPATION)).deleteParticipantsForParticipation(ArrayUtils.toPrimitive(set.toArray(new Long[0])), data, data.getOrganizationId());
 				
 				/// Dependencies
 				set.clear();
@@ -232,7 +232,7 @@ public class WorkFactory extends NameIdGroupFactory {
 				for(int i = 0; i < maps.length;i++) set.add(maps[i].getParticipantId());
 				
 				for(int i = 0; i < data.getDependencies().size();i++){
-					if(set.contains(data.getDependencies().get(i).getId())== false){
+					if(!set.contains(data.getDependencies().get(i).getId())){
 						part = ((WorkParticipationFactory)Factories.getFactory(FactoryEnumType.WORKPARTICIPATION)).newDependencyParticipation(data,data.getDependencies().get(i)); 
 						if(bulkMode) BulkFactories.getBulkFactory().createBulkEntry(null, FactoryEnumType.WORKPARTICIPATION, part);
 						else ((WorkParticipationFactory)Factories.getFactory(FactoryEnumType.WORKPARTICIPATION)).add(part);
@@ -244,7 +244,6 @@ public class WorkFactory extends NameIdGroupFactory {
 				}
 
 				delIds.addAll(Arrays.asList(set.toArray(new Long[0])));
-				///if(set.size() > 0) ((WorkParticipationFactory)Factories.getFactory(FactoryEnumType.WORKPARTICIPATION)).deleteParticipantsForParticipation(ArrayUtils.toPrimitive(set.toArray(new Long[0])), data, data.getOrganizationId());
 				
 				/// Artifacts
 				set.clear();
@@ -252,7 +251,7 @@ public class WorkFactory extends NameIdGroupFactory {
 				for(int i = 0; i < maps.length;i++) set.add(maps[i].getParticipantId());
 				
 				for(int i = 0; i < data.getArtifacts().size();i++){
-					if(set.contains(data.getArtifacts().get(i).getId())== false){
+					if(!set.contains(data.getArtifacts().get(i).getId())){
 						part = ((WorkParticipationFactory)Factories.getFactory(FactoryEnumType.WORKPARTICIPATION)).newArtifactParticipation(data,data.getArtifacts().get(i));
 						if(bulkMode) BulkFactories.getBulkFactory().createBulkEntry(null, FactoryEnumType.WORKPARTICIPATION, part);
 						else ((WorkParticipationFactory)Factories.getFactory(FactoryEnumType.WORKPARTICIPATION)).add(part);
@@ -262,10 +261,8 @@ public class WorkFactory extends NameIdGroupFactory {
 					}
 				}
 
-				//if(set.size() > 0) ((WorkParticipationFactory)Factories.getFactory(FactoryEnumType.WORKPARTICIPATION)).deleteParticipantsForParticipation(ArrayUtils.toPrimitive(set.toArray(new Long[0])), data, data.getOrganizationId());
 				delIds.addAll(Arrays.asList(set.toArray(new Long[0])));
 				if(!delIds.isEmpty()) ((WorkParticipationFactory)Factories.getFactory(FactoryEnumType.WORKPARTICIPATION)).deleteParticipantsForParticipation(ArrayUtils.toPrimitive(delIds.toArray(new Long[0])), data, data.getOrganizationId());
-				
 				
 				outBool = true;
 			}
@@ -300,15 +297,7 @@ public class WorkFactory extends NameIdGroupFactory {
 	}
 	public int deleteWorksByIds(long[] ids, long organizationId) throws FactoryException
 	{
-		int deleted = deleteById(ids, organizationId);
-		if (deleted > 0)
-		{
-			/*
-			Factory.DataParticipationFactoryInstance.DeleteParticipations(ids, organizationId);
-			Factory.TagParticipationFactoryInstance.DeleteParticipants(ids, organizationId);
-			*/
-		}
-		return deleted;
+		return deleteById(ids, organizationId);
 	}
 	public int deleteWorksInGroup(DirectoryGroupType group)  throws FactoryException
 	{

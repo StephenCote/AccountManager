@@ -35,7 +35,7 @@ import org.cote.accountmanager.objects.types.PermissionEnumType;
 import org.cote.propellant.objects.LifecycleType;
 
 public class LifecycleParticipationFactory extends AccelerantParticipationFactory {
-	/// static{ org.cote.accountmanager.data.Factories.registerClass(FactoryEnumType.LIFECYCLEPARTICIPATION, LifecycleParticipationFactory.class); }
+
 	public LifecycleParticipationFactory(){
 		super(ParticipationEnumType.LIFECYCLE, "lifecycleparticipation");
 		this.haveAffect = true;

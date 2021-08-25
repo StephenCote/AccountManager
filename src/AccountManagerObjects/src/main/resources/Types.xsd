@@ -940,6 +940,8 @@
 			<enumeration value="AUDITRETENTIONTYPE"></enumeration>
 			<enumeration value="USERTYPE"></enumeration>
 			<enumeration value="USERSTATUS"></enumeration>
+			<enumeration value="ENDDATE"></enumeration>
+			<enumeration value="NOTEID"></enumeration>
     	</restriction>
     </simpleType>
 </schema>

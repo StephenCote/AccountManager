@@ -49,6 +49,7 @@ import org.cote.accountmanager.objects.NameIdDirectoryGroupType;
 import org.cote.accountmanager.objects.NameIdType;
 import org.cote.accountmanager.objects.ProcessingInstructionType;
 import org.cote.accountmanager.objects.UserType;
+import org.cote.accountmanager.objects.types.ColumnEnumType;
 import org.cote.accountmanager.objects.types.FactoryEnumType;
 import org.cote.accountmanager.objects.types.NameEnumType;
 import org.cote.accountmanager.util.CalendarUtil;
@@ -60,17 +61,18 @@ import org.cote.rocket.query.QueryFields;
 
 public class EventFactory extends NameIdGroupFactory {
 	
-	/// static{ org.cote.accountmanager.data.Factories.registerClass(FactoryEnumType.EVENT, EventFactory.class); }
 	public EventFactory(){
 		super();
-		this.tableNames.add("event");
+		this.primaryTableName = "event";
+		this.tableNames.add(primaryTableName);
 		this.hasParentId = true;
 		factoryType = FactoryEnumType.EVENT;
 	}
 	
+	@Override
 	protected void configureTableRestrictions(DataTable table){
-		if(table.getName().equalsIgnoreCase("event")){
-			/// table.setRestrictSelectColumn("logicalid", true);
+		if(table.getName().equalsIgnoreCase(primaryTableName)){
+			/// restrict columns
 		}
 	}
 	
@@ -106,7 +108,7 @@ public class EventFactory extends NameIdGroupFactory {
 	public <T> void populate(T obj) throws FactoryException, ArgumentException
 	{
 		EventType cobj = (EventType)obj;
-		if(cobj.getPopulated()) return;
+		if(cobj.getPopulated().booleanValue()) return;
 		cobj.getChildEvents().addAll(getChildEventList(cobj));
 		cobj.getActors().addAll(((EventParticipationFactory)Factories.getFactory(FactoryEnumType.EVENTPARTICIPATION)).getActorsFromParticipation(cobj));
 		cobj.getObservers().addAll(((EventParticipationFactory)Factories.getFactory(FactoryEnumType.EVENTPARTICIPATION)).getObserversFromParticipation(cobj));
@@ -151,17 +153,15 @@ public class EventFactory extends NameIdGroupFactory {
 		EventType obj = (EventType)object;
 		if (obj.getGroupId() == null) throw new FactoryException("Cannot add new Event without a group");
 
-		DataRow row = prepareAdd(obj, "event");
+		DataRow row = prepareAdd(obj, primaryTableName);
 		try{
-			row.setCellValue("startdate",obj.getStartDate());
-			row.setCellValue("enddate",obj.getEndDate());
-			row.setCellValue("locationid",(obj.getLocation() != null ? obj.getLocation().getId() : 0L));
-			row.setCellValue("description", obj.getDescription());
-			row.setCellValue("eventtype", obj.getEventType().toString());
-			row.setCellValue("groupid", obj.getGroupId());
+			row.setCellValue(Columns.get(ColumnEnumType.STARTDATE),obj.getStartDate());
+			row.setCellValue(Columns.get(ColumnEnumType.ENDDATE),obj.getEndDate());
+			row.setCellValue(Columns.get(ColumnEnumType.LOCATIONID),(obj.getLocation() != null ? obj.getLocation().getId() : 0L));
+			row.setCellValue(Columns.get(ColumnEnumType.DESCRIPTION), obj.getDescription());
+			row.setCellValue(Columns.get(ColumnEnumType.EVENTTYPE), obj.getEventType().toString());
+			row.setCellValue(Columns.get(ColumnEnumType.GROUPID), obj.getGroupId());
 			if (insertRow(row)){
-				
-				//EventType cobj = (bulkMode ? obj : (EventType)getByNameInGroup(obj.getName(), ((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getDirectoryById(obj.getGroupId(), obj.getOrganizationId())));
 				EventType cobj = null;
 				if(bulkMode) cobj = obj;
 				else if(obj.getParentId() > 0L){
@@ -185,7 +185,6 @@ public class EventFactory extends NameIdGroupFactory {
 					if(bulkMode) ((IParticipationFactory)Factories.getBulkFactory(FactoryEnumType.EVENTPARTICIPATION)).add(part);
 					else ((EventParticipationFactory)Factories.getFactory(FactoryEnumType.EVENTPARTICIPATION)).add(part);
 				}
-				//logger.info("Event Entry Traits: " + obj.getEntryTraits().size());
 				for(int i = 0; i < obj.getEntryTraits().size();i++){
 					part = ((EventParticipationFactory)Factories.getFactory(FactoryEnumType.EVENTPARTICIPATION)).newEntryTraitParticipation(cobj,obj.getEntryTraits().get(i));
 					if(bulkMode) ((IParticipationFactory)Factories.getBulkFactory(FactoryEnumType.EVENTPARTICIPATION)).add(part);
@@ -240,13 +239,12 @@ public class EventFactory extends NameIdGroupFactory {
 		super.read(rset, newObj);
 		readGroup(rset, newObj);
 
-		// TODO: set time, cost
-		newObj.setStartDate(CalendarUtil.getXmlGregorianCalendar(rset.getTimestamp("startdate")));
-		newObj.setEndDate(CalendarUtil.getXmlGregorianCalendar(rset.getTimestamp("enddate")));
-		newObj.setDescription(rset.getString("description"));
-		long locId = rset.getLong("locationid");
+		newObj.setStartDate(CalendarUtil.getXmlGregorianCalendar(rset.getTimestamp(Columns.get(ColumnEnumType.STARTDATE))));
+		newObj.setEndDate(CalendarUtil.getXmlGregorianCalendar(rset.getTimestamp(Columns.get(ColumnEnumType.ENDDATE))));
+		newObj.setDescription(rset.getString(Columns.get(ColumnEnumType.DESCRIPTION)));
+		long locId = rset.getLong(Columns.get(ColumnEnumType.LOCATIONID));
 		if(locId > 0L) newObj.setLocation(((LocationFactory)Factories.getFactory(FactoryEnumType.LOCATION)).getById(locId, newObj.getOrganizationId()));
-		newObj.setEventType(EventEnumType.valueOf(rset.getString("eventtype")));
+		newObj.setEventType(EventEnumType.valueOf(rset.getString(Columns.get(ColumnEnumType.EVENTTYPE))));
 
 		return newObj;
 	}
@@ -408,15 +406,7 @@ public class EventFactory extends NameIdGroupFactory {
 	}
 	public int deleteEventsByIds(long[] ids, long organizationId) throws FactoryException
 	{
-		int deleted = deleteById(ids, organizationId);
-		if (deleted > 0)
-		{
-			/*
-			Factory.DataParticipationFactoryInstance.DeleteParticipations(ids, organizationId);
-			Factory.TagParticipationFactoryInstance.DeleteParticipants(ids, organizationId);
-			*/
-		}
-		return deleted;
+		return deleteById(ids, organizationId);
 	}
 	public int deleteEventsInGroup(DirectoryGroupType group)  throws FactoryException
 	{

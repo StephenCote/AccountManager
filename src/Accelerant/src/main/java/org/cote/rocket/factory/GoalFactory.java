@@ -44,6 +44,7 @@ import org.cote.accountmanager.objects.DirectoryGroupType;
 import org.cote.accountmanager.objects.NameIdType;
 import org.cote.accountmanager.objects.ProcessingInstructionType;
 import org.cote.accountmanager.objects.UserType;
+import org.cote.accountmanager.objects.types.ColumnEnumType;
 import org.cote.accountmanager.objects.types.FactoryEnumType;
 import org.cote.accountmanager.objects.types.NameEnumType;
 import org.cote.propellant.objects.BudgetType;
@@ -57,16 +58,17 @@ import org.cote.rocket.Factories;
 import org.cote.rocket.query.QueryFields;
 public class GoalFactory extends NameIdGroupFactory {
 	
-	/// static{ org.cote.accountmanager.data.Factories.registerClass(FactoryEnumType.GOAL, GoalFactory.class); }
 	public GoalFactory(){
 		super();
-		this.tableNames.add("goal");
+		this.primaryTableName = "goal";
+		this.tableNames.add(primaryTableName);
 		factoryType = FactoryEnumType.GOAL;
 	}
 
+	@Override
 	protected void configureTableRestrictions(DataTable table){
-		if(table.getName().equalsIgnoreCase("goal")){
-			/// table.setRestrictSelectColumn("logicalid", true);
+		if(table.getName().equalsIgnoreCase(primaryTableName)){
+			/// restrict columns
 		}
 	}
 	@Override
@@ -81,7 +83,7 @@ public class GoalFactory extends NameIdGroupFactory {
 	public <T> void populate(T obj) throws FactoryException, ArgumentException
 	{
 		GoalType goal = (GoalType)obj;
-		if(goal.getPopulated()) return;
+		if(goal.getPopulated().booleanValue()) return;
 		goal.getDependencies().addAll(((GoalParticipationFactory)Factories.getFactory(FactoryEnumType.GOALPARTICIPATION)).getDependenciesFromParticipation(goal));
 		goal.getRequirements().addAll(((GoalParticipationFactory)Factories.getFactory(FactoryEnumType.GOALPARTICIPATION)).getRequirementsFromParticipation(goal));
 		goal.getCases().addAll(((GoalParticipationFactory)Factories.getFactory(FactoryEnumType.GOALPARTICIPATION)).getCasesFromParticipation(goal));
@@ -107,17 +109,17 @@ public class GoalFactory extends NameIdGroupFactory {
 		GoalType obj = (GoalType)object;
 		if (obj.getGroupId() == null) throw new FactoryException("Cannot add new Goal without a group");
 
-		DataRow row = prepareAdd(obj, "goal");
+		DataRow row = prepareAdd(obj, primaryTableName);
 		try{
-			row.setCellValue("description",obj.getDescription());
-			row.setCellValue("groupid", obj.getGroupId());
-			row.setCellValue("goaltype", obj.getGoalType().toString());
+			row.setCellValue(Columns.get(ColumnEnumType.DESCRIPTION),obj.getDescription());
+			row.setCellValue(Columns.get(ColumnEnumType.GROUPID), obj.getGroupId());
+			row.setCellValue(Columns.get(ColumnEnumType.GOALTYPE), obj.getGoalType().toString());
 			
-			row.setCellValue("logicalorder",obj.getLogicalOrder());
-			row.setCellValue("priority",obj.getPriority().toString());
-			if(obj.getSchedule() != null) row.setCellValue("scheduleid", obj.getSchedule().getId());
-			if(obj.getAssigned() != null) row.setCellValue("resourceid", obj.getAssigned().getId());
-			if(obj.getBudget() != null) row.setCellValue("budgetid", obj.getBudget().getId());
+			row.setCellValue(Columns.get(ColumnEnumType.LOGICALORDER),obj.getLogicalOrder());
+			row.setCellValue(Columns.get(ColumnEnumType.PRIORITY),obj.getPriority().toString());
+			if(obj.getSchedule() != null) row.setCellValue(Columns.get(ColumnEnumType.SCHEDULEID), obj.getSchedule().getId());
+			if(obj.getAssigned() != null) row.setCellValue(Columns.get(ColumnEnumType.RESOURCEID), obj.getAssigned().getId());
+			if(obj.getBudget() != null) row.setCellValue(Columns.get(ColumnEnumType.BUDGETID), obj.getBudget().getId());
 			if (insertRow(row)){
 
 				try{
@@ -162,20 +164,20 @@ public class GoalFactory extends NameIdGroupFactory {
 		newObj.setNameType(NameEnumType.GOAL);
 		super.read(rset, newObj);
 		readGroup(rset, newObj);
-		newObj.setDescription(rset.getString("description"));
-		newObj.setGoalType(GoalEnumType.valueOf(rset.getString("goaltype")));
+		newObj.setDescription(rset.getString(Columns.get(ColumnEnumType.DESCRIPTION)));
+		newObj.setGoalType(GoalEnumType.valueOf(rset.getString(Columns.get(ColumnEnumType.GOALTYPE))));
 		
-		newObj.setLogicalOrder(rset.getInt("logicalorder"));
-		newObj.setPriority(PriorityEnumType.fromValue(rset.getString("priority")));
+		newObj.setLogicalOrder(rset.getInt(Columns.get(ColumnEnumType.LOGICALORDER)));
+		newObj.setPriority(PriorityEnumType.fromValue(rset.getString(Columns.get(ColumnEnumType.PRIORITY))));
 		
-		long schedule_id = rset.getLong("scheduleid");
-		if(schedule_id > 0L) newObj.setSchedule((ScheduleType)((ScheduleFactory)Factories.getFactory(FactoryEnumType.SCHEDULE)).getById(schedule_id, newObj.getOrganizationId()));
+		long scheduleId = rset.getLong(Columns.get(ColumnEnumType.SCHEDULEID));
+		if(scheduleId > 0L) newObj.setSchedule((ScheduleType)((ScheduleFactory)Factories.getFactory(FactoryEnumType.SCHEDULE)).getById(scheduleId, newObj.getOrganizationId()));
 
-		long budget_id = rset.getLong("budgetid");
-		if(budget_id > 0L) newObj.setBudget((BudgetType)((BudgetFactory)Factories.getFactory(FactoryEnumType.BUDGET)).getById(budget_id, newObj.getOrganizationId()));
+		long budgetId = rset.getLong(Columns.get(ColumnEnumType.BUDGETID));
+		if(budgetId > 0L) newObj.setBudget((BudgetType)((BudgetFactory)Factories.getFactory(FactoryEnumType.BUDGET)).getById(budgetId, newObj.getOrganizationId()));
 
-		long resource_id = rset.getLong("resourceid");
-		if(resource_id > 0L) newObj.setAssigned((ResourceType)((ResourceFactory)Factories.getFactory(FactoryEnumType.RESOURCE)).getById(resource_id, newObj.getOrganizationId()));
+		long resourceId = rset.getLong(Columns.get(ColumnEnumType.RESOURCEID));
+		if(resourceId > 0L) newObj.setAssigned((ResourceType)((ResourceFactory)Factories.getFactory(FactoryEnumType.RESOURCE)).getById(resourceId, newObj.getOrganizationId()));
 
 
 		
@@ -194,7 +196,7 @@ public class GoalFactory extends NameIdGroupFactory {
 				for(int i = 0; i < maps.length;i++) set.add(maps[i].getParticipantId());
 				
 				for(int i = 0; i < data.getDependencies().size();i++){
-					if(set.contains(data.getDependencies().get(i).getId())== false){
+					if(!set.contains(data.getDependencies().get(i).getId())){
 						((GoalParticipationFactory)Factories.getFactory(FactoryEnumType.GOALPARTICIPATION)).add(((GoalParticipationFactory)Factories.getFactory(FactoryEnumType.GOALPARTICIPATION)).newDependencyParticipation(data,data.getDependencies().get(i)));
 					}
 					else{
@@ -208,7 +210,7 @@ public class GoalFactory extends NameIdGroupFactory {
 				for(int i = 0; i < maps.length;i++) set.add(maps[i].getParticipantId());
 				
 				for(int i = 0; i < data.getRequirements().size();i++){
-					if(set.contains(data.getRequirements().get(i).getId())== false){
+					if(!set.contains(data.getRequirements().get(i).getId())){
 						((GoalParticipationFactory)Factories.getFactory(FactoryEnumType.GOALPARTICIPATION)).add(((GoalParticipationFactory)Factories.getFactory(FactoryEnumType.GOALPARTICIPATION)).newRequirementParticipation(data,data.getRequirements().get(i)));
 					}
 					else{
@@ -222,7 +224,7 @@ public class GoalFactory extends NameIdGroupFactory {
 				for(int i = 0; i < maps.length;i++) set.add(maps[i].getParticipantId());
 				
 				for(int i = 0; i < data.getCases().size();i++){
-					if(set.contains(data.getCases().get(i).getId())== false){
+					if(!set.contains(data.getCases().get(i).getId())){
 						((GoalParticipationFactory)Factories.getFactory(FactoryEnumType.GOALPARTICIPATION)).add(((GoalParticipationFactory)Factories.getFactory(FactoryEnumType.GOALPARTICIPATION)).newCaseParticipation(data,data.getCases().get(i)));
 					}
 					else{
@@ -242,26 +244,7 @@ public class GoalFactory extends NameIdGroupFactory {
 		return outBool;
 
 	}
-	/*
-	protected <T,U> void deltaParticipation(T obj, ParticipantEnumType parType, List<U> list){
-		Set<Long> set = new HashSet<>();
-		NameIdType parObj = (NameIdType)obj;
-		BaseParticipationFactory bpf = Factories.getFactory(this.factoryType);
-		BaseParticipantType[] maps = convertList( bpf.getParticipations(new NameIdType[]{parObj}, parType)).toArray(new BaseParticipantType[0]);
-		for(int i = 0; i < maps.length;i++) set.add(maps[i].getParticipantId());
-		
-		for(int i = 0; i < data.getDependencies().size();i++){
-			if(set.contains(data.getDependencies().get(i).getId())== false){
-				((GoalParticipationFactory)Factories.getFactory(FactoryEnumType.GOALPARTICIPATION)).add(((GoalParticipationFactory)Factories.getFactory(FactoryEnumType.GOALPARTICIPATION)).newDependencyParticipation(data,data.getDependencies().get(i)));
-			}
-			else{
-				set.remove(data.getDependencies().get(i).getId());
-			}
-		}
-		((GoalParticipationFactory)Factories.getFactory(FactoryEnumType.GOALPARTICIPATION)).deleteParticipantsForParticipation(ArrayUtils.toPrimitive(set.toArray(new Long[0])), data, data.getOrganizationId());
 
-	}
-	*/
 	@Override
 	public void setFactoryFields(List<QueryField> fields, NameIdType map, ProcessingInstructionType instruction){
 		GoalType useMap = (GoalType)map;
@@ -292,15 +275,7 @@ public class GoalFactory extends NameIdGroupFactory {
 	}
 	public int deleteGoalsByIds(long[] ids, long organizationId) throws FactoryException
 	{
-		int deleted = deleteById(ids, organizationId);
-		if (deleted > 0)
-		{
-			/*
-			Factory.DataParticipationFactoryInstance.DeleteParticipations(ids, organizationId);
-			Factory.TagParticipationFactoryInstance.DeleteParticipants(ids, organizationId);
-			*/
-		}
-		return deleted;
+		return deleteById(ids, organizationId);
 	}
 	public int deleteGoalsInGroup(DirectoryGroupType group)  throws FactoryException
 	{

@@ -38,6 +38,7 @@ import org.cote.accountmanager.objects.DirectoryGroupType;
 import org.cote.accountmanager.objects.NameIdType;
 import org.cote.accountmanager.objects.ProcessingInstructionType;
 import org.cote.accountmanager.objects.UserType;
+import org.cote.accountmanager.objects.types.ColumnEnumType;
 import org.cote.accountmanager.objects.types.FactoryEnumType;
 import org.cote.accountmanager.objects.types.NameEnumType;
 import org.cote.propellant.objects.TraitType;
@@ -48,28 +49,25 @@ import org.cote.rocket.query.QueryFields;
 
 public class TraitFactory extends NameIdGroupFactory {
 	
-	/// static{ org.cote.accountmanager.data.Factories.registerClass(FactoryEnumType.TRAIT, TraitFactory.class); }
 	public TraitFactory(){
 		super();
-		this.tableNames.add("trait");
+		this.primaryTableName = "trait";
+		this.tableNames.add(primaryTableName);
 		factoryType = FactoryEnumType.TRAIT;
 	}
 	
+	@Override
 	protected void configureTableRestrictions(DataTable table){
-		if(table.getName().equalsIgnoreCase("trait")){
-			/// table.setRestrictSelectColumn("logicalid", true);
+		if(table.getName().equalsIgnoreCase(primaryTableName)){
+			/// restrict columns
 		}
 	}
-	@Override
-	public<T> void depopulate(T obj) throws FactoryException, ArgumentException
-	{
-		
-	}
+
 	@Override
 	public <T> void populate(T obj) throws FactoryException, ArgumentException
 	{
 		TraitType cobj = (TraitType)obj;
-		if(cobj.getPopulated()) return;
+		if(cobj.getPopulated().booleanValue()) return;
 
 		cobj.setPopulated(true);
 		updateToCache(cobj);
@@ -95,13 +93,13 @@ public class TraitFactory extends NameIdGroupFactory {
 		TraitType obj = (TraitType)object;
 		if (obj.getGroupId() == null) throw new FactoryException("Cannot add new Trait without a group");
 
-		DataRow row = prepareAdd(obj, "trait");
+		DataRow row = prepareAdd(obj, primaryTableName);
 		try{
-			row.setCellValue("traittype", obj.getTraitType().toString());
-			row.setCellValue("groupid", obj.getGroupId());
-			row.setCellValue("score", obj.getScore());
-			row.setCellValue("alignment", obj.getAlignmentType().toString());
-			row.setCellValue("description", obj.getDescription());
+			row.setCellValue(Columns.get(ColumnEnumType.TRAITTYPE), obj.getTraitType().toString());
+			row.setCellValue(Columns.get(ColumnEnumType.GROUPID), obj.getGroupId());
+			row.setCellValue(Columns.get(ColumnEnumType.SCORE), obj.getScore());
+			row.setCellValue(Columns.get(ColumnEnumType.ALIGNMENT), obj.getAlignmentType().toString());
+			row.setCellValue(Columns.get(ColumnEnumType.DESCRIPTION), obj.getDescription());
 			if (insertRow(row)){
 				return true;
 			}
@@ -122,10 +120,10 @@ public class TraitFactory extends NameIdGroupFactory {
 		newObj.setNameType(NameEnumType.TRAIT);
 		super.read(rset, newObj);
 		readGroup(rset, newObj);
-		newObj.setTraitType(TraitEnumType.valueOf(rset.getString("traittype")));
-		newObj.setAlignmentType(AlignmentEnumType.valueOf(rset.getString("alignment")));
-		newObj.setDescription(rset.getString("description"));
-		newObj.setScore(rset.getInt("score"));
+		newObj.setTraitType(TraitEnumType.valueOf(rset.getString(Columns.get(ColumnEnumType.TRAITTYPE))));
+		newObj.setAlignmentType(AlignmentEnumType.valueOf(rset.getString(Columns.get(ColumnEnumType.ALIGNMENT))));
+		newObj.setDescription(rset.getString(Columns.get(ColumnEnumType.DESCRIPTION)));
+		newObj.setScore(rset.getInt(Columns.get(ColumnEnumType.SCORE)));
 		return newObj;
 	}
 	@Override

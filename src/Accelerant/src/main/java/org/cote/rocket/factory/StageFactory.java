@@ -38,6 +38,7 @@ import org.cote.accountmanager.objects.DirectoryGroupType;
 import org.cote.accountmanager.objects.NameIdType;
 import org.cote.accountmanager.objects.ProcessingInstructionType;
 import org.cote.accountmanager.objects.UserType;
+import org.cote.accountmanager.objects.types.ColumnEnumType;
 import org.cote.accountmanager.objects.types.FactoryEnumType;
 import org.cote.accountmanager.objects.types.NameEnumType;
 import org.cote.propellant.objects.BudgetType;
@@ -50,16 +51,17 @@ import org.cote.rocket.query.QueryFields;
 
 public class StageFactory extends NameIdGroupFactory {
 	
-	/// static{ org.cote.accountmanager.data.Factories.registerClass(FactoryEnumType.STAGE, StageFactory.class); }
 	public StageFactory(){
 		super();
-		this.tableNames.add("stage");
+		this.primaryTableName = "stage";
+		this.tableNames.add(primaryTableName);
 		factoryType = FactoryEnumType.STAGE;
 	}
 	
+	@Override
 	protected void configureTableRestrictions(DataTable table){
-		if(table.getName().equalsIgnoreCase("stage")){
-			/// table.setRestrictSelectColumn("logicalid", true);
+		if(table.getName().equalsIgnoreCase(primaryTableName)){
+			/// restrict columns
 		}
 	}
 	@Override
@@ -79,7 +81,7 @@ public class StageFactory extends NameIdGroupFactory {
 	public <T> void populate(T obj) throws FactoryException, ArgumentException
 	{
 		StageType stage = (StageType)obj;
-		if(stage.getPopulated()) return;
+		if(stage.getPopulated().booleanValue()) return;
 		
 		/// Stage doesn't have anything direct to populate,
 		/// but use this to populate children
@@ -106,15 +108,15 @@ public class StageFactory extends NameIdGroupFactory {
 		StageType obj = (StageType)object;
 		if (obj.getGroupId() == null) throw new FactoryException("Cannot add new Stage without a group");
 
-		DataRow row = prepareAdd(obj, "stage");
+		DataRow row = prepareAdd(obj, primaryTableName);
 		try{
-			row.setCellValue("scheduleid", (obj.getSchedule() != null ? obj.getSchedule().getId() : 0));
-			row.setCellValue("workid", (obj.getWork() != null ? obj.getWork().getId() : 0));
-			row.setCellValue("budgetid", (obj.getBudget() != null ? obj.getBudget().getId() : 0));
-			row.setCellValue("methodologyid", (obj.getMethodology() != null ? obj.getMethodology().getId() : 0));
-			row.setCellValue("logicalorder",obj.getLogicalOrder());
-			row.setCellValue("description", obj.getDescription());
-			row.setCellValue("groupid", obj.getGroupId());
+			row.setCellValue(Columns.get(ColumnEnumType.SCHEDULEID), (obj.getSchedule() != null ? obj.getSchedule().getId() : 0));
+			row.setCellValue(Columns.get(ColumnEnumType.WORKID), (obj.getWork() != null ? obj.getWork().getId() : 0));
+			row.setCellValue(Columns.get(ColumnEnumType.BUDGETID), (obj.getBudget() != null ? obj.getBudget().getId() : 0));
+			row.setCellValue(Columns.get(ColumnEnumType.METHODOLOGYID), (obj.getMethodology() != null ? obj.getMethodology().getId() : 0));
+			row.setCellValue(Columns.get(ColumnEnumType.LOGICALORDER),obj.getLogicalOrder());
+			row.setCellValue(Columns.get(ColumnEnumType.DESCRIPTION), obj.getDescription());
+			row.setCellValue(Columns.get(ColumnEnumType.GROUPID), obj.getGroupId());
 			if (insertRow(row)) return true;
 		}
 		catch(DataAccessException dae){
@@ -133,17 +135,17 @@ public class StageFactory extends NameIdGroupFactory {
 		newObj.setNameType(NameEnumType.STAGE);
 		super.read(rset, newObj);
 		readGroup(rset, newObj);
-		long work_id = rset.getLong("workid");
-		long budget_id = rset.getLong("budgetid");
-		long methodology_id = rset.getLong("methodologyid");
-		long schedule_id = rset.getLong("scheduleid");
+		long work_id = rset.getLong(Columns.get(ColumnEnumType.WORKID));
+		long budget_id = rset.getLong(Columns.get(ColumnEnumType.BUDGETID));
+		long methodology_id = rset.getLong(Columns.get(ColumnEnumType.METHODOLOGYID));
+		long schedule_id = rset.getLong(Columns.get(ColumnEnumType.SCHEDULEID));
 		if(schedule_id > 0) newObj.setSchedule((ScheduleType)((ScheduleFactory)Factories.getFactory(FactoryEnumType.SCHEDULE)).getById(schedule_id, newObj.getOrganizationId()));
 		if(work_id > 0) newObj.setWork((WorkType)((WorkFactory)Factories.getFactory(FactoryEnumType.WORK)).getById(work_id, newObj.getOrganizationId()));
 		if(budget_id > 0) newObj.setBudget((BudgetType)((BudgetFactory)Factories.getFactory(FactoryEnumType.BUDGET)).getById(budget_id, newObj.getOrganizationId()));
 		if(methodology_id > 0) newObj.setMethodology((MethodologyType)((MethodologyFactory)Factories.getFactory(FactoryEnumType.METHODOLOGY)).getById(methodology_id, newObj.getOrganizationId()));
 		
-		newObj.setDescription(rset.getString("description"));
-		newObj.setLogicalOrder(rset.getInt("logicalorder"));
+		newObj.setDescription(rset.getString(Columns.get(ColumnEnumType.DESCRIPTION)));
+		newObj.setLogicalOrder(rset.getInt(Columns.get(ColumnEnumType.LOGICALORDER)));
 		return newObj;
 	}
 	@Override
@@ -181,15 +183,7 @@ public class StageFactory extends NameIdGroupFactory {
 	}
 	public int deleteStagesByIds(long[] ids, long organizationId) throws FactoryException
 	{
-		int deleted = deleteById(ids, organizationId);
-		if (deleted > 0)
-		{
-			/*
-			Factory.DataParticipationFactoryInstance.DeleteParticipations(ids, organizationId);
-			Factory.TagParticipationFactoryInstance.DeleteParticipants(ids, organizationId);
-			*/
-		}
-		return deleted;
+		return deleteById(ids, organizationId);
 	}
 	public int deleteStagesInGroup(DirectoryGroupType group)  throws FactoryException
 	{

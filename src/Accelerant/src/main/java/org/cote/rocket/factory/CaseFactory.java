@@ -44,6 +44,7 @@ import org.cote.accountmanager.objects.DirectoryGroupType;
 import org.cote.accountmanager.objects.NameIdType;
 import org.cote.accountmanager.objects.ProcessingInstructionType;
 import org.cote.accountmanager.objects.UserType;
+import org.cote.accountmanager.objects.types.ColumnEnumType;
 import org.cote.accountmanager.objects.types.FactoryEnumType;
 import org.cote.accountmanager.objects.types.NameEnumType;
 import org.cote.propellant.objects.CaseType;
@@ -58,25 +59,23 @@ public class CaseFactory extends NameIdGroupFactory {
 	/// static{ org.cote.accountmanager.data.Factories.registerClass(FactoryEnumType.CASE, CaseFactory.class); }
 	public CaseFactory(){
 		super();
-		this.tableNames.add("usecase");
+		this.primaryTableName = "usecase";
+		this.tableNames.add(primaryTableName);
 		factoryType = FactoryEnumType.CASE;
 	}
 	
+	@Override
 	protected void configureTableRestrictions(DataTable table){
-		if(table.getName().equalsIgnoreCase("usecase")){
-			/// table.setRestrictSelectColumn("logicalid", true);
+		if(table.getName().equalsIgnoreCase(primaryTableName)){
+			/// restrict columns
 		}
 	}
-	@Override
-	public<T> void depopulate(T obj) throws FactoryException, ArgumentException
-	{
-		
-	}
+
 	@Override
 	public <T> void populate(T obj) throws FactoryException, ArgumentException
 	{
 		CaseType cobj = (CaseType)obj;
-		if(cobj.getPopulated()) return;
+		if(cobj.getPopulated().booleanValue()) return;
 
 		cobj.getActors().addAll(((CaseParticipationFactory)Factories.getFactory(FactoryEnumType.CASEPARTICIPATION)).getResourcesFromParticipation(cobj));
 		cobj.getPrerequisites().addAll(((CaseParticipationFactory)Factories.getFactory(FactoryEnumType.CASEPARTICIPATION)).getArtifactsFromParticipation(cobj));
@@ -104,11 +103,11 @@ public class CaseFactory extends NameIdGroupFactory {
 		CaseType obj = (CaseType)object;
 		if (obj.getGroupId() == null) throw new FactoryException("Cannot add new Case without a group");
 
-		DataRow row = prepareAdd(obj, "usecase");
+		DataRow row = prepareAdd(obj, primaryTableName);
 		try{
-			row.setCellValue("casetype", obj.getCaseType().toString());
-			row.setCellValue("groupid", obj.getGroupId());
-			row.setCellValue("description", obj.getDescription());
+			row.setCellValue(Columns.get(ColumnEnumType.CASETYPE), obj.getCaseType().toString());
+			row.setCellValue(Columns.get(ColumnEnumType.GROUPID), obj.getGroupId());
+			row.setCellValue(Columns.get(ColumnEnumType.DESCRIPTION), obj.getDescription());
 			if (insertRow(row)){
 				CaseType cobj = (bulkMode ? obj : (CaseType)getByNameInGroup(obj.getName(), ((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getDirectoryById(obj.getGroupId(), obj.getOrganizationId())));
 				if(cobj == null) throw new DataAccessException("Failed to retrieve new object");
@@ -140,7 +139,6 @@ public class CaseFactory extends NameIdGroupFactory {
 		catch(DataAccessException dae){
 			throw new FactoryException(dae.getMessage());
 		} catch (ArgumentException e) {
-			
 			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
 		return false;
@@ -156,8 +154,8 @@ public class CaseFactory extends NameIdGroupFactory {
 		newObj.setNameType(NameEnumType.CASE);
 		super.read(rset, newObj);
 		readGroup(rset, newObj);
-		newObj.setCaseType(CaseEnumType.valueOf(rset.getString("casetype")));
-		newObj.setDescription(rset.getString("description"));
+		newObj.setCaseType(CaseEnumType.valueOf(rset.getString(Columns.get(ColumnEnumType.CASETYPE))));
+		newObj.setDescription(rset.getString(Columns.get(ColumnEnumType.DESCRIPTION)));
 		return newObj;
 	}
 	@Override
@@ -190,14 +188,14 @@ public class CaseFactory extends NameIdGroupFactory {
 				for(int i = 0; i < maps.length;i++) set.add(maps[i].getParticipantId());
 				
 				for(int i = 0; i < data.getPrerequisites().size();i++){
-					if(set.contains(data.getPrerequisites().get(i).getId())== false){
+					if(!set.contains(data.getPrerequisites().get(i).getId())){
 						((CaseParticipationFactory)Factories.getFactory(FactoryEnumType.CASEPARTICIPATION)).add(((CaseParticipationFactory)Factories.getFactory(FactoryEnumType.CASEPARTICIPATION)).newArtifactParticipation(data,data.getPrerequisites().get(i)));
 					}
 					else{
 						set.remove(data.getPrerequisites().get(i).getId());
 					}
 				}
-//				System.out.println("Net delete Case parts: " + set.size());
+
 				((CaseParticipationFactory)Factories.getFactory(FactoryEnumType.CASEPARTICIPATION)).deleteParticipantsForParticipation(ArrayUtils.toPrimitive(set.toArray(new Long[0])), data, data.getOrganizationId());
 
 				set = new HashSet<>();
@@ -205,7 +203,7 @@ public class CaseFactory extends NameIdGroupFactory {
 				for(int i = 0; i < maps.length;i++) set.add(maps[i].getParticipantId());
 				
 				for(int i = 0; i < data.getSequence().size();i++){
-					if(set.contains(data.getSequence().get(i).getId())== false){
+					if(!set.contains(data.getSequence().get(i).getId())){
 						((CaseParticipationFactory)Factories.getFactory(FactoryEnumType.CASEPARTICIPATION)).add(((CaseParticipationFactory)Factories.getFactory(FactoryEnumType.CASEPARTICIPATION)).newTaskParticipation(data,data.getSequence().get(i)));
 					}
 					else{
@@ -220,14 +218,14 @@ public class CaseFactory extends NameIdGroupFactory {
 				for(int i = 0; i < maps.length;i++) set.add(maps[i].getParticipantId());
 				
 				for(int i = 0; i < data.getDiagrams().size();i++){
-					if(set.contains(data.getDiagrams().get(i).getId())== false){
+					if(!set.contains(data.getDiagrams().get(i).getId())){
 						((CaseParticipationFactory)Factories.getFactory(FactoryEnumType.CASEPARTICIPATION)).add(((CaseParticipationFactory)Factories.getFactory(FactoryEnumType.CASEPARTICIPATION)).newDataParticipation(data,data.getDiagrams().get(i)));
 					}
 					else{
 						set.remove(data.getDiagrams().get(i).getId());
 					}
 				}
-//				System.out.println("Net delete Case parts: " + set.size());
+
 				((CaseParticipationFactory)Factories.getFactory(FactoryEnumType.CASEPARTICIPATION)).deleteParticipantsForParticipation(ArrayUtils.toPrimitive(set.toArray(new Long[0])), data, data.getOrganizationId());
 
 				
@@ -263,15 +261,7 @@ public class CaseFactory extends NameIdGroupFactory {
 	}
 	public int deleteCasesByIds(long[] ids, long organizationId) throws FactoryException
 	{
-		int deleted = deleteById(ids, organizationId);
-		if (deleted > 0)
-		{
-			/*
-			Factory.DataParticipationFactoryInstance.DeleteParticipations(ids, organizationId);
-			Factory.TagParticipationFactoryInstance.DeleteParticipants(ids, organizationId);
-			*/
-		}
-		return deleted;
+		return deleteById(ids, organizationId);
 	}
 	public int deleteCasesInGroup(DirectoryGroupType group)  throws FactoryException
 	{

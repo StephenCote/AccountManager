@@ -49,6 +49,7 @@ import org.cote.accountmanager.objects.NameIdType;
 import org.cote.accountmanager.objects.ProcessingInstructionType;
 import org.cote.accountmanager.objects.UserType;
 import org.cote.accountmanager.objects.types.AuditEnumType;
+import org.cote.accountmanager.objects.types.ColumnEnumType;
 import org.cote.accountmanager.objects.types.FactoryEnumType;
 import org.cote.accountmanager.objects.types.NameEnumType;
 import org.cote.accountmanager.util.CalendarUtil;
@@ -68,25 +69,23 @@ public class TicketFactory extends NameIdGroupFactory {
 	
 	public TicketFactory(){
 		super();
-		this.tableNames.add("ticket");
+		this.primaryTableName = "ticket";
+		this.tableNames.add(primaryTableName);
 		factoryType = FactoryEnumType.TICKET;
 	}
 	
+	@Override
 	protected void configureTableRestrictions(DataTable table){
-		if(table.getName().equalsIgnoreCase("ticket")){
-			/// table.setRestrictSelectColumn("logicalid", true);
+		if(table.getName().equalsIgnoreCase(primaryTableName)){
+			/// restrict columns
 		}
 	}
-	@Override
-	public<T> void depopulate(T obj) throws FactoryException, ArgumentException
-	{
-		
-	}
+
 	@Override
 	public <T> void populate(T obj) throws FactoryException, ArgumentException
 	{
 		TicketType ticket = (TicketType)obj;
-		if(ticket.getPopulated()) return;
+		if(ticket.getPopulated().booleanValue()) return;
 
 		ticket.getDependencies().addAll(((TicketParticipationFactory)Factories.getFactory(FactoryEnumType.TICKETPARTICIPATION)).getDependenciesFromParticipation(ticket));
 		ticket.getArtifacts().addAll(((TicketParticipationFactory)Factories.getFactory(FactoryEnumType.TICKETPARTICIPATION)).getArtifactsFromParticipation(ticket));
@@ -125,24 +124,23 @@ public class TicketFactory extends NameIdGroupFactory {
 		TicketType obj = (TicketType)object;
 		if (obj.getGroupId() == null) throw new FactoryException("Cannot add new Ticket without a group");
 
-		DataRow row = prepareAdd(obj, "ticket");
+		DataRow row = prepareAdd(obj, primaryTableName);
 		try{
-			row.setCellValue("priority", obj.getPriority().toString());
-			row.setCellValue("severity", obj.getSeverity().toString());
-			row.setCellValue("ticketstatus", obj.getTicketStatus().toString());
-			row.setCellValue("createddate",obj.getCreatedDate());
-			row.setCellValue("modifieddate",obj.getModifiedDate());
-			row.setCellValue("duedate",obj.getDueDate());
-			row.setCellValue("closeddate",obj.getClosedDate());
-			row.setCellValue("reopeneddate",obj.getReopenedDate());
-			row.setCellValue("description",obj.getDescription());
-			//row.setCellValue("wasreopened",obj.getWasReopened());
-			if(obj.getAssignedResource() != null) row.setCellValue("assignedresourceid", obj.getAssignedResource().getId());
-			if(obj.getEstimate() != null) row.setCellValue("estimateid", obj.getEstimate().getId());
-			if(obj.getActualCost() != null) row.setCellValue("actualcostid", obj.getActualCost().getId());
-			if(obj.getActualTime() != null) row.setCellValue("actualtimeid", obj.getActualTime().getId());
+			row.setCellValue(Columns.get(ColumnEnumType.PRIORITY), obj.getPriority().toString());
+			row.setCellValue(Columns.get(ColumnEnumType.SEVERITY), obj.getSeverity().toString());
+			row.setCellValue(Columns.get(ColumnEnumType.TICKETSTATUS), obj.getTicketStatus().toString());
+			row.setCellValue(Columns.get(ColumnEnumType.CREATEDDATE),obj.getCreatedDate());
+			row.setCellValue(Columns.get(ColumnEnumType.MODIFIEDDATE),obj.getModifiedDate());
+			row.setCellValue(Columns.get(ColumnEnumType.DUEDATE),obj.getDueDate());
+			row.setCellValue(Columns.get(ColumnEnumType.CLOSEDDATE),obj.getClosedDate());
+			row.setCellValue(Columns.get(ColumnEnumType.REOPENEDDATE),obj.getReopenedDate());
+			row.setCellValue(Columns.get(ColumnEnumType.DESCRIPTION),obj.getDescription());
+			if(obj.getAssignedResource() != null) row.setCellValue(Columns.get(ColumnEnumType.ASSIGNEDRESOURCEID), obj.getAssignedResource().getId());
+			if(obj.getEstimate() != null) row.setCellValue(Columns.get(ColumnEnumType.ESTIMATEID), obj.getEstimate().getId());
+			if(obj.getActualCost() != null) row.setCellValue(Columns.get(ColumnEnumType.ACTUALCOSTID), obj.getActualCost().getId());
+			if(obj.getActualTime() != null) row.setCellValue(Columns.get(ColumnEnumType.ACTUALTIMEID), obj.getActualTime().getId());
 			
-			row.setCellValue("groupid", obj.getGroupId());
+			row.setCellValue(Columns.get(ColumnEnumType.GROUPID), obj.getGroupId());
 			if (insertRow(row)){
 				try{
 					TicketType cobj = (bulkMode ? obj : (TicketType)getByNameInGroup(obj.getName(), ((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getDirectoryById(obj.getGroupId(), obj.getOrganizationId())));
@@ -202,31 +200,32 @@ public class TicketFactory extends NameIdGroupFactory {
 		newObj.setNameType(NameEnumType.TICKET);
 		super.read(rset, newObj);
 		readGroup(rset, newObj);
-		newObj.setSeverity(SeverityEnumType.valueOf(rset.getString("severity")));
-		newObj.setPriority(PriorityEnumType.valueOf(rset.getString("priority")));
-		newObj.setTicketStatus(TicketStatusEnumType.valueOf(rset.getString("ticketstatus")));
-		newObj.setCreatedDate(CalendarUtil.getXmlGregorianCalendar(rset.getTimestamp("createddate")));
-		newObj.setModifiedDate(CalendarUtil.getXmlGregorianCalendar(rset.getTimestamp("modifieddate")));
-		newObj.setDueDate(CalendarUtil.getXmlGregorianCalendar(rset.getTimestamp("duedate")));
-		newObj.setClosedDate(CalendarUtil.getXmlGregorianCalendar(rset.getTimestamp("closeddate")));
-		newObj.setReopenedDate(CalendarUtil.getXmlGregorianCalendar(rset.getTimestamp("reopeneddate")));
-		newObj.setDescription(rset.getString("description"));
-		//newObj.setWasReopened(rset.getBoolean("wasreopened"));
+		newObj.setSeverity(SeverityEnumType.valueOf(rset.getString(Columns.get(ColumnEnumType.SEVERITY))));
+		newObj.setPriority(PriorityEnumType.valueOf(rset.getString(Columns.get(ColumnEnumType.PRIORITY))));
+		newObj.setTicketStatus(TicketStatusEnumType.valueOf(rset.getString(Columns.get(ColumnEnumType.TICKETSTATUS))));
+		newObj.setCreatedDate(CalendarUtil.getXmlGregorianCalendar(rset.getTimestamp(Columns.get(ColumnEnumType.CREATEDDATE))));
+		newObj.setModifiedDate(CalendarUtil.getXmlGregorianCalendar(rset.getTimestamp(Columns.get(ColumnEnumType.MODIFIEDDATE))));
+		newObj.setDueDate(CalendarUtil.getXmlGregorianCalendar(rset.getTimestamp(Columns.get(ColumnEnumType.DUEDATE))));
+		newObj.setClosedDate(CalendarUtil.getXmlGregorianCalendar(rset.getTimestamp(Columns.get(ColumnEnumType.CLOSEDDATE))));
+		newObj.setReopenedDate(CalendarUtil.getXmlGregorianCalendar(rset.getTimestamp(Columns.get(ColumnEnumType.REOPENEDDATE))));
+		newObj.setDescription(rset.getString(Columns.get(ColumnEnumType.DESCRIPTION)));
+
 		
-		long assign_id = rset.getLong("assignedresourceid");
-		if(assign_id > 0) newObj.setAssignedResource((ResourceType)((ResourceFactory)Factories.getFactory(FactoryEnumType.RESOURCE)).getById(assign_id, newObj.getOrganizationId()));
+		long assignId = rset.getLong(Columns.get(ColumnEnumType.ASSIGNEDRESOURCEID));
+		if(assignId > 0) newObj.setAssignedResource((ResourceType)((ResourceFactory)Factories.getFactory(FactoryEnumType.RESOURCE)).getById(assignId, newObj.getOrganizationId()));
 		
-		long est_id = rset.getLong("estimateid");
-		if(est_id > 0) newObj.setEstimate((EstimateType)((EstimateFactory)Factories.getFactory(FactoryEnumType.ESTIMATE)).getById(est_id, newObj.getOrganizationId()));
+		long estId = rset.getLong(Columns.get(ColumnEnumType.ESTIMATEID));
+		if(estId > 0) newObj.setEstimate((EstimateType)((EstimateFactory)Factories.getFactory(FactoryEnumType.ESTIMATE)).getById(estId, newObj.getOrganizationId()));
 		
-		long cost_id = rset.getLong("actualcostid");
-		if(cost_id > 0) newObj.setActualCost((CostType)((CostFactory)Factories.getFactory(FactoryEnumType.COST)).getById(cost_id, newObj.getOrganizationId()));
+		long costId = rset.getLong(Columns.get(ColumnEnumType.ACTUALCOSTID));
+		if(costId > 0) newObj.setActualCost((CostType)((CostFactory)Factories.getFactory(FactoryEnumType.COST)).getById(costId, newObj.getOrganizationId()));
 		
-		long time_id = rset.getLong("actualtimeid");
-		if(time_id > 0) newObj.setActualTime((TimeType)((TimeFactory)Factories.getFactory(FactoryEnumType.TIME)).getById(time_id, newObj.getOrganizationId()));
+		long timeId = rset.getLong(Columns.get(ColumnEnumType.ACTUALTIMEID));
+		if(timeId > 0) newObj.setActualTime((TimeType)((TimeFactory)Factories.getFactory(FactoryEnumType.TIME)).getById(timeId, newObj.getOrganizationId()));
 		
 		return newObj;
 	}
+	
 	@Override
 	public <T> boolean update(T object) throws FactoryException
 	{
@@ -245,14 +244,14 @@ public class TicketFactory extends NameIdGroupFactory {
 			for(int i = 0; i < maps.length;i++) set.add(maps[i].getParticipantId());
 			
 			for(int i = 0; i < data.getNotes().size();i++){
-				if(set.contains(data.getNotes().get(i).getId())== false){
+				if(!set.contains(data.getNotes().get(i).getId())){
 					((TicketParticipationFactory)Factories.getFactory(FactoryEnumType.TICKETPARTICIPATION)).add(((TicketParticipationFactory)Factories.getFactory(FactoryEnumType.TICKETPARTICIPATION)).newNoteParticipation(data,data.getNotes().get(i)));
 				}
 				else{
 					set.remove(data.getNotes().get(i).getId());
 				}
 			}
-//			System.out.println("Net delete Note parts: " + set.size());
+
 			((TicketParticipationFactory)Factories.getFactory(FactoryEnumType.TICKETPARTICIPATION)).deleteParticipantsForParticipation(ArrayUtils.toPrimitive(set.toArray(new Long[0])), data, data.getOrganizationId());
 			
 			/// Resources
@@ -261,14 +260,13 @@ public class TicketFactory extends NameIdGroupFactory {
 			for(int i = 0; i < maps.length;i++) set.add(maps[i].getParticipantId());
 			
 			for(int i = 0; i < data.getRequiredResources().size();i++){
-				if(set.contains(data.getRequiredResources().get(i).getId())== false){
+				if(!set.contains(data.getRequiredResources().get(i).getId())){
 					((TicketParticipationFactory)Factories.getFactory(FactoryEnumType.TICKETPARTICIPATION)).add(((TicketParticipationFactory)Factories.getFactory(FactoryEnumType.TICKETPARTICIPATION)).newResourceParticipation(data,data.getRequiredResources().get(i)));
 				}
 				else{
 					set.remove(data.getRequiredResources().get(i).getId());
 				}
 			}
-//			System.out.println("Net delete Resource parts: " + set.size());
 			((TicketParticipationFactory)Factories.getFactory(FactoryEnumType.TICKETPARTICIPATION)).deleteParticipantsForParticipation(ArrayUtils.toPrimitive(set.toArray(new Long[0])), data, data.getOrganizationId());
 			
 			
@@ -278,14 +276,13 @@ public class TicketFactory extends NameIdGroupFactory {
 			for(int i = 0; i < maps.length;i++) set.add(maps[i].getParticipantId());
 			
 			for(int i = 0; i < data.getDependencies().size();i++){
-				if(set.contains(data.getDependencies().get(i).getId())== false){
+				if(!set.contains(data.getDependencies().get(i).getId())){
 					((TicketParticipationFactory)Factories.getFactory(FactoryEnumType.TICKETPARTICIPATION)).add(((TicketParticipationFactory)Factories.getFactory(FactoryEnumType.TICKETPARTICIPATION)).newDependencyParticipation(data,data.getDependencies().get(i)));
 				}
 				else{
 					set.remove(data.getDependencies().get(i).getId());
 				}
 			}
-//			System.out.println("Net delete Dependency parts: " + set.size());
 			((TicketParticipationFactory)Factories.getFactory(FactoryEnumType.TICKETPARTICIPATION)).deleteParticipantsForParticipation(ArrayUtils.toPrimitive(set.toArray(new Long[0])), data, data.getOrganizationId());
 			
 			/// Artifacts
@@ -294,14 +291,13 @@ public class TicketFactory extends NameIdGroupFactory {
 			for(int i = 0; i < maps.length;i++) set.add(maps[i].getParticipantId());
 			
 			for(int i = 0; i < data.getArtifacts().size();i++){
-				if(set.contains(data.getArtifacts().get(i).getId())== false){
+				if(!set.contains(data.getArtifacts().get(i).getId())){
 					((TicketParticipationFactory)Factories.getFactory(FactoryEnumType.TICKETPARTICIPATION)).add(((TicketParticipationFactory)Factories.getFactory(FactoryEnumType.TICKETPARTICIPATION)).newArtifactParticipation(data,data.getArtifacts().get(i)));
 				}
 				else{
 					set.remove(data.getArtifacts().get(i).getId());
 				}
 			}
-//			System.out.println("Net delete Artifact parts: " + set.size());
 			((TicketParticipationFactory)Factories.getFactory(FactoryEnumType.TICKETPARTICIPATION)).deleteParticipantsForParticipation(ArrayUtils.toPrimitive(set.toArray(new Long[0])), data, data.getOrganizationId());
 			
 			
@@ -311,18 +307,14 @@ public class TicketFactory extends NameIdGroupFactory {
 			for(int i = 0; i < maps.length;i++) set.add(maps[i].getParticipantId());
 			
 			for(int i = 0; i < data.getForms().size();i++){
-				if(set.contains(data.getForms().get(i).getId())== false){
+				if(!set.contains(data.getForms().get(i).getId())){
 					((TicketParticipationFactory)Factories.getFactory(FactoryEnumType.TICKETPARTICIPATION)).add(((TicketParticipationFactory)Factories.getFactory(FactoryEnumType.TICKETPARTICIPATION)).newFormParticipation(data,data.getForms().get(i)));
 				}
 				else{
 					set.remove(data.getForms().get(i).getId());
 				}
 			}
-//			System.out.println("Net delete Form parts: " + set.size());
 			((TicketParticipationFactory)Factories.getFactory(FactoryEnumType.TICKETPARTICIPATION)).deleteParticipantsForParticipation(ArrayUtils.toPrimitive(set.toArray(new Long[0])), data, data.getOrganizationId());
-			
-			
-			
 			outBool = true;
 			}
 			catch(ArgumentException ae){
@@ -371,10 +363,6 @@ public class TicketFactory extends NameIdGroupFactory {
 		if (deleted > 0)
 		{
 			((TicketParticipationFactory)Factories.getFactory(FactoryEnumType.TICKETPARTICIPATION)).deleteParticipations(ids, organizationId);
-			/*
-			Factory.DataParticipationFactoryInstance.DeleteParticipations(ids, organizationId);
-			Factory.TagParticipationFactoryInstance.DeleteParticipants(ids, organizationId);
-			*/
 		}
 		return deleted;
 	}

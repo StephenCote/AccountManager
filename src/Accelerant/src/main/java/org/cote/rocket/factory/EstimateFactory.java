@@ -38,6 +38,7 @@ import org.cote.accountmanager.objects.DirectoryGroupType;
 import org.cote.accountmanager.objects.NameIdType;
 import org.cote.accountmanager.objects.ProcessingInstructionType;
 import org.cote.accountmanager.objects.UserType;
+import org.cote.accountmanager.objects.types.ColumnEnumType;
 import org.cote.accountmanager.objects.types.FactoryEnumType;
 import org.cote.accountmanager.objects.types.NameEnumType;
 import org.cote.propellant.objects.CostType;
@@ -50,28 +51,24 @@ import org.cote.rocket.query.QueryFields;
 
 public class EstimateFactory extends NameIdGroupFactory {
 	
-	/// static{ org.cote.accountmanager.data.Factories.registerClass(FactoryEnumType.ESTIMATE, EstimateFactory.class); }
 	public EstimateFactory(){
 		super();
-		this.tableNames.add("estimate");
+		this.primaryTableName = "estimate";
+		this.tableNames.add(primaryTableName);
 		factoryType = FactoryEnumType.ESTIMATE;
 	}
 	
 	protected void configureTableRestrictions(DataTable table){
-		if(table.getName().equalsIgnoreCase("estimate")){
-			/// table.setRestrictSelectColumn("logicalid", true);
+		if(table.getName().equalsIgnoreCase(primaryTableName)){
+			/// restrict columns
 		}
 	}
-	@Override
-	public<T> void depopulate(T obj) throws FactoryException, ArgumentException
-	{
-		
-	}
+
 	@Override
 	public <T> void populate(T obj) throws FactoryException, ArgumentException
 	{
 		EstimateType estimate = (EstimateType)obj;
-		if(estimate.getPopulated()) return;
+		if(estimate.getPopulated().booleanValue()) return;
 		estimate.setPopulated(true);
 		updateToCache(estimate);
 	}
@@ -94,14 +91,14 @@ public class EstimateFactory extends NameIdGroupFactory {
 		EstimateType obj = (EstimateType)object;
 		if (obj.getGroupId() == null) throw new FactoryException("Cannot add new Estimate without a group");
 
-		DataRow row = prepareAdd(obj, "estimate");
+		DataRow row = prepareAdd(obj, primaryTableName);
 		try{
-			row.setCellValue("costid",(obj.getCost() != null ? obj.getCost().getId() : 0L));
+			row.setCellValue(Columns.get(ColumnEnumType.COSTID),(obj.getCost() != null ? obj.getCost().getId() : 0L));
 			
-			row.setCellValue("timeid",(obj.getTime() != null ? obj.getTime().getId() : 0L));
-			row.setCellValue("description", obj.getDescription());
-			row.setCellValue("estimatetype", obj.getEstimateType().toString());
-			row.setCellValue("groupid", obj.getGroupId());
+			row.setCellValue(Columns.get(ColumnEnumType.TIMEID),(obj.getTime() != null ? obj.getTime().getId() : 0L));
+			row.setCellValue(Columns.get(ColumnEnumType.DESCRIPTION), obj.getDescription());
+			row.setCellValue(Columns.get(ColumnEnumType.ESTIMATETYPE), obj.getEstimateType().toString());
+			row.setCellValue(Columns.get(ColumnEnumType.GROUPID), obj.getGroupId());
 			if (insertRow(row)) return true;
 		}
 		catch(DataAccessException dae){
@@ -121,10 +118,10 @@ public class EstimateFactory extends NameIdGroupFactory {
 		super.read(rset, newObj);
 		readGroup(rset, newObj);
 		
-		newObj.setEstimateType(EstimateEnumType.valueOf(rset.getString("estimatetype")));
-		newObj.setDescription(rset.getString("description"));
-		long time_id = rset.getLong("timeid");
-		long cost_id = rset.getLong("costid");
+		newObj.setEstimateType(EstimateEnumType.valueOf(rset.getString(Columns.get(ColumnEnumType.ESTIMATETYPE))));
+		newObj.setDescription(rset.getString(Columns.get(ColumnEnumType.DESCRIPTION)));
+		long time_id = rset.getLong(Columns.get(ColumnEnumType.TIMEID));
+		long cost_id = rset.getLong(Columns.get(ColumnEnumType.COSTID));
 		if(time_id > 0L) newObj.setTime((TimeType)((TimeFactory)Factories.getFactory(FactoryEnumType.TIME)).getById(time_id, newObj.getOrganizationId()));
 		if(cost_id > 0L) newObj.setCost((CostType)((CostFactory)Factories.getFactory(FactoryEnumType.COST)).getById(cost_id, newObj.getOrganizationId()));
 		return newObj;
@@ -164,15 +161,7 @@ public class EstimateFactory extends NameIdGroupFactory {
 	}
 	public int deleteEstimatesByIds(long[] ids, long organizationId) throws FactoryException
 	{
-		int deleted = deleteById(ids, organizationId);
-		if (deleted > 0)
-		{
-			/*
-			Factory.DataParticipationFactoryInstance.DeleteParticipations(ids, organizationId);
-			Factory.TagParticipationFactoryInstance.DeleteParticipants(ids, organizationId);
-			*/
-		}
-		return deleted;
+		return deleteById(ids, organizationId);
 	}
 	public int deleteEstimatesInGroup(DirectoryGroupType group)  throws FactoryException
 	{

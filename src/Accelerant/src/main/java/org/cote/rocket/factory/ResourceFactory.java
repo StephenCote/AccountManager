@@ -38,6 +38,7 @@ import org.cote.accountmanager.objects.DirectoryGroupType;
 import org.cote.accountmanager.objects.NameIdType;
 import org.cote.accountmanager.objects.ProcessingInstructionType;
 import org.cote.accountmanager.objects.UserType;
+import org.cote.accountmanager.objects.types.ColumnEnumType;
 import org.cote.accountmanager.objects.types.FactoryEnumType;
 import org.cote.accountmanager.objects.types.NameEnumType;
 import org.cote.propellant.objects.EstimateType;
@@ -50,28 +51,25 @@ import org.cote.rocket.query.QueryFields;
 
 public class ResourceFactory extends NameIdGroupFactory {
 	
-	/// static{ org.cote.accountmanager.data.Factories.registerClass(FactoryEnumType.RESOURCE, ResourceFactory.class); }
 	public ResourceFactory(){
 		super();
-		this.tableNames.add("resource");
+		this.primaryTableName = "resource";
+		this.tableNames.add(primaryTableName);
 		factoryType = FactoryEnumType.RESOURCE;
 	}
 	
+	@Override
 	protected void configureTableRestrictions(DataTable table){
-		if(table.getName().equalsIgnoreCase("resource")){
-			/// table.setRestrictSelectColumn("logicalid", true);
+		if(table.getName().equalsIgnoreCase(primaryTableName)){
+			/// restrict columns
 		}
 	}
-	@Override
-	public<T> void depopulate(T obj) throws FactoryException, ArgumentException
-	{
-		
-	}
+
 	@Override
 	public <T> void populate(T obj) throws FactoryException, ArgumentException
 	{
 		ResourceType rec = (ResourceType)obj;
-		if(rec.getPopulated()) return;
+		if(rec.getPopulated().booleanValue()) return;
 		if(rec.getResourceDataId() > 0){
 			if(rec.getResourceType() == ResourceEnumType.USER){
 				rec.setResourceData((UserType)Factories.getNameIdFactory(FactoryEnumType.USER).getById(rec.getResourceDataId(), rec.getOrganizationId()));
@@ -100,16 +98,16 @@ public class ResourceFactory extends NameIdGroupFactory {
 		ResourceType obj = (ResourceType)object;
 		if (obj.getGroupId() == null) throw new FactoryException("Cannot add new Resource without a group");
 
-		DataRow row = prepareAdd(obj, "resource");
+		DataRow row = prepareAdd(obj, primaryTableName);
 		try{
-			//if(obj.getResourceData() != null) row.setCellValue("resourceid", obj.getResourceData().getId());
-			row.setCellValue("estimateid", (obj.getEstimate() != null ? obj.getEstimate().getId() : 0L));
-			row.setCellValue("scheduleid", (obj.getSchedule() != null ? obj.getSchedule().getId() : 0L));
-			row.setCellValue("resourceid", obj.getResourceDataId());
-			row.setCellValue("utilization",obj.getUtilization());
-			row.setCellValue("description", obj.getDescription());
-			row.setCellValue("resourcetype", obj.getResourceType().toString());
-			row.setCellValue("groupid", obj.getGroupId());
+
+			row.setCellValue(Columns.get(ColumnEnumType.ESTIMATEID), (obj.getEstimate() != null ? obj.getEstimate().getId() : 0L));
+			row.setCellValue(Columns.get(ColumnEnumType.SCHEDULEID), (obj.getSchedule() != null ? obj.getSchedule().getId() : 0L));
+			row.setCellValue(Columns.get(ColumnEnumType.RESOURCEID), obj.getResourceDataId());
+			row.setCellValue(Columns.get(ColumnEnumType.UTILIZATION),obj.getUtilization());
+			row.setCellValue(Columns.get(ColumnEnumType.DESCRIPTION), obj.getDescription());
+			row.setCellValue(Columns.get(ColumnEnumType.RESOURCETYPE), obj.getResourceType().toString());
+			row.setCellValue(Columns.get(ColumnEnumType.GROUPID), obj.getGroupId());
 			if (insertRow(row)) return true;
 		}
 		catch(DataAccessException dae){
@@ -129,14 +127,14 @@ public class ResourceFactory extends NameIdGroupFactory {
 		super.read(rset, newObj);
 		readGroup(rset, newObj);
 		newObj.setNameType(NameEnumType.RESOURCE);
-		newObj.setResourceDataId(rset.getLong("resourceid"));
-		newObj.setUtilization(rset.getDouble("utilization"));
-		newObj.setResourceType(ResourceEnumType.valueOf(rset.getString("ResourceType")));
-		newObj.setDescription(rset.getString("description"));
-		long estimate_id = rset.getLong("estimateid");
-		if(estimate_id > 0L) newObj.setEstimate((EstimateType)((EstimateFactory)Factories.getFactory(FactoryEnumType.ESTIMATE)).getById(estimate_id, newObj.getOrganizationId()));
-		long schedule_id = rset.getLong("scheduleid");
-		if(schedule_id > 0L) newObj.setSchedule((ScheduleType)((ScheduleFactory)Factories.getFactory(FactoryEnumType.SCHEDULE)).getById(schedule_id, newObj.getOrganizationId()));
+		newObj.setResourceDataId(rset.getLong(Columns.get(ColumnEnumType.RESOURCEID)));
+		newObj.setUtilization(rset.getDouble(Columns.get(ColumnEnumType.UTILIZATION)));
+		newObj.setResourceType(ResourceEnumType.valueOf(rset.getString(Columns.get(ColumnEnumType.RESOURCETYPE))));
+		newObj.setDescription(rset.getString(Columns.get(ColumnEnumType.DESCRIPTION)));
+		long estimateId = rset.getLong(Columns.get(ColumnEnumType.ESTIMATEID));
+		if(estimateId > 0L) newObj.setEstimate((EstimateType)((EstimateFactory)Factories.getFactory(FactoryEnumType.ESTIMATE)).getById(estimateId, newObj.getOrganizationId()));
+		long scheduleId = rset.getLong(Columns.get(ColumnEnumType.SCHEDULEID));
+		if(scheduleId > 0L) newObj.setSchedule((ScheduleType)((ScheduleFactory)Factories.getFactory(FactoryEnumType.SCHEDULE)).getById(scheduleId, newObj.getOrganizationId()));
 		return newObj;
 	}
 	@Override
@@ -174,15 +172,7 @@ public class ResourceFactory extends NameIdGroupFactory {
 	}
 	public int deleteResourcesByIds(long[] ids, long organizationId) throws FactoryException
 	{
-		int deleted = deleteById(ids, organizationId);
-		if (deleted > 0)
-		{
-			/*
-			Factory.DataParticipationFactoryInstance.DeleteParticipations(ids, organizationId);
-			Factory.TagParticipationFactoryInstance.DeleteParticipants(ids, organizationId);
-			*/
-		}
-		return deleted;
+		return deleteById(ids, organizationId);
 	}
 	public int deleteResourcesInGroup(DirectoryGroupType group)  throws FactoryException
 	{

@@ -44,6 +44,7 @@ import org.cote.accountmanager.objects.NameIdDirectoryGroupType;
 import org.cote.accountmanager.objects.NameIdType;
 import org.cote.accountmanager.objects.ProcessingInstructionType;
 import org.cote.accountmanager.objects.UserType;
+import org.cote.accountmanager.objects.types.ColumnEnumType;
 import org.cote.accountmanager.objects.types.FactoryEnumType;
 import org.cote.accountmanager.objects.types.NameEnumType;
 import org.cote.accountmanager.util.CalendarUtil;
@@ -56,7 +57,8 @@ public class NoteFactory extends NameIdGroupFactory {
 	public NoteFactory(){
 		super();
 		this.hasParentId=true;
-		this.tableNames.add("note");
+		this.primaryTableName = "note";
+		this.tableNames.add(primaryTableName);
 		factoryType = FactoryEnumType.NOTE;
 		this.clusterByParent = true;
 	}
@@ -67,21 +69,18 @@ public class NoteFactory extends NameIdGroupFactory {
 		return t.getName() + "-" + t.getParentId() + "-" + t.getGroupId();
 	}
 	
+	@Override
 	protected void configureTableRestrictions(DataTable table){
-		if(table.getName().equalsIgnoreCase("note")){
-			/// table.setRestrictSelectColumn("logicalid", true);
+		if(table.getName().equalsIgnoreCase(primaryTableName)){
+			/// restrict columns
 		}
 	}
-	@Override
-	public<T> void depopulate(T obj) throws FactoryException, ArgumentException
-	{
-		
-	}
+
 	@Override
 	public <T> void populate(T obj) throws FactoryException, ArgumentException
 	{
 		NoteType note = (NoteType)obj;
-		if(note.getPopulated()) return;
+		if(note.getPopulated().booleanValue()) return;
 		note.getChildNotes().addAll(getChildNoteList(note));
 		note.setPopulated(true);
 		
@@ -118,12 +117,12 @@ public class NoteFactory extends NameIdGroupFactory {
 
 		if (obj.getGroupId() == null) throw new FactoryException("Cannot add new Note without a group");
 
-		DataRow row = prepareAdd(obj, "note");
+		DataRow row = prepareAdd(obj, primaryTableName);
 		try{
-			row.setCellValue("text", obj.getText().getBytes(StandardCharsets.UTF_8));
-			row.setCellValue("createddate",obj.getCreatedDate());
-			row.setCellValue("modifieddate",obj.getModifiedDate());
-			row.setCellValue("groupid", obj.getGroupId());
+			row.setCellValue(Columns.get(ColumnEnumType.TEXT), obj.getText().getBytes(StandardCharsets.UTF_8));
+			row.setCellValue(Columns.get(ColumnEnumType.CREATEDDATE),obj.getCreatedDate());
+			row.setCellValue(Columns.get(ColumnEnumType.MODIFIEDDATE),obj.getModifiedDate());
+			row.setCellValue(Columns.get(ColumnEnumType.GROUPID), obj.getGroupId());
 			if (insertRow(row)) return true;
 		}
 		catch(DataAccessException dae){
@@ -142,9 +141,9 @@ public class NoteFactory extends NameIdGroupFactory {
 		newObj.setNameType(NameEnumType.NOTE);
 		super.read(rset, newObj);
 		readGroup(rset, newObj);
-		newObj.setText(new String(rset.getBytes("text"),StandardCharsets.UTF_8));
-		newObj.setCreatedDate(CalendarUtil.getXmlGregorianCalendar(rset.getTimestamp("createddate")));
-		newObj.setModifiedDate(CalendarUtil.getXmlGregorianCalendar(rset.getTimestamp("modifieddate")));
+		newObj.setText(new String(rset.getBytes(Columns.get(ColumnEnumType.TEXT)),StandardCharsets.UTF_8));
+		newObj.setCreatedDate(CalendarUtil.getXmlGregorianCalendar(rset.getTimestamp(Columns.get(ColumnEnumType.CREATEDDATE))));
+		newObj.setModifiedDate(CalendarUtil.getXmlGregorianCalendar(rset.getTimestamp(Columns.get(ColumnEnumType.MODIFIEDDATE))));
 		return newObj;
 	}
 	@Override
@@ -179,15 +178,7 @@ public class NoteFactory extends NameIdGroupFactory {
 	}
 	public int deleteNotesByIds(long[] ids, long organizationId) throws FactoryException
 	{
-		int deleted = deleteById(ids, organizationId);
-		if (deleted > 0)
-		{
-			/*
-			Factory.DataParticipationFactoryInstance.DeleteParticipations(ids, organizationId);
-			Factory.TagParticipationFactoryInstance.DeleteParticipants(ids, organizationId);
-			*/
-		}
-		return deleted;
+		return deleteById(ids, organizationId);
 	}
 	public int deleteNotesInGroup(DirectoryGroupType group)  throws FactoryException
 	{

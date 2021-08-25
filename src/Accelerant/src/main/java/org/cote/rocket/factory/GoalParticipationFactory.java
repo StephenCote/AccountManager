@@ -29,7 +29,7 @@ import org.cote.accountmanager.objects.types.ParticipationEnumType;
 
 
 public class GoalParticipationFactory extends AccelerantParticipationFactory {
-	/// static{ org.cote.accountmanager.data.Factories.registerClass(FactoryEnumType.GOALPARTICIPATION, GoalParticipationFactory.class); }
+
 	public GoalParticipationFactory(){
 		super(ParticipationEnumType.GOAL, "goalparticipation");
 		this.haveAffect = true;

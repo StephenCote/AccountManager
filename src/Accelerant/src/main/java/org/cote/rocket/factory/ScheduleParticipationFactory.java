@@ -29,7 +29,6 @@ import org.cote.accountmanager.objects.types.ParticipationEnumType;
 
 
 public class ScheduleParticipationFactory extends AccelerantParticipationFactory {
-	/// static{ org.cote.accountmanager.data.Factories.registerClass(FactoryEnumType.SCHEDULEPARTICIPATION, ScheduleParticipationFactory.class); }
 	public ScheduleParticipationFactory(){
 		super(ParticipationEnumType.SCHEDULE, "scheduleparticipation");
 		this.haveAffect = true;

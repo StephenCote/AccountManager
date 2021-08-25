@@ -44,6 +44,7 @@ import org.cote.accountmanager.objects.DirectoryGroupType;
 import org.cote.accountmanager.objects.NameIdType;
 import org.cote.accountmanager.objects.ProcessingInstructionType;
 import org.cote.accountmanager.objects.UserType;
+import org.cote.accountmanager.objects.types.ColumnEnumType;
 import org.cote.accountmanager.objects.types.FactoryEnumType;
 import org.cote.accountmanager.objects.types.NameEnumType;
 import org.cote.propellant.objects.ModelType;
@@ -54,28 +55,24 @@ import org.cote.rocket.query.QueryFields;
 
 public class ModelFactory extends NameIdGroupFactory {
 	
-	/// static{ org.cote.accountmanager.data.Factories.registerClass(FactoryEnumType.MODEL, ModelFactory.class); }
 	public ModelFactory(){
 		super();
-		this.tableNames.add("model");
+		this.primaryTableName = "model";
+		this.tableNames.add(primaryTableName);
 		factoryType = FactoryEnumType.MODEL;
 	}
 	
 	protected void configureTableRestrictions(DataTable table){
-		if(table.getName().equalsIgnoreCase("model")){
-			/// table.setRestrictSelectColumn("logicalid", true);
+		if(table.getName().equalsIgnoreCase(primaryTableName)){
+			/// restrict columns
 		}
 	}
-	@Override
-	public<T> void depopulate(T obj) throws FactoryException, ArgumentException
-	{
-		
-	}
+
 	@Override
 	public <T> void populate(T obj) throws FactoryException, ArgumentException
 	{
 		ModelType model = (ModelType)obj;
-		if(model.getPopulated()) return;
+		if(model.getPopulated().booleanValue()) return;
 		model.getArtifacts().addAll(((ModelParticipationFactory)Factories.getFactory(FactoryEnumType.MODELPARTICIPATION)).getArtifactsFromParticipation(model));
 		model.getDependencies().addAll(((ModelParticipationFactory)Factories.getFactory(FactoryEnumType.MODELPARTICIPATION)).getDependenciesFromParticipation(model));
 		model.getCases().addAll(((ModelParticipationFactory)Factories.getFactory(FactoryEnumType.MODELPARTICIPATION)).getCasesFromParticipation(model));
@@ -104,11 +101,11 @@ public class ModelFactory extends NameIdGroupFactory {
 		ModelType obj = (ModelType)object;
 		if (obj.getGroupId() == null) throw new FactoryException("Cannot add new Model without a group");
 
-		DataRow row = prepareAdd(obj, "model");
+		DataRow row = prepareAdd(obj, primaryTableName);
 		try{
-			row.setCellValue("modeltype", obj.getModelType().toString());
-			row.setCellValue("groupid", obj.getGroupId());
-			row.setCellValue("description", obj.getDescription());
+			row.setCellValue(Columns.get(ColumnEnumType.MODELTYPE), obj.getModelType().toString());
+			row.setCellValue(Columns.get(ColumnEnumType.GROUPID), obj.getGroupId());
+			row.setCellValue(Columns.get(ColumnEnumType.DESCRIPTION), obj.getDescription());
 			if (insertRow(row)){
 				ModelType cobj = (bulkMode ? obj : (ModelType)getByNameInGroup(obj.getName(), ((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getDirectoryById(obj.getGroupId(), obj.getOrganizationId())));
 				if(cobj == null) throw new DataAccessException("Failed to retrieve new object");
@@ -162,8 +159,8 @@ public class ModelFactory extends NameIdGroupFactory {
 		newObj.setNameType(NameEnumType.MODEL);
 		super.read(rset, newObj);
 		readGroup(rset, newObj);
-		newObj.setModelType(ModelEnumType.valueOf(rset.getString("modeltype")));
-		newObj.setDescription(rset.getString("description"));
+		newObj.setModelType(ModelEnumType.valueOf(rset.getString(Columns.get(ColumnEnumType.MODELTYPE))));
+		newObj.setDescription(rset.getString(Columns.get(ColumnEnumType.DESCRIPTION)));
 		return newObj;
 	}
 	@Override
@@ -181,16 +178,14 @@ public class ModelFactory extends NameIdGroupFactory {
 				for(int i = 0; i < maps.length;i++) set.add(maps[i].getParticipantId());
 				
 				for(int i = 0; i < data.getCases().size();i++){
-					if(set.contains(data.getCases().get(i).getId())== false){
+					if(!set.contains(data.getCases().get(i).getId())){
 						((ModelParticipationFactory)Factories.getFactory(FactoryEnumType.MODELPARTICIPATION)).add(((ModelParticipationFactory)Factories.getFactory(FactoryEnumType.MODELPARTICIPATION)).newCaseParticipation(data,data.getCases().get(i)));
 					}
 					else{
 						set.remove(data.getCases().get(i).getId());
 					}
 				}
-//				System.out.println("Net delete Case parts: " + set.size());
 				((ModelParticipationFactory)Factories.getFactory(FactoryEnumType.MODELPARTICIPATION)).deleteParticipantsForParticipation(ArrayUtils.toPrimitive(set.toArray(new Long[0])), data, data.getOrganizationId());
-				
 				
 				/// Requirements
 				///
@@ -199,14 +194,13 @@ public class ModelFactory extends NameIdGroupFactory {
 				for(int i = 0; i < maps.length;i++) set.add(maps[i].getParticipantId());
 				
 				for(int i = 0; i < data.getRequirements().size();i++){
-					if(set.contains(data.getRequirements().get(i).getId())== false){
+					if(!set.contains(data.getRequirements().get(i).getId())){
 						((ModelParticipationFactory)Factories.getFactory(FactoryEnumType.MODELPARTICIPATION)).add(((ModelParticipationFactory)Factories.getFactory(FactoryEnumType.MODELPARTICIPATION)).newRequirementParticipation(data,data.getRequirements().get(i)));
 					}
 					else{
 						set.remove(data.getRequirements().get(i).getId());
 					}
 				}
-//				System.out.println("Net delete Requirement parts: " + set.size());
 				((ModelParticipationFactory)Factories.getFactory(FactoryEnumType.MODELPARTICIPATION)).deleteParticipantsForParticipation(ArrayUtils.toPrimitive(set.toArray(new Long[0])), data, data.getOrganizationId());
 				
 				/// Dependencies
@@ -216,14 +210,13 @@ public class ModelFactory extends NameIdGroupFactory {
 				for(int i = 0; i < maps.length;i++) set.add(maps[i].getParticipantId());
 				
 				for(int i = 0; i < data.getDependencies().size();i++){
-					if(set.contains(data.getDependencies().get(i).getId())== false){
+					if(!set.contains(data.getDependencies().get(i).getId())){
 						((ModelParticipationFactory)Factories.getFactory(FactoryEnumType.MODELPARTICIPATION)).add(((ModelParticipationFactory)Factories.getFactory(FactoryEnumType.MODELPARTICIPATION)).newDependencyParticipation(data,data.getDependencies().get(i)));
 					}
 					else{
 						set.remove(data.getDependencies().get(i).getId());
 					}
 				}
-//				System.out.println("Net delete Dependencie parts: " + set.size());
 				((ModelParticipationFactory)Factories.getFactory(FactoryEnumType.MODELPARTICIPATION)).deleteParticipantsForParticipation(ArrayUtils.toPrimitive(set.toArray(new Long[0])), data, data.getOrganizationId());
 				
 				/// Artifacts
@@ -233,14 +226,13 @@ public class ModelFactory extends NameIdGroupFactory {
 				for(int i = 0; i < maps.length;i++) set.add(maps[i].getParticipantId());
 				
 				for(int i = 0; i < data.getArtifacts().size();i++){
-					if(set.contains(data.getArtifacts().get(i).getId())== false){
+					if(!set.contains(data.getArtifacts().get(i).getId())){
 						((ModelParticipationFactory)Factories.getFactory(FactoryEnumType.MODELPARTICIPATION)).add(((ModelParticipationFactory)Factories.getFactory(FactoryEnumType.MODELPARTICIPATION)).newArtifactParticipation(data,data.getArtifacts().get(i)));
 					}
 					else{
 						set.remove(data.getArtifacts().get(i).getId());
 					}
 				}
-//				System.out.println("Net delete Artifact parts: " + set.size());
 				((ModelParticipationFactory)Factories.getFactory(FactoryEnumType.MODELPARTICIPATION)).deleteParticipantsForParticipation(ArrayUtils.toPrimitive(set.toArray(new Long[0])), data, data.getOrganizationId());
 				
 				/// Models
@@ -250,14 +242,13 @@ public class ModelFactory extends NameIdGroupFactory {
 				for(int i = 0; i < maps.length;i++) set.add(maps[i].getParticipantId());
 				
 				for(int i = 0; i < data.getModels().size();i++){
-					if(set.contains(data.getModels().get(i).getId())== false){
+					if(!set.contains(data.getModels().get(i).getId())){
 						((ModelParticipationFactory)Factories.getFactory(FactoryEnumType.MODELPARTICIPATION)).add(((ModelParticipationFactory)Factories.getFactory(FactoryEnumType.MODELPARTICIPATION)).newModelParticipation(data,data.getModels().get(i)));
 					}
 					else{
 						set.remove(data.getModels().get(i).getId());
 					}
 				}
-//				System.out.println("Net delete Model parts: " + set.size());
 				((ModelParticipationFactory)Factories.getFactory(FactoryEnumType.MODELPARTICIPATION)).deleteParticipantsForParticipation(ArrayUtils.toPrimitive(set.toArray(new Long[0])), data, data.getOrganizationId());
 				
 				outBool = true;
@@ -297,10 +288,6 @@ public class ModelFactory extends NameIdGroupFactory {
 		if (deleted > 0)
 		{
 			((ModelParticipationFactory)Factories.getFactory(FactoryEnumType.MODELPARTICIPATION)).deleteParticipations(ids, organizationId);
-			/*
-			Factory.DataParticipationFactoryInstance.DeleteParticipations(ids, organizationId);
-			Factory.TagParticipationFactoryInstance.DeleteParticipants(ids, organizationId);
-			*/
 		}
 		return deleted;
 	}

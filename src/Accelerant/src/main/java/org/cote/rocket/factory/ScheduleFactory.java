@@ -48,6 +48,7 @@ import org.cote.accountmanager.objects.DirectoryGroupType;
 import org.cote.accountmanager.objects.NameIdType;
 import org.cote.accountmanager.objects.ProcessingInstructionType;
 import org.cote.accountmanager.objects.UserType;
+import org.cote.accountmanager.objects.types.ColumnEnumType;
 import org.cote.accountmanager.objects.types.FactoryEnumType;
 import org.cote.accountmanager.objects.types.NameEnumType;
 import org.cote.accountmanager.util.CalendarUtil;
@@ -57,28 +58,25 @@ import org.cote.rocket.Factories;
 
 public class ScheduleFactory extends NameIdGroupFactory {
 	
-	/// static{ org.cote.accountmanager.data.Factories.registerClass(FactoryEnumType.SCHEDULE, ScheduleFactory.class); }
 	public ScheduleFactory(){
 		super();
-		this.tableNames.add("schedule");
+		this.primaryTableName = "schedule";
+		this.tableNames.add(primaryTableName);
 		factoryType = FactoryEnumType.SCHEDULE;
 	}
 	
+	@Override
 	protected void configureTableRestrictions(DataTable table){
 		if(table.getName().equalsIgnoreCase("schedule")){
-			/// table.setRestrictSelectColumn("logicalid", true);
+			/// restrict columns
 		}
 	}
-	@Override
-	public<T> void depopulate(T obj) throws FactoryException, ArgumentException
-	{
-		
-	}
+
 	@Override
 	public <T> void populate(T obj) throws FactoryException, ArgumentException
 	{
 		ScheduleType sched = (ScheduleType)obj;
-		if(sched.getPopulated()) return;
+		if(sched.getPopulated().booleanValue()) return;
 		sched.getBudgets().addAll(((ScheduleParticipationFactory)Factories.getFactory(FactoryEnumType.SCHEDULEPARTICIPATION)).getBudgetsFromParticipation(sched));
 		sched.getGoals().addAll(((ScheduleParticipationFactory)Factories.getFactory(FactoryEnumType.SCHEDULEPARTICIPATION)).getGoalsFromParticipation(sched));
 		sched.setPopulated(true);
@@ -107,11 +105,11 @@ public class ScheduleFactory extends NameIdGroupFactory {
 		ScheduleType obj = (ScheduleType)object;
 		if (obj.getGroupId() == null) throw new FactoryException("Cannot add new Schedule without a group");
 
-		DataRow row = prepareAdd(obj, "schedule");
+		DataRow row = prepareAdd(obj, primaryTableName);
 		try{
-			row.setCellValue("starttime",obj.getStartTime());
-			row.setCellValue("endtime",obj.getEndTime());
-			row.setCellValue("groupid", obj.getGroupId());
+			row.setCellValue(Columns.get(ColumnEnumType.STARTTIME),obj.getStartTime());
+			row.setCellValue(Columns.get(ColumnEnumType.ENDTIME),obj.getEndTime());
+			row.setCellValue(Columns.get(ColumnEnumType.GROUPID), obj.getGroupId());
 			if (insertRow(row)){
 				ScheduleType cobj = (bulkMode ? obj : (ScheduleType)getByNameInGroup(obj.getName(), ((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getDirectoryById(obj.getGroupId(), obj.getOrganizationId())));
 				if(cobj == null) throw new DataAccessException("Failed to retrieve new object");
@@ -152,8 +150,8 @@ public class ScheduleFactory extends NameIdGroupFactory {
 		newObj.setNameType(NameEnumType.SCHEDULE);
 		super.read(rset, newObj);
 		readGroup(rset, newObj);
-		newObj.setStartTime(CalendarUtil.getXmlGregorianCalendar(rset.getTimestamp("starttime")));
-		newObj.setEndTime(CalendarUtil.getXmlGregorianCalendar(rset.getTimestamp("endtime")));
+		newObj.setStartTime(CalendarUtil.getXmlGregorianCalendar(rset.getTimestamp(Columns.get(ColumnEnumType.STARTTIME))));
+		newObj.setEndTime(CalendarUtil.getXmlGregorianCalendar(rset.getTimestamp(Columns.get(ColumnEnumType.ENDTIME))));
 		return newObj;
 	}
 	@Override
@@ -174,14 +172,13 @@ public class ScheduleFactory extends NameIdGroupFactory {
 				for(int i = 0; i < maps.length;i++) set.add(maps[i].getParticipantId());
 				
 				for(int i = 0; i < data.getBudgets().size();i++){
-					if(set.contains(data.getBudgets().get(i).getId())== false){
+					if(!set.contains(data.getBudgets().get(i).getId())){
 						((ScheduleParticipationFactory)Factories.getFactory(FactoryEnumType.SCHEDULEPARTICIPATION)).add(((ScheduleParticipationFactory)Factories.getFactory(FactoryEnumType.SCHEDULEPARTICIPATION)).newBudgetParticipation(data,data.getBudgets().get(i)));
 					}
 					else{
 						set.remove(data.getBudgets().get(i).getId());
 					}
 				}
-//				System.out.println("Net delete budget parts: " + set.size());
 				((ScheduleParticipationFactory)Factories.getFactory(FactoryEnumType.SCHEDULEPARTICIPATION)).deleteParticipantsForParticipation(ArrayUtils.toPrimitive(set.toArray(new Long[0])), data, data.getOrganizationId());
 				
 				/// Goals
@@ -190,14 +187,13 @@ public class ScheduleFactory extends NameIdGroupFactory {
 				for(int i = 0; i < maps.length;i++) set.add(maps[i].getParticipantId());
 				
 				for(int i = 0; i < data.getGoals().size();i++){
-					if(set.contains(data.getGoals().get(i).getId())== false){
+					if(!set.contains(data.getGoals().get(i).getId())){
 						((ScheduleParticipationFactory)Factories.getFactory(FactoryEnumType.SCHEDULEPARTICIPATION)).add(((ScheduleParticipationFactory)Factories.getFactory(FactoryEnumType.SCHEDULEPARTICIPATION)).newGoalParticipation(data,data.getGoals().get(i)));
 					}
 					else{
 						set.remove(data.getGoals().get(i).getId());
 					}
 				}
-//				System.out.println("Net delete goal parts: " + set.size());
 				((ScheduleParticipationFactory)Factories.getFactory(FactoryEnumType.SCHEDULEPARTICIPATION)).deleteParticipantsForParticipation(ArrayUtils.toPrimitive(set.toArray(new Long[0])), data, data.getOrganizationId());
 
 				
@@ -238,10 +234,6 @@ public class ScheduleFactory extends NameIdGroupFactory {
 		if (deleted > 0)
 		{
 			((ScheduleParticipationFactory)Factories.getFactory(FactoryEnumType.SCHEDULEPARTICIPATION)).deleteParticipations(ids, organizationId);
-			/*
-			Factory.DataParticipationFactoryInstance.DeleteParticipations(ids, organizationId);
-			Factory.TagParticipationFactoryInstance.DeleteParticipants(ids, organizationId);
-			*/
 		}
 		return deleted;
 	}

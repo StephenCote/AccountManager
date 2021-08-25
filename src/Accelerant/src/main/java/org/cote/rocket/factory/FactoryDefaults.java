@@ -40,7 +40,12 @@ public class FactoryDefaults{
 	}
 	
 	public static boolean getIsSetup(){
-		return Factories.isSetup(getAccelerantOrganization().getId());
+		OrganizationType org = getAccelerantOrganization();
+		if(org == null) {
+			logger.error("Failed to retrieve organization");
+			return false;
+		}
+		return Factories.isSetup(org.getId());
 	}
 	
 	public static OrganizationType getAccelerantOrganization(){
@@ -48,10 +53,7 @@ public class FactoryDefaults{
 		try{
 			accelerantOrganization = ((OrganizationFactory)Factories.getFactory(FactoryEnumType.ORGANIZATION)).addOrganization("Accelerant", OrganizationEnumType.PUBLIC, Factories.getRootOrganization());
 		}
-		catch(FactoryException fe){
-			logger.error(FactoryException.LOGICAL_EXCEPTION,fe);
-			accelerantOrganization = null;
-		} catch (ArgumentException e) {
+		catch(FactoryException | ArgumentException e) {
 			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 			accelerantOrganization = null;
 		}

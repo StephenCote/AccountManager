@@ -38,6 +38,7 @@ import org.cote.accountmanager.exceptions.FactoryException;
 import org.cote.accountmanager.objects.NameIdType;
 import org.cote.accountmanager.objects.ProcessingInstructionType;
 import org.cote.accountmanager.objects.UserType;
+import org.cote.accountmanager.objects.types.ColumnEnumType;
 import org.cote.accountmanager.objects.types.ComparatorEnumType;
 import org.cote.accountmanager.objects.types.NameEnumType;
 import org.cote.accountmanager.objects.types.SqlDataEnumType;
@@ -49,11 +50,11 @@ import org.cote.rocket.query.QueryFields;
 
 public class FormElementValueFactory extends NameIdFactory {
 	
-	/// static{ org.cote.accountmanager.data.Factories.registerClass(FactoryEnumType.FORMELEMENTVALUE, FormElementValueFactory.class); }
 	public FormElementValueFactory(){
 		super();
 		this.hasParentId = false;
-		this.tableNames.add("formelementvalue");
+		this.primaryTableName = "formelementvalue";
+		this.tableNames.add(primaryTableName);
 	}
 	
 	@Override
@@ -62,21 +63,18 @@ public class FormElementValueFactory extends NameIdFactory {
 		return t.getName() + "-" + t.getFormElementId() + "-" + t.getOrganizationId();
 	}
 	
+	@Override
 	protected void configureTableRestrictions(DataTable table){
-		if(table.getName().equalsIgnoreCase("formelementvalue")){
-			/// table.setRestrictSelectColumn("logicalid", true);
+		if(table.getName().equalsIgnoreCase(primaryTableName)){
+			/// restrict columns
 		}
 	}
-	@Override
-	public<T> void depopulate(T obj) throws FactoryException, ArgumentException
-	{
-		
-	}
+
 	@Override
 	public <T> void populate(T obj) throws FactoryException, ArgumentException
 	{
 		FormElementValueType formElementValue = (FormElementValueType)obj;
-		if(formElementValue.getPopulated()) return;
+		if(formElementValue.getPopulated().booleanValue()) return;
 		formElementValue.setPopulated(true);
 		updateToCache(formElementValue);
 	}
@@ -101,14 +99,14 @@ public class FormElementValueFactory extends NameIdFactory {
 		FormElementValueType obj = (FormElementValueType)object;
 		if (obj.getFormElementId() <= 0) throw new FactoryException("Cannot add new FormElementValue without a FormElement");
 
-		DataRow row = prepareAdd(obj, "formelementvalue");
+		DataRow row = prepareAdd(obj, primaryTableName);
 		try{
-			row.setCellValue("formid", obj.getFormId());
-			row.setCellValue("formelementid", obj.getFormElementId());
-			row.setCellValue("isbinary", obj.getIsBinary());
-			if(obj.getIsBinary() == false && obj.getTextValue() != null) row.setCellValue("textvalue", obj.getTextValue());
-			if(obj.getIsBinary()){
-				row.setCellValue("binaryvalueid", obj.getBinaryId());
+			row.setCellValue(Columns.get(ColumnEnumType.FORMID), obj.getFormId());
+			row.setCellValue(Columns.get(ColumnEnumType.FORMELEMENTID), obj.getFormElementId());
+			row.setCellValue(Columns.get(ColumnEnumType.ISBINARY), obj.getIsBinary());
+			if(!obj.getIsBinary().booleanValue() && obj.getTextValue() != null) row.setCellValue(Columns.get(ColumnEnumType.TEXTVALUE), obj.getTextValue());
+			if(obj.getIsBinary().booleanValue()){
+				row.setCellValue(Columns.get(ColumnEnumType.BINARYVALUEID), obj.getBinaryId());
 			}
 
 			if (insertRow(row)) return true;
@@ -120,34 +118,33 @@ public class FormElementValueFactory extends NameIdFactory {
 	}
 	
 	
+	@SuppressWarnings("unchecked")
 	public <T> T getByNameInGroup(String name, FormType form, FormElementType formElement) throws FactoryException,ArgumentException{
 
 		String keyName = name + "-" + formElement.getId() + "-" + formElement.getOrganizationId();
-		T out_data = readCache(keyName);
-		if (out_data != null) return out_data;
+		T outData = readCache(keyName);
+		if (outData != null) return outData;
 
-		List<NameIdType> obj_list = getByField(new QueryField[] { QueryFields.getFieldName(name),QueryFields.getFieldFormElementId(formElement.getId()) }, formElement.getOrganizationId());
+		List<NameIdType> objList = getByField(new QueryField[] { QueryFields.getFieldName(name),QueryFields.getFieldFormElementId(formElement.getId()) }, formElement.getOrganizationId());
 
-		if (obj_list.size() > 0)
+		if (objList.size() > 0)
 		{
-			addToCache(obj_list.get(0),keyName);
-			out_data = (T)obj_list.get(0);
+			addToCache(objList.get(0),keyName);
+			outData = (T)objList.get(0);
 		}
-		else{
-			//System.out.println("No results for " + name + " in form " + form.getId());
-		}
-		return out_data;
+
+		return outData;
 	}
 	
 	public List<FormElementValueType> getByForm(FormType form) throws FactoryException,ArgumentException{
 
 
-		return list(new QueryField[] { QueryFields.getBigIntField("formid",form.getId()) }, form.getOrganizationId());
+		return list(new QueryField[] { QueryFields.getBigIntField(Columns.get(ColumnEnumType.FORMID),form.getId()) }, form.getOrganizationId());
 	}
 	public List<FormElementValueType> getByFormElement(FormType form, FormElementType formElement) throws FactoryException,ArgumentException{
 
 
-		return list(new QueryField[] { QueryFields.getBigIntField("formid",form.getId()), QueryFields.getBigIntField("formelementid",formElement.getId()) }, form.getOrganizationId());
+		return list(new QueryField[] { QueryFields.getBigIntField(Columns.get(ColumnEnumType.FORMID),form.getId()), QueryFields.getBigIntField(Columns.get(ColumnEnumType.FORMELEMENTID),formElement.getId()) }, form.getOrganizationId());
 	}
 	
 	@Override
@@ -157,13 +154,13 @@ public class FormElementValueFactory extends NameIdFactory {
 		newObj.setNameType(NameEnumType.FORMELEMENTVALUE);
 		super.read(rset, newObj);
 
-		newObj.setIsBinary(rset.getBoolean("isbinary"));
-		if(newObj.getIsBinary() == false) newObj.setTextValue(rset.getString("textvalue"));
+		newObj.setIsBinary(rset.getBoolean(Columns.get(ColumnEnumType.ISBINARY)));
+		if(!newObj.getIsBinary()) newObj.setTextValue(rset.getString(Columns.get(ColumnEnumType.TEXTVALUE)));
 		else{
-			newObj.setBinaryId(rset.getLong("binaryvalueid"));
+			newObj.setBinaryId(rset.getLong(Columns.get(ColumnEnumType.BINARYVALUEID)));
 		}
-		newObj.setFormElementId(rset.getLong("formelementid"));
-		newObj.setFormId(rset.getLong("formid"));
+		newObj.setFormElementId(rset.getLong(Columns.get(ColumnEnumType.FORMELEMENTID)));
+		newObj.setFormId(rset.getLong(Columns.get(ColumnEnumType.FORMID)));
 		return newObj;
 	}
 	@Override
@@ -200,29 +197,19 @@ public class FormElementValueFactory extends NameIdFactory {
 	}
 	public int deleteFormElementValuesByIds(long[] ids, long organizationId) throws FactoryException
 	{
-		int deleted = deleteById(ids, organizationId);
-		if (deleted > 0)
-		{
-			/*
-			Factory.DataParticipationFactoryInstance.DeleteParticipations(ids, organizationId);
-			Factory.TagParticipationFactoryInstance.DeleteParticipants(ids, organizationId);
-			*/
-		}
-		return deleted;
+		return deleteById(ids, organizationId);
 	}
 	public int deleteFormElementValuesByElementIds(long[] ids, long organizationId) throws FactoryException
 	{
-		QueryField match = new QueryField(SqlDataEnumType.BIGINT, "formelementid", QueryFields.getFilteredLongList(ids));
+		QueryField match = new QueryField(SqlDataEnumType.BIGINT, Columns.get(ColumnEnumType.FORMELEMENTID), QueryFields.getFilteredLongList(ids));
 		match.setComparator(ComparatorEnumType.ANY);
-		int deleted = deleteByField(new QueryField[]{match}, organizationId);
-		return deleted;
+		return deleteByField(new QueryField[]{match}, organizationId);
 	}
 	public int deleteFormElementValuesByFormIds(long[] ids, long organizationId) throws FactoryException
 	{
-		QueryField match = new QueryField(SqlDataEnumType.BIGINT, "formid", QueryFields.getFilteredLongList(ids));
+		QueryField match = new QueryField(SqlDataEnumType.BIGINT, Columns.get(ColumnEnumType.FORMID), QueryFields.getFilteredLongList(ids));
 		match.setComparator(ComparatorEnumType.ANY);
-		int deleted = deleteByField(new QueryField[]{match}, organizationId);
-		return deleted;
+		return deleteByField(new QueryField[]{match}, organizationId);
 	}
 
 	public List<FormElementValueType>  getFormElementValueList(QueryField[] fields, long startRecord, int recordCount, long organizationId)  throws FactoryException,ArgumentException

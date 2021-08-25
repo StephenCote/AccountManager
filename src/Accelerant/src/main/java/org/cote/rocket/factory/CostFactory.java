@@ -38,6 +38,7 @@ import org.cote.accountmanager.objects.DirectoryGroupType;
 import org.cote.accountmanager.objects.NameIdType;
 import org.cote.accountmanager.objects.ProcessingInstructionType;
 import org.cote.accountmanager.objects.UserType;
+import org.cote.accountmanager.objects.types.ColumnEnumType;
 import org.cote.accountmanager.objects.types.FactoryEnumType;
 import org.cote.accountmanager.objects.types.NameEnumType;
 import org.cote.propellant.objects.CostType;
@@ -47,28 +48,25 @@ import org.cote.rocket.query.QueryFields;
 
 public class CostFactory extends NameIdGroupFactory {
 	
-	/// static{ org.cote.accountmanager.data.Factories.registerClass(FactoryEnumType.COST, CostFactory.class); }
 	public CostFactory(){
 		super();
-		this.tableNames.add("cost");
+		this.primaryTableName = "cost";
+		this.tableNames.add(primaryTableName);
 		factoryType = FactoryEnumType.COST;
 	}
 	
+	@Override
 	protected void configureTableRestrictions(DataTable table){
-		if(table.getName().equalsIgnoreCase("cost")){
-			/// table.setRestrictSelectColumn("logicalid", true);
+		if(table.getName().equalsIgnoreCase(primaryTableName)){
+			/// restrict columns
 		}
 	}
-	@Override
-	public<T> void depopulate(T obj) throws FactoryException, ArgumentException
-	{
-		
-	}
+
 	@Override
 	public <T> void populate(T obj) throws FactoryException, ArgumentException
 	{
 		CostType cost = (CostType)obj;
-		if(cost.getPopulated()) return;
+		if(cost.getPopulated().booleanValue()) return;
 		cost.setPopulated(true);
 		updateToCache(cost);
 	}
@@ -92,11 +90,11 @@ public class CostFactory extends NameIdGroupFactory {
 		CostType obj = (CostType)object;
 		if (obj.getGroupId() == null) throw new FactoryException("Cannot add new Cost without a group");
 
-		DataRow row = prepareAdd(obj, "cost");
+		DataRow row = prepareAdd(obj, primaryTableName);
 		try{
-			row.setCellValue("value", obj.getValue());
-			row.setCellValue("currencytype", obj.getCurrencyType().toString());
-			row.setCellValue("groupid", obj.getGroupId());
+			row.setCellValue(Columns.get(ColumnEnumType.VALUE), obj.getValue());
+			row.setCellValue(Columns.get(ColumnEnumType.CURRENCYTYPE), obj.getCurrencyType().toString());
+			row.setCellValue(Columns.get(ColumnEnumType.GROUPID), obj.getGroupId());
 			if (insertRow(row)) return true;
 		}
 		catch(DataAccessException dae){
@@ -115,10 +113,9 @@ public class CostFactory extends NameIdGroupFactory {
 		newObj.setNameType(NameEnumType.COST);
 		super.read(rset, newObj);
 		readGroup(rset, newObj);
-		// TODO: set time, cost
 		
-		newObj.setCurrencyType(CurrencyEnumType.valueOf(rset.getString("currencytype")));
-		newObj.setValue(rset.getDouble("value"));
+		newObj.setCurrencyType(CurrencyEnumType.valueOf(rset.getString(Columns.get(ColumnEnumType.CURRENCYTYPE))));
+		newObj.setValue(rset.getDouble(Columns.get(ColumnEnumType.VALUE)));
 		return newObj;
 	}
 	@Override
@@ -152,15 +149,7 @@ public class CostFactory extends NameIdGroupFactory {
 	}
 	public int deleteCostsByIds(long[] ids, long organizationId) throws FactoryException
 	{
-		int deleted = deleteById(ids, organizationId);
-		if (deleted > 0)
-		{
-			/*
-			Factory.DataParticipationFactoryInstance.DeleteParticipations(ids, organizationId);
-			Factory.TagParticipationFactoryInstance.DeleteParticipants(ids, organizationId);
-			*/
-		}
-		return deleted;
+		return deleteById(ids, organizationId);
 	}
 	public int deleteCostsInGroup(DirectoryGroupType group)  throws FactoryException
 	{

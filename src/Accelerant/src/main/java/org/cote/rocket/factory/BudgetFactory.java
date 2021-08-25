@@ -38,6 +38,7 @@ import org.cote.accountmanager.objects.DirectoryGroupType;
 import org.cote.accountmanager.objects.NameIdType;
 import org.cote.accountmanager.objects.ProcessingInstructionType;
 import org.cote.accountmanager.objects.UserType;
+import org.cote.accountmanager.objects.types.ColumnEnumType;
 import org.cote.accountmanager.objects.types.FactoryEnumType;
 import org.cote.accountmanager.objects.types.NameEnumType;
 import org.cote.propellant.objects.BudgetType;
@@ -50,27 +51,24 @@ import org.cote.rocket.query.QueryFields;
 
 public class BudgetFactory extends NameIdGroupFactory {
 	
-	/// static{ org.cote.accountmanager.data.Factories.registerClass(FactoryEnumType.BUDGET, BudgetFactory.class); }
 	public BudgetFactory(){
 		super();
-		this.tableNames.add("budget");
+		this.primaryTableName = "budget";
+		this.tableNames.add(primaryTableName);
 	}
 	
+	@Override
 	protected void configureTableRestrictions(DataTable table){
-		if(table.getName().equalsIgnoreCase("budget")){
-			/// table.setRestrictSelectColumn("logicalid", true);
+		if(table.getName().equalsIgnoreCase(primaryTableName)){
+			/// restrict columns
 		}
 	}
-	@Override
-	public<T> void depopulate(T obj) throws FactoryException, ArgumentException
-	{
-		
-	}
+
 	@Override
 	public <T> void populate(T obj) throws FactoryException, ArgumentException
 	{
 		BudgetType budget = (BudgetType)obj;
-		if(budget.getPopulated()) return;
+		if(budget.getPopulated().booleanValue()) return;
 
 		budget.setPopulated(true);
 		updateToCache(budget);
@@ -94,13 +92,13 @@ public class BudgetFactory extends NameIdGroupFactory {
 		BudgetType obj = (BudgetType)object;
 		if (obj.getGroupId() == null) throw new FactoryException("Cannot add new Budget without a group");
 
-		DataRow row = prepareAdd(obj, "budget");
+		DataRow row = prepareAdd(obj, primaryTableName);
 		try{
-			if(obj.getCost() != null) row.setCellValue("costid",obj.getCost().getId());
-			if(obj.getTime() != null) row.setCellValue("timeid",obj.getTime().getId());
-			row.setCellValue("description", obj.getDescription());
-			row.setCellValue("budgettype", obj.getBudgetType().toString());
-			row.setCellValue("groupid", obj.getGroupId());
+			if(obj.getCost() != null) row.setCellValue(Columns.get(ColumnEnumType.COSTID),obj.getCost().getId());
+			if(obj.getTime() != null) row.setCellValue(Columns.get(ColumnEnumType.TIMEID),obj.getTime().getId());
+			row.setCellValue(Columns.get(ColumnEnumType.DESCRIPTION), obj.getDescription());
+			row.setCellValue(Columns.get(ColumnEnumType.BUDGETTYPE), obj.getBudgetType().toString());
+			row.setCellValue(Columns.get(ColumnEnumType.GROUPID), obj.getGroupId());
 			if (insertRow(row)) return true;
 		}
 		catch(DataAccessException dae){
@@ -119,11 +117,11 @@ public class BudgetFactory extends NameIdGroupFactory {
 		newObj.setNameType(NameEnumType.BUDGET);
 		super.read(rset, newObj);
 		readGroup(rset, newObj);
-		newObj.setBudgetType(BudgetEnumType.valueOf(rset.getString("budgettype")));
-		newObj.setDescription(rset.getString("description"));
+		newObj.setBudgetType(BudgetEnumType.valueOf(rset.getString(Columns.get(ColumnEnumType.BUDGETTYPE))));
+		newObj.setDescription(rset.getString(Columns.get(ColumnEnumType.DESCRIPTION)));
 		
-		long time_id = rset.getLong("timeid");
-		long cost_id = rset.getLong("costid");
+		long time_id = rset.getLong(Columns.get(ColumnEnumType.TIMEID));
+		long cost_id = rset.getLong(Columns.get(ColumnEnumType.COSTID));
 		
 		if(time_id > 0L) newObj.setTime((TimeType)((TimeFactory)Factories.getFactory(FactoryEnumType.TIME)).getById(time_id, newObj.getOrganizationId()));
 		if(cost_id > 0L) newObj.setCost((CostType)((CostFactory)Factories.getFactory(FactoryEnumType.COST)).getById(cost_id, newObj.getOrganizationId()));

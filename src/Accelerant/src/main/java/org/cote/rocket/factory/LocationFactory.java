@@ -46,6 +46,7 @@ import org.cote.accountmanager.objects.NameIdDirectoryGroupType;
 import org.cote.accountmanager.objects.NameIdType;
 import org.cote.accountmanager.objects.ProcessingInstructionType;
 import org.cote.accountmanager.objects.UserType;
+import org.cote.accountmanager.objects.types.ColumnEnumType;
 import org.cote.accountmanager.objects.types.FactoryEnumType;
 import org.cote.accountmanager.objects.types.NameEnumType;
 import org.cote.propellant.objects.LocationType;
@@ -56,17 +57,18 @@ import org.cote.rocket.query.QueryFields;
 
 public class LocationFactory extends NameIdGroupFactory {
 	
-	/// static{ org.cote.accountmanager.data.Factories.registerClass(FactoryEnumType.LOCATION, LocationFactory.class); }
 	public LocationFactory(){
 		super();
-		this.tableNames.add("location");
+		this.primaryTableName = "location";
+		this.tableNames.add(primaryTableName);
 		this.hasParentId = true;
 		factoryType = FactoryEnumType.LOCATION;
 	}
 	
+	@Override
 	protected void configureTableRestrictions(DataTable table){
-		if(table.getName().equalsIgnoreCase("location")){
-			/// table.setRestrictSelectColumn("logicalid", true);
+		if(table.getName().equalsIgnoreCase(primaryTableName)){
+			/// restrict columns
 		}
 	}
 	
@@ -93,7 +95,7 @@ public class LocationFactory extends NameIdGroupFactory {
 	public <T> void populate(T obj) throws FactoryException, ArgumentException
 	{
 		LocationType cobj = (LocationType)obj;
-		if(cobj.getPopulated()) return;
+		if(cobj.getPopulated().booleanValue()) return;
 		cobj.getChildLocations().addAll(getChildLocationList(cobj));
 		cobj.getBoundaries().addAll(((LocationParticipationFactory)Factories.getFactory(FactoryEnumType.LOCATIONPARTICIPATION)).getBoundariesFromParticipation(cobj));
 		cobj.getBorders().addAll(((LocationParticipationFactory)Factories.getFactory(FactoryEnumType.LOCATIONPARTICIPATION)).getBordersFromParticipation(cobj));
@@ -123,21 +125,19 @@ public class LocationFactory extends NameIdGroupFactory {
 		LocationType obj = (LocationType)object;
 		if (obj.getGroupId() == null) throw new FactoryException("Cannot add new Location without a group");
 
-		DataRow row = prepareAdd(obj, "location");
+		DataRow row = prepareAdd(obj, primaryTableName);
 		try{
-			row.setCellValue("geographytype", obj.getGeographyType().toString());
-			row.setCellValue("groupid", obj.getGroupId());
-			row.setCellValue("classification", obj.getClassification());
-			row.setCellValue("description", obj.getDescription());
+			row.setCellValue(Columns.get(ColumnEnumType.GEOGRAPHYTYPE), obj.getGeographyType().toString());
+			row.setCellValue(Columns.get(ColumnEnumType.GROUPID), obj.getGroupId());
+			row.setCellValue(Columns.get(ColumnEnumType.CLASSIFICATION), obj.getClassification());
+			row.setCellValue(Columns.get(ColumnEnumType.DESCRIPTION), obj.getDescription());
 			if (insertRow(row)){
-				//LocationType cobj = (bulkMode ? obj : (LocationType)getByNameInGroup(obj.getName(), ((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getDirectoryById(obj.getGroupId(), obj.getOrganizationId())));
 				LocationType cobj = null;
 				if(bulkMode) cobj = obj;
 				else if(obj.getParentId() > 0L){
 					LocationType parent = getById(obj.getParentId(),obj.getOrganizationId());
 					if(parent == null) throw new FactoryException("Unable to update orphaned task without correcting the parent");
 					cobj = getByNameInGroup(obj.getName(),obj.getParentId(),((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getDirectoryById(obj.getGroupId(),obj.getOrganizationId()));
-					//(bulkMode ? obj : obj.getParentId() > 0L ? (LocationType)getByNameInGroup(obj.getName(),obj.get);
 				}
 				else{
 					cobj = (LocationType)getByNameInGroup(obj.getName(), ((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getDirectoryById(obj.getGroupId(), obj.getOrganizationId()));
@@ -162,7 +162,6 @@ public class LocationFactory extends NameIdGroupFactory {
 		catch(DataAccessException dae){
 			throw new FactoryException(dae.getMessage());
 		} catch (ArgumentException e) {
-			
 			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
 		return false;
@@ -178,9 +177,9 @@ public class LocationFactory extends NameIdGroupFactory {
 		newObj.setNameType(NameEnumType.LOCATION);
 		super.read(rset, newObj);
 		readGroup(rset, newObj);
-		newObj.setClassification(rset.getString("classification"));
-		newObj.setGeographyType(GeographyEnumType.valueOf(rset.getString("geographytype")));
-		newObj.setDescription(rset.getString("description"));
+		newObj.setClassification(rset.getString(Columns.get(ColumnEnumType.CLASSIFICATION)));
+		newObj.setGeographyType(GeographyEnumType.valueOf(rset.getString(Columns.get(ColumnEnumType.GEOGRAPHYTYPE))));
+		newObj.setDescription(rset.getString(Columns.get(ColumnEnumType.DESCRIPTION)));
 		return newObj;
 	}
 	@Override
@@ -198,14 +197,13 @@ public class LocationFactory extends NameIdGroupFactory {
 				for(int i = 0; i < maps.length;i++) set.add(maps[i].getParticipantId());
 				
 				for(int i = 0; i < data.getBorders().size();i++){
-					if(set.contains(data.getBorders().get(i).getId())== false){
+					if(!set.contains(data.getBorders().get(i).getId())){
 						((LocationParticipationFactory)Factories.getFactory(FactoryEnumType.LOCATIONPARTICIPATION)).add(((LocationParticipationFactory)Factories.getFactory(FactoryEnumType.LOCATIONPARTICIPATION)).newBorderParticipation(data,data.getBorders().get(i)));
 					}
 					else{
 						set.remove(data.getBorders().get(i).getId());
 					}
 				}
-//				System.out.println("Net delete Location parts: " + set.size());
 				((LocationParticipationFactory)Factories.getFactory(FactoryEnumType.LOCATIONPARTICIPATION)).deleteParticipantsForParticipation(ArrayUtils.toPrimitive(set.toArray(new Long[0])), data, data.getOrganizationId());
 				
 				set = new HashSet<>();
@@ -213,16 +211,14 @@ public class LocationFactory extends NameIdGroupFactory {
 				for(int i = 0; i < maps.length;i++) set.add(maps[i].getParticipantId());
 				
 				for(int i = 0; i < data.getBoundaries().size();i++){
-					if(set.contains(data.getBoundaries().get(i).getId())== false){
+					if(!set.contains(data.getBoundaries().get(i).getId())){
 						((LocationParticipationFactory)Factories.getFactory(FactoryEnumType.LOCATIONPARTICIPATION)).add(((LocationParticipationFactory)Factories.getFactory(FactoryEnumType.LOCATIONPARTICIPATION)).newBoundaryParticipation(data,data.getBoundaries().get(i)));
 					}
 					else{
 						set.remove(data.getBoundaries().get(i).getId());
 					}
 				}
-//				System.out.println("Net delete Location parts: " + set.size());
 				((LocationParticipationFactory)Factories.getFactory(FactoryEnumType.LOCATIONPARTICIPATION)).deleteParticipantsForParticipation(ArrayUtils.toPrimitive(set.toArray(new Long[0])), data, data.getOrganizationId());
-	
 				outBool = true;
 			}
 			catch(ArgumentException e){
@@ -257,15 +253,7 @@ public class LocationFactory extends NameIdGroupFactory {
 	}
 	public int deleteLocationsByIds(long[] ids, long organizationId) throws FactoryException
 	{
-		int deleted = deleteById(ids, organizationId);
-		if (deleted > 0)
-		{
-			/*
-			Factory.DataParticipationFactoryInstance.DeleteParticipations(ids, organizationId);
-			Factory.TagParticipationFactoryInstance.DeleteParticipants(ids, organizationId);
-			*/
-		}
-		return deleted;
+		return deleteById(ids, organizationId);
 	}
 	public int deleteLocationsInGroup(DirectoryGroupType group)  throws FactoryException
 	{

@@ -44,6 +44,7 @@ import org.cote.accountmanager.objects.DirectoryGroupType;
 import org.cote.accountmanager.objects.NameIdType;
 import org.cote.accountmanager.objects.ProcessingInstructionType;
 import org.cote.accountmanager.objects.UserType;
+import org.cote.accountmanager.objects.types.ColumnEnumType;
 import org.cote.accountmanager.objects.types.FactoryEnumType;
 import org.cote.accountmanager.objects.types.NameEnumType;
 import org.cote.propellant.objects.FormElementType;
@@ -55,23 +56,20 @@ import org.cote.rocket.query.QueryFields;
 
 public class FormFactory extends NameIdGroupFactory {
 	
-	/// static{ org.cote.accountmanager.data.Factories.registerClass(FactoryEnumType.FORM, FormFactory.class); }
 	public FormFactory(){
 		super();
-		this.tableNames.add("form");
+		this.primaryTableName = "form";
+		this.tableNames.add(primaryTableName);
 		factoryType = FactoryEnumType.FORM;
 	}
 
+	@Override
 	protected void configureTableRestrictions(DataTable table){
-		if(table.getName().equalsIgnoreCase("form")){
-			/// table.setRestrictSelectColumn("logicalid", true);
+		if(table.getName().equalsIgnoreCase(primaryTableName)){
+			/// restrict columns
 		}
 	}
-	@Override
-	public<T> void depopulate(T obj) throws FactoryException, ArgumentException
-	{
-		
-	}
+
 	@Override
 	public <T> void populate(T obj) throws FactoryException, ArgumentException
 	{
@@ -80,11 +78,11 @@ public class FormFactory extends NameIdGroupFactory {
 			logger.error("Form reference is null. This is likely due to an invalid template or subform reference.");
 			return;
 		}
-		if(form.getPopulated()) return;
+		if(form.getPopulated().booleanValue()) return;
 
 		form.getChildForms().addAll(((FormParticipationFactory)Factories.getFactory(FactoryEnumType.FORMPARTICIPATION)).getFormsFromParticipation(form));
 		try{
-			if(form.getIsTemplate()){
+			if(form.getIsTemplate().booleanValue()){
 				form.getElements().addAll(((FormParticipationFactory)Factories.getFactory(FactoryEnumType.FORMPARTICIPATION)).getFormElementsFromParticipation(form));
 			}
 			else{
@@ -99,12 +97,11 @@ public class FormFactory extends NameIdGroupFactory {
 				}
 			}
 			for(int i = 0; i < form.getElements().size();i++){
-				if(form.getIsTemplate()) ((FormElementFactory)Factories.getFactory(FactoryEnumType.FORMELEMENT)).populate(form.getElements().get(i));
+				if(form.getIsTemplate().booleanValue()) ((FormElementFactory)Factories.getFactory(FactoryEnumType.FORMELEMENT)).populate(form.getElements().get(i));
 				else form.getElements().get(i).getElementValues().addAll(((FormElementValueFactory)Factories.getFactory(FactoryEnumType.FORMELEMENTVALUE)).getByFormElement(form,form.getElements().get(i)));
 			}
 		}
 		catch(FactoryException fe){
-			System.out.println(fe.getMessage());
 			logger.error(FactoryException.LOGICAL_EXCEPTION,fe);
 		}
 		form.setPopulated(true);
@@ -127,18 +124,18 @@ public class FormFactory extends NameIdGroupFactory {
 		FormType obj = (FormType)object;
 		if (obj.getGroupId() == null) throw new FactoryException("Cannot add new Form without a group");
 
-		DataRow row = prepareAdd(obj, "form");
+		DataRow row = prepareAdd(obj, primaryTableName);
 		try{
 			if(obj.getTemplate() != null && obj.getTemplate().getId().compareTo(obj.getId())==0){
-				System.out.println("Form cannot point to itself as a template");
+				logger.error("Form cannot point to itself as a template");
 				obj.setTemplate(null);
 			}
-			row.setCellValue("description",obj.getDescription());
-			row.setCellValue("groupid", obj.getGroupId());
-			row.setCellValue("istemplate", obj.getIsTemplate());
-			row.setCellValue("isgrid",obj.getIsGrid());
-			if(obj.getViewTemplate() != null) row.setCellValue("viewtemplateid", obj.getViewTemplate().getId());
-			if(obj.getTemplate() != null) row.setCellValue("templateid", obj.getTemplate().getId());
+			row.setCellValue(Columns.get(ColumnEnumType.DESCRIPTION),obj.getDescription());
+			row.setCellValue(Columns.get(ColumnEnumType.GROUPID), obj.getGroupId());
+			row.setCellValue(Columns.get(ColumnEnumType.ISTEMPLATE), obj.getIsTemplate());
+			row.setCellValue(Columns.get(ColumnEnumType.ISGRID),obj.getIsGrid());
+			if(obj.getViewTemplate() != null) row.setCellValue(Columns.get(ColumnEnumType.VIEWTEMPLATEID), obj.getViewTemplate().getId());
+			if(obj.getTemplate() != null) row.setCellValue(Columns.get(ColumnEnumType.TEMPLATEID), obj.getTemplate().getId());
 			if (insertRow(row)){
 				try{
 					FormType cobj = (bulkMode ? obj : (FormType)getByNameInGroup(obj.getName(), ((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getDirectoryById(obj.getGroupId(), obj.getOrganizationId())));
@@ -181,13 +178,13 @@ public class FormFactory extends NameIdGroupFactory {
 		newObj.setNameType(NameEnumType.FORM);
 		super.read(rset, newObj);
 		readGroup(rset, newObj);
-		newObj.setDescription(rset.getString("description"));
-		long view_id = rset.getLong("viewtemplateid");
-		if(view_id > 0) newObj.setViewTemplate((NoteType)((NoteFactory)Factories.getFactory(FactoryEnumType.NOTE)).getById(view_id, newObj.getOrganizationId()));
-		long form_id = rset.getLong("templateid");
-		if(form_id > 0) newObj.setTemplate((FormType)getById(form_id,newObj.getOrganizationId()));
-		newObj.setIsTemplate(rset.getBoolean("istemplate"));
-		newObj.setIsGrid(rset.getBoolean("isgrid"));
+		newObj.setDescription(rset.getString(Columns.get(ColumnEnumType.DESCRIPTION)));
+		long viewId = rset.getLong(Columns.get(ColumnEnumType.VIEWTEMPLATEID));
+		if(viewId > 0) newObj.setViewTemplate((NoteType)((NoteFactory)Factories.getFactory(FactoryEnumType.NOTE)).getById(viewId, newObj.getOrganizationId()));
+		long formId = rset.getLong(Columns.get(ColumnEnumType.TEMPLATEID));
+		if(formId > 0) newObj.setTemplate((FormType)getById(formId,newObj.getOrganizationId()));
+		newObj.setIsTemplate(rset.getBoolean(Columns.get(ColumnEnumType.ISTEMPLATE)));
+		newObj.setIsGrid(rset.getBoolean(Columns.get(ColumnEnumType.ISGRID)));
 		return newObj;
 	}
 	@Override
@@ -198,41 +195,38 @@ public class FormFactory extends NameIdGroupFactory {
 		removeFromCache(data);
 		if(update(data, null)){
 			try{
-			/// Elements
-			Set<Long> set = new HashSet<>();
-			BaseParticipantType[] maps = ((FormParticipationFactory)Factories.getFactory(FactoryEnumType.FORMPARTICIPATION)).getFormElementParticipations(data).toArray(new BaseParticipantType[0]);
-			for(int i = 0; i < maps.length;i++) set.add(maps[i].getParticipantId());
-			
-			for(int i = 0; i < data.getElements().size();i++){
-				if(set.contains(data.getElements().get(i).getId())== false){
-					((FormParticipationFactory)Factories.getFactory(FactoryEnumType.FORMPARTICIPATION)).add(((FormParticipationFactory)Factories.getFactory(FactoryEnumType.FORMPARTICIPATION)).newFormElementParticipation(data,data.getElements().get(i)));
+				/// Elements
+				Set<Long> set = new HashSet<>();
+				BaseParticipantType[] maps = ((FormParticipationFactory)Factories.getFactory(FactoryEnumType.FORMPARTICIPATION)).getFormElementParticipations(data).toArray(new BaseParticipantType[0]);
+				for(int i = 0; i < maps.length;i++) set.add(maps[i].getParticipantId());
+				
+				for(int i = 0; i < data.getElements().size();i++){
+					if(!set.contains(data.getElements().get(i).getId())){
+						((FormParticipationFactory)Factories.getFactory(FactoryEnumType.FORMPARTICIPATION)).add(((FormParticipationFactory)Factories.getFactory(FactoryEnumType.FORMPARTICIPATION)).newFormElementParticipation(data,data.getElements().get(i)));
+					}
+					else{
+						set.remove(data.getElements().get(i).getId());
+					}
 				}
-				else{
-					set.remove(data.getElements().get(i).getId());
+	
+				((FormParticipationFactory)Factories.getFactory(FactoryEnumType.FORMPARTICIPATION)).deleteParticipantsForParticipation(ArrayUtils.toPrimitive(set.toArray(new Long[0])), data, data.getOrganizationId());
+				
+				/// Forms
+				set.clear();
+				maps = ((FormParticipationFactory)Factories.getFactory(FactoryEnumType.FORMPARTICIPATION)).getFormParticipations(data).toArray(new BaseParticipantType[0]);
+				for(int i = 0; i < maps.length;i++) set.add(maps[i].getParticipantId());
+				
+				for(int i = 0; i < data.getChildForms().size();i++){
+					if(!set.contains(data.getChildForms().get(i).getId())){
+						((FormParticipationFactory)Factories.getFactory(FactoryEnumType.FORMPARTICIPATION)).add(((FormParticipationFactory)Factories.getFactory(FactoryEnumType.FORMPARTICIPATION)).newFormParticipation(data,data.getChildForms().get(i)));
+					}
+					else{
+						set.remove(data.getChildForms().get(i).getId());
+					}
 				}
-			}
-//			System.out.println("Net delete Element parts: " + set.size());
-			((FormParticipationFactory)Factories.getFactory(FactoryEnumType.FORMPARTICIPATION)).deleteParticipantsForParticipation(ArrayUtils.toPrimitive(set.toArray(new Long[0])), data, data.getOrganizationId());
+				((FormParticipationFactory)Factories.getFactory(FactoryEnumType.FORMPARTICIPATION)).deleteParticipantsForParticipation(ArrayUtils.toPrimitive(set.toArray(new Long[0])), data, data.getOrganizationId());
 			
-			/// Forms
-			set.clear();
-			maps = ((FormParticipationFactory)Factories.getFactory(FactoryEnumType.FORMPARTICIPATION)).getFormParticipations(data).toArray(new BaseParticipantType[0]);
-			for(int i = 0; i < maps.length;i++) set.add(maps[i].getParticipantId());
-			
-			for(int i = 0; i < data.getChildForms().size();i++){
-				if(set.contains(data.getChildForms().get(i).getId())== false){
-					((FormParticipationFactory)Factories.getFactory(FactoryEnumType.FORMPARTICIPATION)).add(((FormParticipationFactory)Factories.getFactory(FactoryEnumType.FORMPARTICIPATION)).newFormParticipation(data,data.getChildForms().get(i)));
-				}
-				else{
-					set.remove(data.getChildForms().get(i).getId());
-				}
-			}
-//			System.out.println("Net delete Form parts: " + set.size());
-			((FormParticipationFactory)Factories.getFactory(FactoryEnumType.FORMPARTICIPATION)).deleteParticipantsForParticipation(ArrayUtils.toPrimitive(set.toArray(new Long[0])), data, data.getOrganizationId());
-			
-			
-		
-			outBool = true;
+				outBool = true;
 			}
 			catch(ArgumentException ae){
 				throw new FactoryException(ae.getMessage());
@@ -282,11 +276,6 @@ public class FormFactory extends NameIdGroupFactory {
 		{
 			((FormElementValueFactory)Factories.getFactory(FactoryEnumType.FORMELEMENTVALUE)).deleteFormElementValuesByFormIds(ids, organizationId);
 			((FormParticipationFactory)Factories.getFactory(FactoryEnumType.FORMPARTICIPATION)).deleteParticipations(ids, organizationId);
-			
-			/*
-			Factory.DataParticipationFactoryInstance.DeleteParticipations(ids, organizationId);
-			Factory.TagParticipationFactoryInstance.DeleteParticipants(ids, organizationId);
-			*/
 		}
 		return deleted;
 	}

@@ -124,112 +124,112 @@ public abstract class AccelerantParticipationFactory extends BaseParticipationFa
 	@Override
 	protected BaseParticipantType newParticipant(ParticipantEnumType type) throws ArgumentException
 	{
-		BaseParticipantType new_participant = null;
+		BaseParticipantType newParticipant = null;
 		switch (type)
 		{
 			case BOUNDARY:
-				new_participant = new BoundaryParticipantType();
+				newParticipant = new BoundaryParticipantType();
 				break;
 			case BORDER:
-				new_participant = new BorderParticipantType();
+				newParticipant = new BorderParticipantType();
 				break;
 			case THING:
-				new_participant = new ThingParticipantType();
+				newParticipant = new ThingParticipantType();
 				break;
 			case ENTRYTRAIT:
-				new_participant = new EntryTraitParticipantType();
+				newParticipant = new EntryTraitParticipantType();
 				break;
 			case EXITTRAIT:
-				new_participant = new ExitTraitParticipantType();
+				newParticipant = new ExitTraitParticipantType();
 				break;
 			case ACTOR:
-				new_participant = new ActorParticipantType();
+				newParticipant = new ActorParticipantType();
 				break;
 			case OBSERVER:
-				new_participant = new ObserverParticipantType();
+				newParticipant = new ObserverParticipantType();
 				break;
 			case INFLUENCER:
-				new_participant = new InfluencerParticipantType();
+				newParticipant = new InfluencerParticipantType();
 				break;
 			case ORCHESTRATOR:
-				new_participant = new OrchestratorParticipantType();
+				newParticipant = new OrchestratorParticipantType();
 				break;
 			case SCHEDULE:
-				new_participant = new ScheduleParticipantType();
+				newParticipant = new ScheduleParticipantType();
 				break;
 			case BUDGET:
-				new_participant = new BudgetParticipantType();
+				newParticipant = new BudgetParticipantType();
 				break;
 			case PROJECT:
-				new_participant = new ProjectParticipantType();
+				newParticipant = new ProjectParticipantType();
 				break;
 			case GOAL:
-				new_participant = new GoalParticipantType();
+				newParticipant = new GoalParticipantType();
 				break;
 			case REQUIREMENT:
-				new_participant = new RequirementParticipantType();
+				newParticipant = new RequirementParticipantType();
 				break;
 			case DEPENDENCY:
 			case ARTIFACT:
-				new_participant = new ArtifactParticipantType();
+				newParticipant = new ArtifactParticipantType();
 				break;
 			case WORK:
-				new_participant = new WorkParticipantType();
+				newParticipant = new WorkParticipantType();
 				break;
 			case NOTE:
-				new_participant = new NoteParticipantType();
+				newParticipant = new NoteParticipantType();
 				break;
 			case TIME:
-				new_participant = new TimeParticipantType();
+				newParticipant = new TimeParticipantType();
 				break;
 			case COST:
-				new_participant = new CostParticipantType();
+				newParticipant = new CostParticipantType();
 				break;
 			case RESOURCE:
-				new_participant = new ResourceParticipantType();
+				newParticipant = new ResourceParticipantType();
 				break;
 			case CASE:
-				new_participant = new CaseParticipantType();
+				newParticipant = new CaseParticipantType();
 				break;
 			case MODEL:
-				new_participant = new ModelParticipantType();
+				newParticipant = new ModelParticipantType();
 				break;
 			case TASK:
-				new_participant = new TaskParticipantType();
+				newParticipant = new TaskParticipantType();
 				break;
 			case MODULE:
-				new_participant = new ModuleParticipantType();
+				newParticipant = new ModuleParticipantType();
 				break;
 			case STAGE:
-				new_participant = new StageParticipantType();
+				newParticipant = new StageParticipantType();
 				break;
 			case PROCESS:
-				new_participant = new ProcessParticipantType();
+				newParticipant = new ProcessParticipantType();
 				break;
 			case PROCESSSTEP:
-				new_participant = new ProcessStepParticipantType();
+				newParticipant = new ProcessStepParticipantType();
 				break;
 			case FORM:
-				new_participant = new FormParticipantType();
+				newParticipant = new FormParticipantType();
 				break;
 			case FORMELEMENT:
-				new_participant = new FormElementParticipantType();
+				newParticipant = new FormElementParticipantType();
 				break;
 			case FORMELEMENTVALUE:
-				new_participant = new FormElementValueParticipantType();
+				newParticipant = new FormElementValueParticipantType();
 				break;
 			case TICKET:
-				new_participant = new TicketParticipantType();
+				newParticipant = new TicketParticipantType();
 				break;
 			case VALIDATIONRULE:
-				new_participant = new ValidationRuleParticipantType();
+				newParticipant = new ValidationRuleParticipantType();
 				break;
 			default:
-				new_participant = super.newParticipant(type);
+				newParticipant = super.newParticipant(type);
 				break;
 		}
-		new_participant.setParticipantType(type);
-		return new_participant;
+		newParticipant.setParticipantType(type);
+		return newParticipant;
 	}
 	public ValidationRuleParticipantType newValidationRuleParticipation(NameIdType cycle, ValidationRuleType sched) throws ArgumentException,FactoryException {
 		return newParticipation(cycle, sched, AuthorizationService.getViewObjectPermission(cycle.getOrganizationId()),AffectEnumType.GRANT_PERMISSION,ParticipantEnumType.VALIDATIONRULE);

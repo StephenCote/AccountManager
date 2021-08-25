@@ -38,6 +38,7 @@ import org.cote.accountmanager.objects.DirectoryGroupType;
 import org.cote.accountmanager.objects.NameIdType;
 import org.cote.accountmanager.objects.ProcessingInstructionType;
 import org.cote.accountmanager.objects.UserType;
+import org.cote.accountmanager.objects.types.ColumnEnumType;
 import org.cote.accountmanager.objects.types.FactoryEnumType;
 import org.cote.accountmanager.objects.types.NameEnumType;
 import org.cote.propellant.objects.TimeType;
@@ -47,28 +48,25 @@ import org.cote.rocket.query.QueryFields;
 
 public class TimeFactory extends NameIdGroupFactory {
 	
-	/// static{ org.cote.accountmanager.data.Factories.registerClass(FactoryEnumType.TIME, TimeFactory.class); }
 	public TimeFactory(){
 		super();
-		this.tableNames.add("time");
+		this.primaryTableName = "time";
+		this.tableNames.add(primaryTableName);
 		factoryType = FactoryEnumType.TIME;
 	}
 	
+	@Override
 	protected void configureTableRestrictions(DataTable table){
 		if(table.getName().equalsIgnoreCase("time")){
-			/// table.setRestrictSelectColumn("logicalid", true);
+			/// restrict columns
 		}
 	}
-	@Override
-	public<T> void depopulate(T obj) throws FactoryException, ArgumentException
-	{
-		
-	}
+
 	@Override
 	public <T> void populate(T obj) throws FactoryException, ArgumentException
 	{
 		TimeType time = (TimeType)obj;
-		if(time.getPopulated()) return;
+		if(time.getPopulated().booleanValue()) return;
 		
 		time.setPopulated(true);
 		updateToCache(time);
@@ -92,11 +90,11 @@ public class TimeFactory extends NameIdGroupFactory {
 		TimeType obj = (TimeType)object;
 		if (obj.getGroupId() == null) throw new FactoryException("Cannot add new Time without a group");
 
-		DataRow row = prepareAdd(obj, "time");
+		DataRow row = prepareAdd(obj, primaryTableName);
 		try{
-			row.setCellValue("value", obj.getValue());
-			row.setCellValue("basistype", obj.getBasisType().toString());
-			row.setCellValue("groupid", obj.getGroupId());
+			row.setCellValue(Columns.get(ColumnEnumType.VALUE), obj.getValue());
+			row.setCellValue(Columns.get(ColumnEnumType.BASISTYPE), obj.getBasisType().toString());
+			row.setCellValue(Columns.get(ColumnEnumType.GROUPID), obj.getGroupId());
 			if (insertRow(row)) return true;
 		}
 		catch(DataAccessException dae){
@@ -115,10 +113,9 @@ public class TimeFactory extends NameIdGroupFactory {
 		newObj.setNameType(NameEnumType.TIME);
 		super.read(rset, newObj);
 		readGroup(rset, newObj);
-		// TODO: set time, Time
 		
-		newObj.setBasisType(TimeEnumType.valueOf(rset.getString("basistype")));
-		newObj.setValue(rset.getDouble("value"));
+		newObj.setBasisType(TimeEnumType.valueOf(rset.getString(Columns.get(ColumnEnumType.BASISTYPE))));
+		newObj.setValue(rset.getDouble(Columns.get(ColumnEnumType.VALUE)));
 		return newObj;
 	}
 	@Override
@@ -152,15 +149,7 @@ public class TimeFactory extends NameIdGroupFactory {
 	}
 	public int deleteTimesByIds(long[] ids, long organizationId) throws FactoryException
 	{
-		int deleted = deleteById(ids, organizationId);
-		if (deleted > 0)
-		{
-			/*
-			Factory.DataParticipationFactoryInstance.DeleteParticipations(ids, organizationId);
-			Factory.TagParticipationFactoryInstance.DeleteParticipants(ids, organizationId);
-			*/
-		}
-		return deleted;
+		return deleteById(ids, organizationId);
 	}
 	public int deleteTimesInGroup(DirectoryGroupType group)  throws FactoryException
 	{

@@ -44,6 +44,7 @@ import org.cote.accountmanager.objects.DirectoryGroupType;
 import org.cote.accountmanager.objects.NameIdType;
 import org.cote.accountmanager.objects.ProcessingInstructionType;
 import org.cote.accountmanager.objects.UserType;
+import org.cote.accountmanager.objects.types.ColumnEnumType;
 import org.cote.accountmanager.objects.types.FactoryEnumType;
 import org.cote.accountmanager.objects.types.NameEnumType;
 import org.cote.propellant.objects.CostType;
@@ -56,30 +57,26 @@ import org.cote.rocket.query.QueryFields;
 
 public class ModuleFactory extends NameIdGroupFactory {
 	
-	/// static{ org.cote.accountmanager.data.Factories.registerClass(FactoryEnumType.MODULE, ModuleFactory.class); }
 	public ModuleFactory(){
 		super();
-		this.tableNames.add("module");
+		this.primaryTableName = "module";
+		this.tableNames.add(primaryTableName);
 		factoryType = FactoryEnumType.MODULE;
 	}
-	@Override
-	public<T> void depopulate(T obj) throws FactoryException, ArgumentException
-	{
-		
-	}
+
 	@Override
 	public <T> void populate(T obj) throws FactoryException, ArgumentException
 	{
 		ModuleType module = (ModuleType)obj;
-		if(module.getPopulated()) return;
+		if(module.getPopulated().booleanValue()) return;
 		module.getArtifacts().addAll(((ModuleParticipationFactory)Factories.getFactory(FactoryEnumType.MODULEPARTICIPATION)).getArtifactsFromParticipation(module));
 		module.getWork().addAll(((ModuleParticipationFactory)Factories.getFactory(FactoryEnumType.MODULEPARTICIPATION)).getWorkFromParticipation(module));
 		module.setPopulated(true);
 		updateToCache(module);
 	}
 	protected void configureTableRestrictions(DataTable table){
-		if(table.getName().equalsIgnoreCase("module")){
-			/// table.setRestrictSelectColumn("logicalid", true);
+		if(table.getName().equalsIgnoreCase(primaryTableName)){
+			/// restrict columns
 		}
 	}
 	
@@ -102,13 +99,13 @@ public class ModuleFactory extends NameIdGroupFactory {
 		ModuleType obj = (ModuleType)object;
 		if (obj.getGroupId() == null) throw new FactoryException("Cannot add new Module without a group");
 
-		DataRow row = prepareAdd(obj, "module");
+		DataRow row = prepareAdd(obj, primaryTableName);
 		try{
-			if(obj.getActualCost() != null) row.setCellValue("costid",obj.getActualCost().getId());
-			if(obj.getActualTime() != null) row.setCellValue("timeid",obj.getActualTime().getId());
-			row.setCellValue("description", obj.getDescription());
-			row.setCellValue("moduletype", obj.getModuleType().toString());
-			row.setCellValue("groupid", obj.getGroupId());
+			if(obj.getActualCost() != null) row.setCellValue(Columns.get(ColumnEnumType.COSTID),obj.getActualCost().getId());
+			if(obj.getActualTime() != null) row.setCellValue(Columns.get(ColumnEnumType.TIMEID),obj.getActualTime().getId());
+			row.setCellValue(Columns.get(ColumnEnumType.DESCRIPTION), obj.getDescription());
+			row.setCellValue(Columns.get(ColumnEnumType.MODULETYPE), obj.getModuleType().toString());
+			row.setCellValue(Columns.get(ColumnEnumType.GROUPID), obj.getGroupId());
 			if (insertRow(row)){
 				try{
 					ModuleType cobj = (bulkMode ? obj : (ModuleType)getByNameInGroup(obj.getName(), ((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getDirectoryById(obj.getGroupId(), obj.getOrganizationId())));
@@ -149,10 +146,10 @@ public class ModuleFactory extends NameIdGroupFactory {
 		newObj.setNameType(NameEnumType.MODULE);
 		super.read(rset, newObj);
 		readGroup(rset, newObj);
-		newObj.setModuleType(ModuleEnumType.valueOf(rset.getString("moduletype")));
-		newObj.setDescription(rset.getString("description"));
-		long time_id = rset.getLong("timeid");
-		long cost_id = rset.getLong("costid");
+		newObj.setModuleType(ModuleEnumType.valueOf(rset.getString(Columns.get(ColumnEnumType.MODULETYPE))));
+		newObj.setDescription(rset.getString(Columns.get(ColumnEnumType.DESCRIPTION)));
+		long time_id = rset.getLong(Columns.get(ColumnEnumType.TIMEID));
+		long cost_id = rset.getLong(Columns.get(ColumnEnumType.COSTID));
 		if(time_id > 0) newObj.setActualTime((TimeType)((TimeFactory)Factories.getFactory(FactoryEnumType.TIME)).getById(time_id, newObj.getOrganizationId()));
 		if(cost_id > 0) newObj.setActualCost((CostType)((CostFactory)Factories.getFactory(FactoryEnumType.COST)).getById(cost_id, newObj.getOrganizationId()));
 		return newObj;
@@ -170,14 +167,13 @@ public class ModuleFactory extends NameIdGroupFactory {
 				for(int i = 0; i < maps.length;i++) set.add(maps[i].getParticipantId());
 				
 				for(int i = 0; i < data.getWork().size();i++){
-					if(set.contains(data.getWork().get(i).getId())== false){
+					if(!set.contains(data.getWork().get(i).getId())){
 						((ModuleParticipationFactory)Factories.getFactory(FactoryEnumType.MODULEPARTICIPATION)).add(((ModuleParticipationFactory)Factories.getFactory(FactoryEnumType.MODULEPARTICIPATION)).newWorkParticipation(data,data.getWork().get(i)));
 					}
 					else{
 						set.remove(data.getWork().get(i).getId());
 					}
 				}
-//				System.out.println("Net delete Work parts: " + set.size());
 				((ModuleParticipationFactory)Factories.getFactory(FactoryEnumType.MODULEPARTICIPATION)).deleteParticipantsForParticipation(ArrayUtils.toPrimitive(set.toArray(new Long[0])), data, data.getOrganizationId());
 				
 				
@@ -187,14 +183,13 @@ public class ModuleFactory extends NameIdGroupFactory {
 				for(int i = 0; i < maps.length;i++) set.add(maps[i].getParticipantId());
 				
 				for(int i = 0; i < data.getArtifacts().size();i++){
-					if(set.contains(data.getArtifacts().get(i).getId())== false){
+					if(!set.contains(data.getArtifacts().get(i).getId())){
 						((ModuleParticipationFactory)Factories.getFactory(FactoryEnumType.MODULEPARTICIPATION)).add(((ModuleParticipationFactory)Factories.getFactory(FactoryEnumType.MODULEPARTICIPATION)).newArtifactParticipation(data,data.getArtifacts().get(i)));
 					}
 					else{
 						set.remove(data.getArtifacts().get(i).getId());
 					}
 				}
-//				System.out.println("Net delete Artifact parts: " + set.size());
 				((ModuleParticipationFactory)Factories.getFactory(FactoryEnumType.MODULEPARTICIPATION)).deleteParticipantsForParticipation(ArrayUtils.toPrimitive(set.toArray(new Long[0])), data, data.getOrganizationId());
 				
 			}
@@ -235,10 +230,6 @@ public class ModuleFactory extends NameIdGroupFactory {
 		if (deleted > 0)
 		{
 			((ModuleParticipationFactory)Factories.getFactory(FactoryEnumType.MODULEPARTICIPATION)).deleteParticipations(ids, organizationId);
-			/*
-			Factory.DataParticipationFactoryInstance.DeleteParticipations(ids, organizationId);
-			Factory.TagParticipationFactoryInstance.DeleteParticipants(ids, organizationId);
-			*/
 		}
 		return deleted;
 	}

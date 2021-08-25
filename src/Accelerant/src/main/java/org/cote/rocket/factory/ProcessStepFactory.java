@@ -44,6 +44,7 @@ import org.cote.accountmanager.objects.DirectoryGroupType;
 import org.cote.accountmanager.objects.NameIdType;
 import org.cote.accountmanager.objects.ProcessingInstructionType;
 import org.cote.accountmanager.objects.UserType;
+import org.cote.accountmanager.objects.types.ColumnEnumType;
 import org.cote.accountmanager.objects.types.FactoryEnumType;
 import org.cote.accountmanager.objects.types.NameEnumType;
 import org.cote.propellant.objects.ProcessStepType;
@@ -54,28 +55,24 @@ import org.cote.rocket.query.QueryFields;
 
 public class ProcessStepFactory extends NameIdGroupFactory {
 	
-	/// static{ org.cote.accountmanager.data.Factories.registerClass(FactoryEnumType.PROCESSSTEP, ProcessStepFactory.class); }
 	public ProcessStepFactory(){
 		super();
-		this.tableNames.add("processstep");
+		this.primaryTableName = "processstep";
+		this.tableNames.add(primaryTableName);
 		factoryType = FactoryEnumType.PROCESSSTEP;
 	}
 	
 	protected void configureTableRestrictions(DataTable table){
-		if(table.getName().equalsIgnoreCase("processstep")){
-			/// table.setRestrictSelectColumn("logicalid", true);
+		if(table.getName().equalsIgnoreCase(primaryTableName)){
+			/// restrict columns
 		}
 	}
-	@Override
-	public<T> void depopulate(T obj) throws FactoryException, ArgumentException
-	{
-		
-	}
+
 	@Override
 	public <T> void populate(T obj) throws FactoryException, ArgumentException
 	{
 		ProcessStepType step = (ProcessStepType)obj;
-		if(step.getPopulated()) return;
+		if(step.getPopulated().booleanValue()) return;
 		step.getBudgets().addAll(((ProcessStepParticipationFactory)Factories.getFactory(FactoryEnumType.PROCESSSTEPPARTICIPATION)).getBudgetsFromParticipation(step));
 		step.getGoals().addAll(((ProcessStepParticipationFactory)Factories.getFactory(FactoryEnumType.PROCESSSTEPPARTICIPATION)).getGoalsFromParticipation(step));
 		step.getRequirements().addAll(((ProcessStepParticipationFactory)Factories.getFactory(FactoryEnumType.PROCESSSTEPPARTICIPATION)).getRequirementsFromParticipation(step));
@@ -101,11 +98,11 @@ public class ProcessStepFactory extends NameIdGroupFactory {
 		ProcessStepType obj = (ProcessStepType)object;
 		if (obj.getGroupId() == null) throw new FactoryException("Cannot add new ProcessStep without a group");
 
-		DataRow row = prepareAdd(obj, "processstep");
+		DataRow row = prepareAdd(obj, primaryTableName);
 		try{
-			row.setCellValue("logicalorder",obj.getLogicalOrder());
-			row.setCellValue("description", obj.getDescription());
-			row.setCellValue("groupid", obj.getGroupId());
+			row.setCellValue(Columns.get(ColumnEnumType.LOGICALORDER),obj.getLogicalOrder());
+			row.setCellValue(Columns.get(ColumnEnumType.DESCRIPTION), obj.getDescription());
+			row.setCellValue(Columns.get(ColumnEnumType.GROUPID), obj.getGroupId());
 			if (insertRow(row)){
 				ProcessStepType cobj = (bulkMode ? obj : (ProcessStepType)getByNameInGroup(obj.getName(), ((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getDirectoryById(obj.getGroupId(), obj.getOrganizationId())));
 				if(cobj == null) throw new DataAccessException("Failed to retrieve new object");
@@ -131,10 +128,7 @@ public class ProcessStepFactory extends NameIdGroupFactory {
 				return true;
 			}
 		}
-		catch(DataAccessException dae){
-			throw new FactoryException(dae.getMessage());
-		}
-		catch(ArgumentException ae){
+		catch(DataAccessException | ArgumentException ae){
 			throw new FactoryException(ae.getMessage());
 		}
 		return false;
@@ -150,8 +144,8 @@ public class ProcessStepFactory extends NameIdGroupFactory {
 		newObj.setNameType(NameEnumType.PROCESSSTEP);
 		super.read(rset, newObj);
 		readGroup(rset, newObj);
-		newObj.setDescription(rset.getString("description"));
-		newObj.setLogicalOrder(rset.getInt("logicalorder"));
+		newObj.setDescription(rset.getString(Columns.get(ColumnEnumType.DESCRIPTION)));
+		newObj.setLogicalOrder(rset.getInt(Columns.get(ColumnEnumType.LOGICALORDER)));
 		return newObj;
 	}
 	@Override
@@ -171,14 +165,13 @@ public class ProcessStepFactory extends NameIdGroupFactory {
 				for(int i = 0; i < maps.length;i++) set.add(maps[i].getParticipantId());
 				
 				for(int i = 0; i < data.getBudgets().size();i++){
-					if(set.contains(data.getBudgets().get(i).getId())== false){
+					if(!set.contains(data.getBudgets().get(i).getId())){
 						((ProcessStepParticipationFactory)Factories.getFactory(FactoryEnumType.PROCESSSTEPPARTICIPATION)).add(((ProcessStepParticipationFactory)Factories.getFactory(FactoryEnumType.PROCESSSTEPPARTICIPATION)).newBudgetParticipation(data,data.getBudgets().get(i)));
 					}
 					else{
 						set.remove(data.getBudgets().get(i).getId());
 					}
 				}
-//				System.out.println("Net delete budget parts: " + set.size());
 				((ProcessStepParticipationFactory)Factories.getFactory(FactoryEnumType.PROCESSSTEPPARTICIPATION)).deleteParticipantsForParticipation(ArrayUtils.toPrimitive(set.toArray(new Long[0])), data, data.getOrganizationId());
 				
 				/// Goals
@@ -187,14 +180,13 @@ public class ProcessStepFactory extends NameIdGroupFactory {
 				for(int i = 0; i < maps.length;i++) set.add(maps[i].getParticipantId());
 				
 				for(int i = 0; i < data.getGoals().size();i++){
-					if(set.contains(data.getGoals().get(i).getId())== false){
+					if(!set.contains(data.getGoals().get(i).getId())){
 						((ProcessStepParticipationFactory)Factories.getFactory(FactoryEnumType.PROCESSSTEPPARTICIPATION)).add(((ProcessStepParticipationFactory)Factories.getFactory(FactoryEnumType.PROCESSSTEPPARTICIPATION)).newGoalParticipation(data,data.getGoals().get(i)));
 					}
 					else{
 						set.remove(data.getGoals().get(i).getId());
 					}
 				}
-//				System.out.println("Net delete goal parts: " + set.size());
 				((ProcessStepParticipationFactory)Factories.getFactory(FactoryEnumType.PROCESSSTEPPARTICIPATION)).deleteParticipantsForParticipation(ArrayUtils.toPrimitive(set.toArray(new Long[0])), data, data.getOrganizationId());
 
 				/// Requirements
@@ -203,16 +195,14 @@ public class ProcessStepFactory extends NameIdGroupFactory {
 				for(int i = 0; i < maps.length;i++) set.add(maps[i].getParticipantId());
 				
 				for(int i = 0; i < data.getRequirements().size();i++){
-					if(set.contains(data.getRequirements().get(i).getId())== false){
+					if(!set.contains(data.getRequirements().get(i).getId())){
 						((ProcessStepParticipationFactory)Factories.getFactory(FactoryEnumType.PROCESSSTEPPARTICIPATION)).add(((ProcessStepParticipationFactory)Factories.getFactory(FactoryEnumType.PROCESSSTEPPARTICIPATION)).newRequirementParticipation(data,data.getRequirements().get(i)));
 					}
 					else{
 						set.remove(data.getRequirements().get(i).getId());
 					}
 				}
-				System.out.println("Net delete Requirement parts: " + set.size());
 				((ProcessStepParticipationFactory)Factories.getFactory(FactoryEnumType.PROCESSSTEPPARTICIPATION)).deleteParticipantsForParticipation(ArrayUtils.toPrimitive(set.toArray(new Long[0])), data, data.getOrganizationId());
-
 				
 				outBool = true;
 			}
@@ -250,10 +240,6 @@ public class ProcessStepFactory extends NameIdGroupFactory {
 		if (deleted > 0)
 		{
 			((ProcessStepParticipationFactory)Factories.getFactory(FactoryEnumType.PROCESSSTEPPARTICIPATION)).deleteParticipations(ids, organizationId);
-			/*
-			Factory.DataParticipationFactoryInstance.DeleteParticipations(ids, organizationId);
-			Factory.TagParticipationFactoryInstance.DeleteParticipants(ids, organizationId);
-			*/
 		}
 		return deleted;
 	}

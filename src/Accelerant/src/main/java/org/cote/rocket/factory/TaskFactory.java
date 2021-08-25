@@ -52,6 +52,7 @@ import org.cote.accountmanager.objects.NameIdDirectoryGroupType;
 import org.cote.accountmanager.objects.NameIdType;
 import org.cote.accountmanager.objects.ProcessingInstructionType;
 import org.cote.accountmanager.objects.UserType;
+import org.cote.accountmanager.objects.types.ColumnEnumType;
 import org.cote.accountmanager.objects.types.FactoryEnumType;
 import org.cote.accountmanager.objects.types.NameEnumType;
 import org.cote.accountmanager.util.CalendarUtil;
@@ -64,11 +65,11 @@ import org.cote.rocket.query.QueryFields;
 
 public class TaskFactory extends NameIdGroupFactory {
 	
-	/// static{ org.cote.accountmanager.data.Factories.registerClass(FactoryEnumType.TASK, TaskFactory.class); }
 	public TaskFactory(){
 		super();
 		this.hasParentId=true;
-		this.tableNames.add("task");
+		this.primaryTableName = "task";
+		this.tableNames.add(primaryTableName);
 		factoryType = FactoryEnumType.TASK;
 		this.clusterByParent = true;
 	}
@@ -79,9 +80,10 @@ public class TaskFactory extends NameIdGroupFactory {
 		return t.getName() + "-" + t.getParentId() + "-" + t.getGroupId();
 	}
 	
+	@Override
 	protected void configureTableRestrictions(DataTable table){
-		if(table.getName().equalsIgnoreCase("task")){
-			/// table.setRestrictSelectColumn("logicalid", true);
+		if(table.getName().equalsIgnoreCase(primaryTableName)){
+			/// restrict columns
 		}
 	}
 	@Override
@@ -107,12 +109,6 @@ public class TaskFactory extends NameIdGroupFactory {
 	{
 		TaskType task = (TaskType)obj;
 		if(task.getPopulated()) return;
-		/*
-		if(task.getEstimateId() > 0){
-			task.setEstimate((EstimateType)((EstimateFactory)Factories.getFactory(FactoryEnumType.ESTIMATE)).getById(task.getEstimateId(), task.getOrganizationId()));
-		}
-		*/
-		
 		task.getArtifacts().addAll(((TaskParticipationFactory)Factories.getFactory(FactoryEnumType.TASKPARTICIPATION)).getArtifactsFromParticipation(task));
 		task.getRequirements().addAll(((TaskParticipationFactory)Factories.getFactory(FactoryEnumType.TASKPARTICIPATION)).getRequirementsFromParticipation(task));
 		task.getWork().addAll(((TaskParticipationFactory)Factories.getFactory(FactoryEnumType.TASKPARTICIPATION)).getWorkFromParticipation(task));
@@ -161,16 +157,16 @@ public class TaskFactory extends NameIdGroupFactory {
 
 		DataRow row = prepareAdd(obj, "task");
 		try{
-			if(obj.getEstimate() != null) row.setCellValue("estimateid", obj.getEstimate().getId());
-			row.setCellValue("logicalorder",obj.getLogicalOrder());
-			row.setCellValue("description", obj.getDescription());
-			row.setCellValue("taskstatus", obj.getTaskStatus().toString());
-			row.setCellValue("groupid", obj.getGroupId());
-			row.setCellValue("startdate",obj.getStartDate());
-			row.setCellValue("createddate",obj.getCreatedDate());
-			row.setCellValue("modifieddate",obj.getModifiedDate());
-			row.setCellValue("completeddate",obj.getCompletedDate());
-			row.setCellValue("duedate",obj.getDueDate());
+			if(obj.getEstimate() != null) row.setCellValue(Columns.get(ColumnEnumType.ESTIMATEID), obj.getEstimate().getId());
+			row.setCellValue(Columns.get(ColumnEnumType.LOGICALORDER),obj.getLogicalOrder());
+			row.setCellValue(Columns.get(ColumnEnumType.DESCRIPTION), obj.getDescription());
+			row.setCellValue(Columns.get(ColumnEnumType.TASKSTATUS), obj.getTaskStatus().toString());
+			row.setCellValue(Columns.get(ColumnEnumType.GROUPID), obj.getGroupId());
+			row.setCellValue(Columns.get(ColumnEnumType.STARTDATE),obj.getStartDate());
+			row.setCellValue(Columns.get(ColumnEnumType.CREATEDDATE),obj.getCreatedDate());
+			row.setCellValue(Columns.get(ColumnEnumType.MODIFIEDDATE),obj.getModifiedDate());
+			row.setCellValue(Columns.get(ColumnEnumType.COMPLETEDDATE),obj.getCompletedDate());
+			row.setCellValue(Columns.get(ColumnEnumType.DUEDATE),obj.getDueDate());
 
 			if (insertRow(row)){
 				try{
@@ -180,14 +176,11 @@ public class TaskFactory extends NameIdGroupFactory {
 						TaskType parent = getById(obj.getParentId(),obj.getOrganizationId());
 						if(parent == null) throw new FactoryException("Unable to update orphaned task without correcting the parent");
 						cobj = getByNameInGroup(obj.getName(),obj.getParentId(),((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getDirectoryById(obj.getGroupId(),obj.getOrganizationId()));
-						//(bulkMode ? obj : obj.getParentId() > 0L ? (TaskType)getByNameInGroup(obj.getName(),obj.get);
 					}
 					else{
 						cobj = (TaskType)getByNameInGroup(obj.getName(), ((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getDirectoryById(obj.getGroupId(), obj.getOrganizationId()));
 					}
 					if(cobj == null) throw new DataAccessException("Failed to retrieve new object");
-					
-					logger.info("Adding initial " + obj.getResources().size() + " resources on new task " + obj.getName() + " with id " + cobj.getId());
 					
 					BaseParticipantType part = null;
 					if(bulkMode) BulkFactories.getBulkFactory().setDirty(FactoryEnumType.TASKPARTICIPATION);
@@ -258,16 +251,16 @@ public class TaskFactory extends NameIdGroupFactory {
 		newObj.setNameType(NameEnumType.TASK);
 		super.read(rset, newObj);
 		readGroup(rset, newObj);
-		long estimate_id = rset.getLong("estimateid");
-		if(estimate_id > 0) newObj.setEstimate((EstimateType)((EstimateFactory)Factories.getFactory(FactoryEnumType.ESTIMATE)).getById(estimate_id, newObj.getOrganizationId()));
-		newObj.setTaskStatus(TaskStatusEnumType.valueOf(rset.getString("TaskStatus")));
-		newObj.setDescription(rset.getString("description"));
-		newObj.setLogicalOrder(rset.getInt("logicalorder"));
-		newObj.setStartDate(CalendarUtil.getXmlGregorianCalendar(rset.getTimestamp("startdate")));
-		newObj.setCreatedDate(CalendarUtil.getXmlGregorianCalendar(rset.getTimestamp("createddate")));
-		newObj.setModifiedDate(CalendarUtil.getXmlGregorianCalendar(rset.getTimestamp("modifieddate")));
-		newObj.setCompletedDate(CalendarUtil.getXmlGregorianCalendar(rset.getTimestamp("completeddate")));
-		newObj.setDueDate(CalendarUtil.getXmlGregorianCalendar(rset.getTimestamp("duedate")));
+		long estimateId = rset.getLong(Columns.get(ColumnEnumType.ESTIMATEID));
+		if(estimateId > 0) newObj.setEstimate((EstimateType)((EstimateFactory)Factories.getFactory(FactoryEnumType.ESTIMATE)).getById(estimateId, newObj.getOrganizationId()));
+		newObj.setTaskStatus(TaskStatusEnumType.valueOf(rset.getString(Columns.get(ColumnEnumType.TASKSTATUS))));
+		newObj.setDescription(rset.getString(Columns.get(ColumnEnumType.DESCRIPTION)));
+		newObj.setLogicalOrder(rset.getInt(Columns.get(ColumnEnumType.LOGICALORDER)));
+		newObj.setStartDate(CalendarUtil.getXmlGregorianCalendar(rset.getTimestamp(Columns.get(ColumnEnumType.STARTDATE))));
+		newObj.setCreatedDate(CalendarUtil.getXmlGregorianCalendar(rset.getTimestamp(Columns.get(ColumnEnumType.CREATEDDATE))));
+		newObj.setModifiedDate(CalendarUtil.getXmlGregorianCalendar(rset.getTimestamp(Columns.get(ColumnEnumType.MODIFIEDDATE))));
+		newObj.setCompletedDate(CalendarUtil.getXmlGregorianCalendar(rset.getTimestamp(Columns.get(ColumnEnumType.COMPLETEDDATE))));
+		newObj.setDueDate(CalendarUtil.getXmlGregorianCalendar(rset.getTimestamp(Columns.get(ColumnEnumType.DUEDATE))));
 
 		
 		return newObj;
@@ -279,7 +272,7 @@ public class TaskFactory extends NameIdGroupFactory {
 		TaskType data = (TaskType)object;
 		boolean outBool = false;
 		removeBranchFromCache(data);
-		//logger.info("Updating Task: " + data.getName());
+
 		if(update(data, null)){
 			try{
 			/// Goals
@@ -292,7 +285,7 @@ public class TaskFactory extends NameIdGroupFactory {
 			BaseParticipantType[] maps = ((TaskParticipationFactory)Factories.getFactory(FactoryEnumType.TASKPARTICIPATION)).getWorkParticipations(data).toArray(new BaseParticipantType[0]);
 			for(int i = 0; i < maps.length;i++) set.add(maps[i].getParticipantId());
 			for(int i = 0; i < data.getWork().size();i++){
-				if(set.contains(data.getWork().get(i).getId())== false){
+				if(!set.contains(data.getWork().get(i).getId())){
 					part = ((TaskParticipationFactory)Factories.getFactory(FactoryEnumType.TASKPARTICIPATION)).newWorkParticipation(data,data.getWork().get(i));
 					if(bulkMode) BulkFactories.getBulkFactory().createBulkEntry(null, FactoryEnumType.TASKPARTICIPATION, part);
 					else ((TaskParticipationFactory)Factories.getFactory(FactoryEnumType.TASKPARTICIPATION)).add(part);
@@ -302,14 +295,13 @@ public class TaskFactory extends NameIdGroupFactory {
 				}
 			}
 			delIds.addAll(Arrays.asList(set.toArray(new Long[0])));
-			//if(set.size() > 0) ((TaskParticipationFactory)Factories.getFactory(FactoryEnumType.TASKPARTICIPATION)).deleteParticipantsForParticipation(ArrayUtils.toPrimitive(set.toArray(new Long[0])), data, data.getOrganizationId());
 			
 			/// ActualTimes
 			set.clear();
 			maps = ((TaskParticipationFactory)Factories.getFactory(FactoryEnumType.TASKPARTICIPATION)).getTimeParticipations(data).toArray(new BaseParticipantType[0]);
 			for(int i = 0; i < maps.length;i++) set.add(maps[i].getParticipantId());
 			for(int i = 0; i < data.getActualTime().size();i++){
-				if(set.contains(data.getActualTime().get(i).getId())== false){
+				if(!set.contains(data.getActualTime().get(i).getId())){
 					part = ((TaskParticipationFactory)Factories.getFactory(FactoryEnumType.TASKPARTICIPATION)).newTimeParticipation(data,data.getActualTime().get(i));
 					if(bulkMode) BulkFactories.getBulkFactory().createBulkEntry(null, FactoryEnumType.TASKPARTICIPATION, part);
 					else ((TaskParticipationFactory)Factories.getFactory(FactoryEnumType.TASKPARTICIPATION)).add(part);
@@ -319,7 +311,6 @@ public class TaskFactory extends NameIdGroupFactory {
 				}
 			}
 			delIds.addAll(Arrays.asList(set.toArray(new Long[0])));
-			//if(set.size() > 0) ((TaskParticipationFactory)Factories.getFactory(FactoryEnumType.TASKPARTICIPATION)).deleteParticipantsForParticipation(ArrayUtils.toPrimitive(set.toArray(new Long[0])), data, data.getOrganizationId());
 			
 			/// ActualCosts
 			set.clear();
@@ -327,7 +318,7 @@ public class TaskFactory extends NameIdGroupFactory {
 			for(int i = 0; i < maps.length;i++) set.add(maps[i].getParticipantId());
 			
 			for(int i = 0; i < data.getActualCost().size();i++){
-				if(set.contains(data.getActualCost().get(i).getId())== false){
+				if(!set.contains(data.getActualCost().get(i).getId())){
 					part = ((TaskParticipationFactory)Factories.getFactory(FactoryEnumType.TASKPARTICIPATION)).newCostParticipation(data,data.getActualCost().get(i));
 					if(bulkMode) BulkFactories.getBulkFactory().createBulkEntry(null, FactoryEnumType.TASKPARTICIPATION, part);
 					else ((TaskParticipationFactory)Factories.getFactory(FactoryEnumType.TASKPARTICIPATION)).add(part);
@@ -338,16 +329,13 @@ public class TaskFactory extends NameIdGroupFactory {
 			}
 			delIds.addAll(Arrays.asList(set.toArray(new Long[0])));
 			
-//			System.out.println("Net delete ActualCost parts: " + set.size());
-			//if(set.size() > 0)  ((TaskParticipationFactory)Factories.getFactory(FactoryEnumType.TASKPARTICIPATION)).deleteParticipantsForParticipation(ArrayUtils.toPrimitive(set.toArray(new Long[0])), data, data.getOrganizationId());
-			
 			/// Notes
 			set.clear();
 			maps = ((TaskParticipationFactory)Factories.getFactory(FactoryEnumType.TASKPARTICIPATION)).getNoteParticipations(data).toArray(new BaseParticipantType[0]);
 			for(int i = 0; i < maps.length;i++) set.add(maps[i].getParticipantId());
 			
 			for(int i = 0; i < data.getNotes().size();i++){
-				if(set.contains(data.getNotes().get(i).getId())== false){
+				if(!set.contains(data.getNotes().get(i).getId())){
 					part = ((TaskParticipationFactory)Factories.getFactory(FactoryEnumType.TASKPARTICIPATION)).newNoteParticipation(data,data.getNotes().get(i));
 					if(bulkMode) BulkFactories.getBulkFactory().createBulkEntry(null, FactoryEnumType.TASKPARTICIPATION, part);
 					else ((TaskParticipationFactory)Factories.getFactory(FactoryEnumType.TASKPARTICIPATION)).add(part);
@@ -357,9 +345,7 @@ public class TaskFactory extends NameIdGroupFactory {
 					set.remove(data.getNotes().get(i).getId());
 				}
 			}
-//			System.out.println("Net delete Note parts: " + set.size());
 			delIds.addAll(Arrays.asList(set.toArray(new Long[0])));
-			//if(set.size() > 0) ((TaskParticipationFactory)Factories.getFactory(FactoryEnumType.TASKPARTICIPATION)).deleteParticipantsForParticipation(ArrayUtils.toPrimitive(set.toArray(new Long[0])), data, data.getOrganizationId());
 			
 			/// Resources
 			set.clear();
@@ -367,7 +353,7 @@ public class TaskFactory extends NameIdGroupFactory {
 			for(int i = 0; i < maps.length;i++) set.add(maps[i].getParticipantId());
 			
 			for(int i = 0; i < data.getResources().size();i++){
-				if(set.contains(data.getResources().get(i).getId())== false){
+				if(!set.contains(data.getResources().get(i).getId())){
 					part = ((TaskParticipationFactory)Factories.getFactory(FactoryEnumType.TASKPARTICIPATION)).newResourceParticipation(data,data.getResources().get(i));
 					if(bulkMode) BulkFactories.getBulkFactory().createBulkEntry(null, FactoryEnumType.TASKPARTICIPATION, part);
 					else ((TaskParticipationFactory)Factories.getFactory(FactoryEnumType.TASKPARTICIPATION)).add(part);
@@ -378,7 +364,6 @@ public class TaskFactory extends NameIdGroupFactory {
 				}
 			}
 			delIds.addAll(Arrays.asList(set.toArray(new Long[0])));
-			//if(set.size() > 0) ((TaskParticipationFactory)Factories.getFactory(FactoryEnumType.TASKPARTICIPATION)).deleteParticipantsForParticipation(ArrayUtils.toPrimitive(set.toArray(new Long[0])), data, data.getOrganizationId());
 			
 			/// Requirements
 			set.clear();
@@ -386,7 +371,7 @@ public class TaskFactory extends NameIdGroupFactory {
 			for(int i = 0; i < maps.length;i++) set.add(maps[i].getParticipantId());
 			
 			for(int i = 0; i < data.getRequirements().size();i++){
-				if(set.contains(data.getRequirements().get(i).getId())== false){
+				if(!set.contains(data.getRequirements().get(i).getId())){
 					part = ((TaskParticipationFactory)Factories.getFactory(FactoryEnumType.TASKPARTICIPATION)).newRequirementParticipation(data,data.getRequirements().get(i));
 					if(bulkMode) BulkFactories.getBulkFactory().createBulkEntry(null, FactoryEnumType.TASKPARTICIPATION, part);
 					else ((TaskParticipationFactory)Factories.getFactory(FactoryEnumType.TASKPARTICIPATION)).add(part);
@@ -398,7 +383,6 @@ public class TaskFactory extends NameIdGroupFactory {
 			}
 			
 			delIds.addAll(Arrays.asList(set.toArray(new Long[0])));
-			//if(set.size() > 0) ((TaskParticipationFactory)Factories.getFactory(FactoryEnumType.TASKPARTICIPATION)).deleteParticipantsForParticipation(ArrayUtils.toPrimitive(set.toArray(new Long[0])), data, data.getOrganizationId());
 			
 			/// Dependencies
 			set.clear();
@@ -406,7 +390,7 @@ public class TaskFactory extends NameIdGroupFactory {
 			for(int i = 0; i < maps.length;i++) set.add(maps[i].getParticipantId());
 			
 			for(int i = 0; i < data.getDependencies().size();i++){
-				if(set.contains(data.getDependencies().get(i).getId())== false){
+				if(!set.contains(data.getDependencies().get(i).getId())){
 					part = ((TaskParticipationFactory)Factories.getFactory(FactoryEnumType.TASKPARTICIPATION)).newDependencyParticipation(data,data.getDependencies().get(i));
 					if(bulkMode) BulkFactories.getBulkFactory().createBulkEntry(null, FactoryEnumType.TASKPARTICIPATION, part);
 					else ((TaskParticipationFactory)Factories.getFactory(FactoryEnumType.TASKPARTICIPATION)).add(part);
@@ -418,7 +402,6 @@ public class TaskFactory extends NameIdGroupFactory {
 			}
 
 			delIds.addAll(Arrays.asList(set.toArray(new Long[0])));
-			//if(set.size() > 0) ((TaskParticipationFactory)Factories.getFactory(FactoryEnumType.TASKPARTICIPATION)).deleteParticipantsForParticipation(ArrayUtils.toPrimitive(set.toArray(new Long[0])), data, data.getOrganizationId());
 			
 			/// Artifacts
 			set.clear();
@@ -426,7 +409,7 @@ public class TaskFactory extends NameIdGroupFactory {
 			for(int i = 0; i < maps.length;i++) set.add(maps[i].getParticipantId());
 			
 			for(int i = 0; i < data.getArtifacts().size();i++){
-				if(set.contains(data.getArtifacts().get(i).getId())== false){
+				if(!set.contains(data.getArtifacts().get(i).getId())){
 					part = ((TaskParticipationFactory)Factories.getFactory(FactoryEnumType.TASKPARTICIPATION)).newArtifactParticipation(data,data.getArtifacts().get(i));
 					if(bulkMode) BulkFactories.getBulkFactory().createBulkEntry(null, FactoryEnumType.TASKPARTICIPATION, part);
 					else ((TaskParticipationFactory)Factories.getFactory(FactoryEnumType.TASKPARTICIPATION)).add(part);
@@ -437,9 +420,7 @@ public class TaskFactory extends NameIdGroupFactory {
 				}
 			}
 			delIds.addAll(Arrays.asList(set.toArray(new Long[0])));
-			//if(set.size() > 0) ((TaskParticipationFactory)Factories.getFactory(FactoryEnumType.TASKPARTICIPATION)).deleteParticipantsForParticipation(ArrayUtils.toPrimitive(set.toArray(new Long[0])), data, data.getOrganizationId());
 			if(!delIds.isEmpty()) ((TaskParticipationFactory)Factories.getFactory(FactoryEnumType.TASKPARTICIPATION)).deleteParticipantsForParticipation(ArrayUtils.toPrimitive(delIds.toArray(new Long[0])), data, data.getOrganizationId());
-			
 				outBool = true;
 			}
 			catch(ArgumentException ae){
@@ -454,7 +435,6 @@ public class TaskFactory extends NameIdGroupFactory {
 		TaskType useMap = (TaskType)map;
 		fields.add(QueryFields.getFieldCreatedDate(useMap.getCreatedDate()));
 		fields.add(QueryFields.getFieldStartDate(useMap.getStartDate()));
-		//fields.add(QueryFields.getFieldModifiedDate(useMap.getModifiedDate()));
 		Calendar now = Calendar.getInstance();
 		fields.add(QueryFields.getFieldModifiedDate(CalendarUtil.getXmlGregorianCalendar(now.getTime())));
 
@@ -491,10 +471,6 @@ public class TaskFactory extends NameIdGroupFactory {
 		if (deleted > 0)
 		{
 			((TaskParticipationFactory)Factories.getFactory(FactoryEnumType.TASKPARTICIPATION)).deleteParticipations(ids, organizationId);
-			/*
-			Factory.DataParticipationFactoryInstance.DeleteParticipations(ids, organizationId);
-			Factory.TagParticipationFactoryInstance.DeleteParticipants(ids, organizationId);
-			*/
 		}
 		return deleted;
 	}
@@ -512,7 +488,6 @@ public class TaskFactory extends NameIdGroupFactory {
 
 		List<QueryField> fields = new ArrayList<>();
 		fields.add(QueryFields.getFieldParent(parent.getId()));
-		//fields.add(QueryFields.getFieldGroup(parent.getGroupId()));
 		return getTaskList(fields.toArray(new QueryField[0]), 0,0,parent.getOrganizationId());
 	}
 	
