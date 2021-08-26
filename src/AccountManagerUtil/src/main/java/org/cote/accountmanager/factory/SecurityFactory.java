@@ -64,7 +64,7 @@ import org.apache.logging.log4j.Logger;
 import org.bouncycastle.asn1.ASN1ObjectIdentifier;
 import org.bouncycastle.asn1.x9.X962NamedCurves;
 import org.bouncycastle.crypto.AsymmetricCipherKeyPair;
-import org.bouncycastle.crypto.generators.ECKeyPairGenerator;
+
 import org.bouncycastle.crypto.params.ECDomainParameters;
 import org.bouncycastle.crypto.params.ECKeyGenerationParameters;
 import org.bouncycastle.crypto.params.ECPublicKeyParameters;
@@ -78,6 +78,7 @@ import org.cote.accountmanager.util.BinaryUtil;
 import org.cote.accountmanager.util.SecurityUtil;
 import org.cote.accountmanager.util.XmlUtil;
 import org.w3c.dom.Document;
+
 
 public class SecurityFactory {
 	public static final Logger logger = LogManager.getLogger(SecurityFactory.class);
@@ -349,17 +350,30 @@ public class SecurityFactory {
 		return getCipherKey(bean, true);
 	}
 	private Cipher getCipherKey(SecurityBean bean,  boolean decrypt){
-		if(bean.getSecretKey() == null){
+		boolean bECD = bean.getCipherKeySpec().startsWith("EC");
+		if(
+			bean.getSecretKey() == null
+			&&
+			(bECD
+			&&
+			( decrypt && bean.getPrivateKey() == null)
+			|| ( bean.getPublicKey() == null )
+			)
+		){
 			return null;
 		}
 
 		Cipher cipherKey = null;
        try {
-		cipherKey = Cipher.getInstance(bean.getSymmetricCipherKeySpec());
+		cipherKey = Cipher.getInstance((bECD ? bean.getCipherKeySpec() : bean.getSymmetricCipherKeySpec()));
 
 		int mode = Cipher.ENCRYPT_MODE;
 		if(decrypt) mode = Cipher.DECRYPT_MODE;
-		if(bean.getCipherIV() != null && bean.getCipherIV().length > 0){
+
+		if(bECD) {
+			cipherKey.init(mode,  (decrypt ? bean.getPrivateKey() : bean.getPublicKey()));
+		}
+		else if(bean.getCipherIV() != null && bean.getCipherIV().length > 0){
 			IvParameterSpec iv = new IvParameterSpec(bean.getCipherIV());
 			cipherKey.init(mode, bean.getSecretKey(), iv);
 
@@ -373,6 +387,7 @@ public class SecurityFactory {
        catch (NoSuchAlgorithmException | NoSuchPaddingException | InvalidKeyException | InvalidAlgorithmParameterException e) {
 			logger.error(e.getMessage());
 			logger.error(e);
+			e.printStackTrace();
 		}
        return cipherKey;
 	}
@@ -390,7 +405,6 @@ public class SecurityFactory {
 		SecretKey secretKey = null;
 		try {
 			kgen = KeyGenerator.getInstance(bean.getCipherKeySpec());
-
 			kgen.init(bean.getCipherKeySize());
 			secretKey = kgen.generateKey();
 			bean.setSecretKey(secretKey);
@@ -409,6 +423,7 @@ public class SecurityFactory {
 		} catch (NoSuchAlgorithmException e) {
 			logger.error(e.getMessage());
 			logger.error(e);
+			e.printStackTrace();
 			
 		}
 		return ret;
@@ -419,9 +434,11 @@ public class SecurityFactory {
 		try{
 	        KeyPairGenerator keyGen = KeyPairGenerator.getInstance(bean.getAsymmetricCipherKeySpec());
 	        
-	        boolean bECD = bean.getAsymmetricCipherKeySpec().matches("ECDSA");
+	        boolean bECD = bean.getAsymmetricCipherKeySpec().startsWith("EC");
 	        if(bECD) {
+
 	        	ECParameterSpec ecSpec = ECNamedCurveTable.getParameterSpec(bean.getCurveName());
+	        	
 	        	keyGen.initialize(ecSpec, secureRandom);
 	        }
 	        else keyGen.initialize(bean.getKeySize(), secureRandom);

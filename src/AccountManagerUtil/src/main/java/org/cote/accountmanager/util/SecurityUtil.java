@@ -160,10 +160,12 @@ public class SecurityUtil {
 	public static byte[] decipher(SecurityBean bean, byte[] data){
 
 		byte[] ret = new byte[0];
+		boolean bECD = bean.getCipherKeySpec().startsWith("EC");
 		Cipher cipher = SecurityFactory.getSecurityFactory().getDecryptCipherKey(bean);
-		SecretKey secretKey = bean.getSecretKey();
-		if(cipher == null || secretKey == null ){
-			logger.error("Secret key is null");
+
+		if(cipher == null || ((!bECD && bean.getSecretKey() == null) && (bean.getPrivateKey() == null))) {
+			logger.error("Expected keys not present");
+			if(cipher == null) logger.error("Null cipher");
 			return ret;
 		}
 		try {
@@ -178,15 +180,20 @@ public class SecurityUtil {
 	}
 	public static byte[] encipher(SecurityBean bean, byte[] data){
 		byte[] ret = new byte[0];
+		boolean bECD = bean.getCipherKeySpec().startsWith("EC");
 		Cipher cipher = SecurityFactory.getSecurityFactory().getEncryptCipherKey(bean);
-		if(cipher == null || bean.getSecretKey() == null )
+		if(cipher == null || ((!bECD && bean.getSecretKey() == null) && (bean.getPublicKey() == null))) {
+			logger.error("Expected keys not present");
+			if(cipher == null) logger.error("Null cipher");
 			return ret;
+		}
 		try {
 			ret = cipher.doFinal(data);
 		}
 		catch (IllegalBlockSizeException | BadPaddingException e) {
 			logger.error(e.getMessage());
 			logger.error(FactoryException.TRACE_EXCEPTION,e);
+			e.printStackTrace();
 		} 
 		return ret;
 	}
@@ -200,7 +207,8 @@ public class SecurityUtil {
 			return ret;
 		}
 		try{
-			Cipher cipher = Cipher.getInstance(bean.getAsymmetricCipherKeySpec());
+			boolean bECD = bean.getAsymmetricCipherKeySpec().startsWith("EC");
+			Cipher cipher = Cipher.getInstance((bECD ? bean.getCipherKeySpec() : bean.getAsymmetricCipherKeySpec()));
 			if(cipher == null){
 				logger.error("Null Cipher");
 				return ret;
@@ -226,7 +234,8 @@ public class SecurityUtil {
 			return ret;
 		}
 		try{
-			Cipher cipher = Cipher.getInstance(bean.getAsymmetricCipherKeySpec());
+			boolean bECD = bean.getAsymmetricCipherKeySpec().startsWith("EC");
+			Cipher cipher = Cipher.getInstance((bECD ? bean.getCipherKeySpec() : bean.getAsymmetricCipherKeySpec()));
     	    cipher.init(Cipher.DECRYPT_MODE, key);
 			ret = cipher.doFinal(data);
 		}
@@ -253,7 +262,7 @@ public class SecurityUtil {
 					buff.append("<private><key>" + BinaryUtil.toBase64Str(sf.serializePrivateKeyToRSAXml(bean)) + "</key></private>");
 				}
 			}
-			else if(spec.matches("ECDSA")) {
+			else if(spec.startsWith("EC")) {
 				if(includePublicKey){
 					try {
 						StringWriter writer = new StringWriter();
