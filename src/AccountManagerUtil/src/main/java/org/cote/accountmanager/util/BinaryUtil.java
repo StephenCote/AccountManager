@@ -36,7 +36,7 @@ public class BinaryUtil {
 		
 	}
 	public static String fromBase64Str(String inBase64){
-		return fromBase64Str(inBase64.getBytes());
+		return fromBase64Str(inBase64.getBytes(StandardCharsets.UTF_8));
 	}
 	public static String fromBase64Str(byte[] inBase64){
 		return (new String(fromBase64(inBase64),StandardCharsets.UTF_8));
