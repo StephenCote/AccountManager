@@ -6,7 +6,7 @@ elementFormDefault="qualified" attributeFormDefault="unqualified"
 jaxb:extensionBindingPrefixes="xjc" jaxb:version="2.1">
     <xs:annotation>
         <xs:appinfo>
-            <jaxb:globalBindings>
+            <jaxb:globalBindings typesafeEnumMaxMembers="2000">
                 <xjc:serializable />
             </jaxb:globalBindings>
         </xs:appinfo>

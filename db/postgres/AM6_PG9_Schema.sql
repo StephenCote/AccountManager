@@ -96,6 +96,7 @@ CREATE TABLE asymmetrickeys (
 	PrimaryKey boolean not null default false,
 	PreviousKeyId bigint not null default 0,
 	CurveName varchar(32),
+	KeyAgreementSpec varchar(32),
 	PublicKey bytea,
 	PrivateKey bytea,
 	SymmetricKeyId bigint not null default 0
