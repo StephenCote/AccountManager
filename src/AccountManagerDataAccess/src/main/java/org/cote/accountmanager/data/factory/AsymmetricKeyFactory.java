@@ -77,6 +77,7 @@ public class AsymmetricKeyFactory extends NameIdFactory {
 			table.setRestrictUpdateColumn(Columns.get(ColumnEnumType.ORGANIZATIONKEY),true);
 			table.setRestrictUpdateColumn(Columns.get(ColumnEnumType.GLOBALKEY),true);
 			table.setRestrictUpdateColumn(Columns.get(ColumnEnumType.CURVENAME),true);
+			table.setRestrictUpdateColumn(Columns.get(ColumnEnumType.KEYAGREEMENTSPEC),true);
 
 		}
 	}
@@ -119,6 +120,7 @@ public class AsymmetricKeyFactory extends NameIdFactory {
 			row.setCellValue(Columns.get(ColumnEnumType.PUBLICKEY),obj.getPublicKeyBytes());
 			row.setCellValue(Columns.get(ColumnEnumType.PRIVATEKEY),obj.getPrivateKeyBytes());
 			row.setCellValue(Columns.get(ColumnEnumType.CURVENAME),obj.getCurveName());
+			row.setCellValue(Columns.get(ColumnEnumType.KEYAGREEMENTSPEC),obj.getKeyAgreementSpec());
 
 			
 			if(insertRow(row)) return true;
@@ -148,6 +150,7 @@ public class AsymmetricKeyFactory extends NameIdFactory {
 		newCred.setPublicKeyBytes(rset.getBytes(Columns.get(ColumnEnumType.PUBLICKEY)));
 		newCred.setPrivateKeyBytes(rset.getBytes(Columns.get(ColumnEnumType.PRIVATEKEY)));
 		newCred.setCurveName(rset.getString(Columns.get(ColumnEnumType.CURVENAME)));
+		newCred.setKeyAgreementSpec(rset.getString(Columns.get(ColumnEnumType.KEYAGREEMENTSPEC)));
 		return newCred;
 	}
 	

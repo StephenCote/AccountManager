@@ -685,9 +685,7 @@ public class QueryFields {
 	public static QueryField getFieldRoleId(long id){
 		return getBigIntField(FieldMap.Columns.get(ColumnEnumType.ROLEID), id);
 	}
-	public static QueryField getFieldData(String val){
-		return getStringField(FieldMap.Columns.get(ColumnEnumType.DATA), val);
-	}
+
 	public static QueryField getFieldSecurityId(String id){
 		return getStringField(FieldMap.Columns.get(ColumnEnumType.SECURITYID), id);
 	}
