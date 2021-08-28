@@ -332,6 +332,8 @@ public class TokenService {
 			outType.setCipherKeySize(secType.getCipherKeySize());
 			outType.setCipherKeySpec(secType.getCipherKeySpec());
 			outType.setCipherProvider(secType.getCipherProvider());
+			outType.setKeyAgreementSpec(secType.getKeyAgreementSpec());
+			outType.setSymmetricCipherKeySpec(secType.getSymmetricCipherKeySpec());
 			
 		}
 		/// logger.info("Sending back: " + JSONUtil.exportObject(secType));
