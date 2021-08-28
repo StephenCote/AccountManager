@@ -23,6 +23,7 @@
  *******************************************************************************/
 package org.cote.accountmanager.util;
 
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.math.BigInteger;
@@ -30,10 +31,12 @@ import java.nio.charset.StandardCharsets;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
+import java.security.NoSuchProviderException;
 import java.security.Security;
 import java.util.UUID;
 
 import javax.crypto.Cipher;
+import javax.crypto.KeyAgreement;
 import javax.crypto.KeyGenerator;
 import javax.crypto.NoSuchPaddingException;
 import javax.crypto.SecretKey;
@@ -149,71 +152,8 @@ public class TestSecurityFactory {
 		byte[] dec = SecurityUtil.decipher(bean,enc);
 		logger.info((new String(dec)) + " = '" + enc_str + "'");
 	}
-
-	@Test
-	public void testECDSACipher() {
-		logger.info("Testing ECDSA Cipher");
-		SecurityFactory sf = SecurityFactory.getSecurityFactory();
-		SecurityBean bean = new SecurityBean();
-		bean.setCipherKeySpec("ECIES");
-		bean.setAsymmetricCipherKeySpec("ECDSA");
-		bean.setCurveName("secp256r1");
-		boolean generated = sf.generateKeyPair(bean);
-		assertTrue("Failed to generate secret", generated);
-		StringBuilder buff = new StringBuilder();
-		for(int i = 0; i < 1000; i++) {
-			buff.append(UUID.randomUUID());
-		}
-		String test_data = buff.toString();
-		byte[] enc = SecurityUtil.encipher(bean, test_data.getBytes());
-		
-		assertTrue("Expected an enciphered value", enc.length > 0);
-		
-		byte[] dec = SecurityUtil.decipher(bean, enc);
-		
-		String test_data2 = new String(dec);
-		assertTrue("Strings don't match", test_data2.equals(test_data));
-		///logger.info("ECIES " + test_data + "='" + enc_str + "'");
-	}
 	
-	@Test
-	public void testECDSAKeyPair() {
-		logger.info("Testing ECDSA");
-		SecurityFactory sf = SecurityFactory.getSecurityFactory();
-		SecurityBean bean = new SecurityBean();
-		bean.setAsymmetricCipherKeySpec("ECDSA");
-		bean.setCipherKeySpec("ECIES");
-		bean.setHashProvider("SHA256withECDSA");
-		bean.setCurveName("secp256r1");
-		/// bean.setKeySize(571);
-		boolean generated = sf.generateKeyPair(bean);
-		assertTrue("Failed to generate ECDSA Key Pair",generated);
 
-		String test_data = "This is a test";
-		byte[] enc = SecurityUtil.encrypt(bean, test_data.getBytes());
-		String enc_str = new String(BinaryUtil.toBase64(enc));
-		logger.info("ECDSA " + test_data + "='" + enc_str + "'");
-		
-		String serialized = SecurityUtil.serializeToXml(bean, true, true, true);
-		SecurityBean bean2 = new SecurityBean();
-		bean2.setCipherKeySpec("ECIES");
-		bean2.setAsymmetricCipherKeySpec("ECDSA");
-		bean2.setHashProvider("SHA256withECDSA");
-		bean2.setCurveName("secp256r1");
-		/// bean2.setKeySize(571);
-		try {
-			sf.importSecurityBean(bean2, serialized.getBytes(StandardCharsets.UTF_8), false);
-		}
-		catch(Exception e) {
-			e.printStackTrace();
-		}
-		assertTrue("Expected keys to match", Arrays.areEqual(bean2.getPublicKeyBytes(), bean.getPublicKeyBytes()));
-			
-		byte[] dec = SecurityUtil.decrypt(bean2,enc);
-		String test_data2 = new String(dec);
-		assertTrue("Strings don't match",test_data2.equals(test_data));
-		logger.info("ECDSA " + test_data2 + " = '" + enc_str + "'");
-	}
 	
 	@Test
 	public void testGenerateKeyPair(){
