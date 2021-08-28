@@ -352,8 +352,8 @@ public class VaultService
 
 		// Encipher with product key
 		//
-		byte[] enc_private_key = SecurityUtil.encipher(orgSKey, decConfig);
-		vault.getCredential().setCredential(enc_private_key);
+		byte[] encPrivateKey = SecurityUtil.encipher(orgSKey, decConfig);
+		vault.getCredential().setCredential(encPrivateKey);
 		logger.info("Saving vault to '" + vault.getVaultKeyPath() + "'");
 		FileUtil.emitFile(new String(SecurityUtil.decipher(orgSKey,vault.getVaultKeyPath())), exportVault(vault));
 
@@ -422,22 +422,20 @@ public class VaultService
 			logger.error("Vault Key Path already exists: " + vault.getVaultKeyPath());
 			return false;
 		}
-		//vault.setVaultKeyPath(vault.getVaultPath() + File.separator + vault.getVaultNameHash() + "-" + vault.getKeyPrefix() + (vault.getProtected() ? vault.getKeyProtectedPrefix() : "") + vault.getKeyExtension());
+		DirectoryGroupType impDir = ((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getCreateDirectory(vault.getServiceUser(), vault.getVaultGroupName(), vault.getServiceUser().getHomeDirectory(), vault.getServiceUser().getOrganizationId());
 
-		DirectoryGroupType imp_dir = ((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getCreateDirectory(vault.getServiceUser(), vault.getVaultGroupName(), vault.getServiceUser().getHomeDirectory(), vault.getServiceUser().getOrganizationId());
-
-		DataType imp_data = ((DataFactory)Factories.getFactory(FactoryEnumType.DATA)).getDataByName(vault.getVaultName(), true, imp_dir);
-		if (imp_data != null)
+		DataType impData = ((DataFactory)Factories.getFactory(FactoryEnumType.DATA)).getDataByName(vault.getVaultName(), true, impDir);
+		if (impData != null)
 		{
 			logger.error("Vault for '" + vault.getVaultName() + "' could not be made.  Existing vault must first be unimproved.");
 			return false;
 		}
-		Factories.getNameIdFactory(FactoryEnumType.GROUP).populate(imp_dir);
+		Factories.getNameIdFactory(FactoryEnumType.GROUP).populate(impDir);
 		
 		// Create a new group directory for storing keys that are vaulted for a specified vault
 		// The name is the same as the vault data name
 		//
-		DirectoryGroupType localImpDir = ((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getCreateDirectory(vault.getServiceUser(), vault.getVaultName(), imp_dir, vault.getServiceUser().getOrganizationId());
+		DirectoryGroupType localImpDir = ((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getCreateDirectory(vault.getServiceUser(), vault.getVaultName(), impDir, vault.getServiceUser().getOrganizationId());
 		
 		//imp_
 		CredentialType credSalt = CredentialService.newCredential(CredentialEnumType.SALT, null, vault.getServiceUser(), localImpDir, new byte[0], true, false, null);
@@ -452,33 +450,33 @@ public class VaultService
 		SecurityFactory.getSecurityFactory().generateKeyPair(sm);
 		SecurityFactory.getSecurityFactory().generateSecretKey(sm);
 
-		byte[] private_key_config = SecurityUtil.serializeToXml(sm, true, true, true).getBytes(StandardCharsets.UTF_8);
+		byte[] privateKeyConfig = SecurityUtil.serializeToXml(sm, true, true, true).getBytes(StandardCharsets.UTF_8);
 		
-		String in_password = null;
+		String inPassword = null;
 		if(vault.getProtectedCredential() != null && (vault.getProtectedCredential().getCredentialType() == CredentialEnumType.ENCRYPTED_PASSWORD || vault.getProtectedCredential().getCredentialType() == CredentialEnumType.HASHED_PASSWORD)){
-			in_password = new String(getProtectedCredentialValue(vault.getProtectedCredential()));
+			inPassword = new String(getProtectedCredentialValue(vault.getProtectedCredential()));
 		}
 		
 		// If a password was specified, encrypt with password
 		//
-		if (vault.getProtected() && in_password != null && in_password.length() > 0)
+		if (vault.getProtected() && inPassword != null && inPassword.length() > 0)
 		{
-			private_key_config = SecurityUtil.encipher(private_key_config, in_password, credSalt.getSalt()); 
+			privateKeyConfig = SecurityUtil.encipher(privateKeyConfig, inPassword, credSalt.getSalt()); 
 		}
 
 		// Encipher with product key
 		//
 		SecurityBean orgSKey = KeyService.getPrimarySymmetricKey(vault.getServiceUser().getOrganizationId()); 
-		byte[] enc_private_key = SecurityUtil.encipher(orgSKey,private_key_config);
+		byte[] encPrivateKey = SecurityUtil.encipher(orgSKey,privateKeyConfig);
 
 		// No need to encrypt the public key beyond the auto-encrypt supplied by the AM org-level key (same key as used by default to encrypt private key)
 		//
-		byte[] public_key_config = SecurityUtil.serializeToXml(sm, false, true, false).getBytes(StandardCharsets.UTF_8);
+		byte[] publicKeyConfig = SecurityUtil.serializeToXml(sm, false, true, false).getBytes(StandardCharsets.UTF_8);
 
-		imp_data = ((DataFactory)Factories.getFactory(FactoryEnumType.DATA)).newData(vault.getServiceUser(), imp_dir.getId());
-		imp_data.setName(vault.getVaultName());
-		imp_data.setDescription("Vault public key for node/cluster");
-		imp_data.setMimeType("text/xml");
+		impData = ((DataFactory)Factories.getFactory(FactoryEnumType.DATA)).newData(vault.getServiceUser(), impDir.getId());
+		impData.setName(vault.getVaultName());
+		impData.setDescription("Vault public key for node/cluster");
+		impData.setMimeType("text/xml");
 		
 		/// Use promote to clone the vault. The private key is set on the vault below, and this public copy will contain the public key
 		/// This also leaves a copy of relevent meta data in the database so configuration to find the other configuration isn't needed
@@ -495,26 +493,26 @@ public class VaultService
 		pubVaultCred.setNameType(NameEnumType.CREDENTIAL);
 		pubVaultCred.setEnciphered(true);
 		pubVaultCred.setCredentialType(CredentialEnumType.KEY);
-		pubVaultCred.setCredential(public_key_config);
+		pubVaultCred.setCredential(publicKeyConfig);
 		pubVaultCred.setCreatedDate(pubVault.getCreated());
 		
 		pubVault.setCredential(pubVaultCred);
 		pubVault.setProtected(vault.getProtected());
 		pubVault.setHaveCredential(true);
-		pubVault.setVaultDataUrn(UrnUtil.getUrn(imp_data));
+		pubVault.setVaultDataUrn(UrnUtil.getUrn(impData));
 		vault.setVaultDataUrn(pubVault.getVaultDataUrn());
-		DataUtil.setValue(imp_data, exportVault(pubVault).getBytes());
+		DataUtil.setValue(impData, exportVault(pubVault).getBytes());
 		
-		//DataUtil.setValue(imp_data, public_key_config);
+		//DataUtil.setValue(impData, publicKeyConfig);
 
-		((DataFactory)Factories.getFactory(FactoryEnumType.DATA)).add(imp_data);
-		imp_data = ((DataFactory)Factories.getFactory(FactoryEnumType.DATA)).getDataByName(vault.getVaultName(), imp_dir);
-		if(generateCertificates && in_password != null){
-			if(createVaultCertificate(vault, null, in_password) == false){
+		((DataFactory)Factories.getFactory(FactoryEnumType.DATA)).add(impData);
+		impData = ((DataFactory)Factories.getFactory(FactoryEnumType.DATA)).getDataByName(vault.getVaultName(), impDir);
+		if(generateCertificates && inPassword != null){
+			if(createVaultCertificate(vault, null, inPassword) == false){
 				throw new ArgumentException("Failed to generate new certificates for vault");
 			}
 			byte[] pubCertificate = getCertificate(vault, false);
-			CredentialType pubCred = CredentialService.newCredential(CredentialEnumType.CERTIFICATE, null, vault.getServiceUser(), imp_data, pubCertificate, true, false, null);
+			CredentialType pubCred = CredentialService.newCredential(CredentialEnumType.CERTIFICATE, null, vault.getServiceUser(), impData, pubCertificate, true, false, null);
 			if(pubCred == null){
 				logger.error("Failed to create public certificate credential");
 				return false;
@@ -533,7 +531,7 @@ public class VaultService
 		vaultCred.setNameType(NameEnumType.CREDENTIAL);
 		vaultCred.setEnciphered(true);
 		vaultCred.setCredentialType(CredentialEnumType.KEY);
-		vaultCred.setCredential(enc_private_key);
+		vaultCred.setCredential(encPrivateKey);
 		vaultCred.setCreatedDate(vault.getCreated());
 		
 		vault.setCredential(vaultCred);
@@ -706,12 +704,12 @@ public class VaultService
 		}
 		DirectoryGroupType vaultGroup = getVaultGroup(vault);
 		if(vaultGroup != null){
-			DataType imp_data = ((DataFactory)Factories.getFactory(FactoryEnumType.DATA)).getDataByName(vault.getVaultName(), true,vaultGroup);
-			logger.info("Removing implementation data: " + (imp_data == null ? "[null]" : imp_data.getUrn()));
-			if(imp_data != null && !((DataFactory)Factories.getFactory(FactoryEnumType.DATA)).delete(imp_data)){
+			DataType impData = ((DataFactory)Factories.getFactory(FactoryEnumType.DATA)).getDataByName(vault.getVaultName(), true,vaultGroup);
+			logger.info("Removing implementation data: " + (impData == null ? "[null]" : impData.getUrn()));
+			if(impData != null && !((DataFactory)Factories.getFactory(FactoryEnumType.DATA)).delete(impData)){
 				logger.warn("Unable to delete improvement key");
 			}
-			else if(imp_data == null){
+			else if(impData == null){
 				logger.warn("Implementation data '" + vault.getVaultName() + "' in group " + vaultGroup.getUrn() + " could not be removed");
 			}
 		}
@@ -744,16 +742,16 @@ public class VaultService
 		
 		
 		AuditType audit = beginAudit(vault,ActionEnumType.ADD, "Vault key",true);
-		DataType imp_data = getVaultMetaData(vault);
+		DataType impData = getVaultMetaData(vault);
 
 		// Can't make active key
 		//
-		if (imp_data == null){
+		if (impData == null){
 			AuditService.denyResult(audit, "Vault implementation data is null");
 			return false;
 		}
-		AuditService.targetAudit(audit, AuditEnumType.DATA, imp_data.getUrn());
-		VaultType pubVault = JSONUtil.importObject(new String(DataUtil.getValue(imp_data)), VaultType.class);
+		AuditService.targetAudit(audit, AuditEnumType.DATA, impData.getUrn());
+		VaultType pubVault = JSONUtil.importObject(new String(DataUtil.getValue(impData)), VaultType.class);
 		if(pubVault == null){
 			AuditService.denyResult(audit, "Cannot restore public vault");
 			return false;
@@ -777,8 +775,8 @@ public class VaultService
 		byte[] secretKey = SecurityUtil.serializeToXml(sm, false, false, true).getBytes(StandardCharsets.UTF_8);
 		String id = UUID.randomUUID().toString();
 		
-		DirectoryGroupType loc_imp_dir = getVaultInstanceGroup(vault);
-		DataType newKey = ((DataFactory)Factories.getFactory(FactoryEnumType.DATA)).newData(vault.getServiceUser(), loc_imp_dir.getId());
+		DirectoryGroupType loc_impDir = getVaultInstanceGroup(vault);
+		DataType newKey = ((DataFactory)Factories.getFactory(FactoryEnumType.DATA)).newData(vault.getServiceUser(), loc_impDir.getId());
 		newKey.setName(id);
 		newKey.setMimeType("text/xml");
 		newKey.setDescription("Improvement key for " + vault.getVaultName());

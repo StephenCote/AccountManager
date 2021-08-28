@@ -226,6 +226,9 @@ public class KeyService {
 	public static SecurityBean newOrganizationSymmetricKey(String bulkSessionId, SecurityBean asymmetricKey, long organizationId, boolean primaryKey) throws ArgumentException {
 		return newSymmetricKey(bulkSessionId,asymmetricKey,null,organizationId,primaryKey,true,false);
 	}
+	public static SecurityBean newPersonalSymmetricKey(String bulkSessionId, SecurityBean symmetricKey, SecurityBean asymmetricKey, UserType user, boolean primaryKey) throws ArgumentException {
+		return newSymmetricKey(bulkSessionId,symmetricKey, asymmetricKey,user,user.getOrganizationId(),primaryKey,false,false);
+	}
 	public static SecurityBean newPersonalSymmetricKey(String bulkSessionId, SecurityBean asymmetricKey, UserType user, boolean primaryKey) throws ArgumentException {
 		return newSymmetricKey(bulkSessionId,asymmetricKey,user,user.getOrganizationId(),primaryKey,false,false);
 	}
@@ -237,10 +240,7 @@ public class KeyService {
 		try {
 			SecurityType sec = ((AsymmetricKeyFactory)Factories.getFactory(FactoryEnumType.ASYMMETRICKEY)).getById(id, organizationId);
 			if(sec != null) bean = promote(sec);
-		} catch (FactoryException e) {
-			
-			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
-		} catch (ArgumentException e) {
+		} catch (FactoryException | ArgumentException e) {
 			
 			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 		}
@@ -301,31 +301,41 @@ public class KeyService {
 	public static SecurityBean newPersonalAsymmetricKey(String bulkSessionId, SecurityBean symmetricKey, UserType user, boolean primaryKey) throws ArgumentException {
 		return newAsymmetricKey(bulkSessionId,symmetricKey,user,user.getOrganizationId(),primaryKey,false,false);
 	}
-	public static SecurityBean newPersonalAsymmetricKey(UserType user, boolean primaryKey) throws ArgumentException {
-		return newPersonalAsymmetricKey(null,null,user,primaryKey);
+
+	public static SecurityBean newPersonalAsymmetricKey(String bulkSessionId, SecurityBean base, SecurityBean symmetricKey, UserType user, boolean primaryKey) throws ArgumentException {
+		return newAsymmetricKey(bulkSessionId,base, symmetricKey,user,user.getOrganizationId(),primaryKey,false,false);
 	}
-	
+	public static SecurityBean newPersonalAsymmetricKey(UserType user, SecurityBean base, boolean primaryKey) throws ArgumentException {
+		return newPersonalAsymmetricKey(null, base, null, user, primaryKey);
+	}
+	public static SecurityBean newPersonalAsymmetricKey(UserType user, boolean primaryKey) throws ArgumentException {
+		return newPersonalAsymmetricKey(null, null,user,primaryKey);
+	}
 	private static SecurityBean newSymmetricKey(String bulkSessionId, SecurityBean asymmetricKey, UserType owner, long organizationId, boolean primaryKey, boolean organizationKey, boolean globalKey) throws ArgumentException {
 		SecurityBean sec = new SecurityBean();
+		return newSymmetricKey(bulkSessionId, sec, asymmetricKey, owner, organizationId, primaryKey, organizationKey, globalKey);
+	}
+	private static SecurityBean newSymmetricKey(String bulkSessionId, SecurityBean sec, SecurityBean asymmetricKey, UserType owner, long organizationId, boolean primaryKey, boolean organizationKey, boolean globalKey) throws ArgumentException {
+
 		sec.setOrganizationKey(organizationKey);
 		sec.setGlobalKey(globalKey);
 		sec.setPrimaryKey(primaryKey);
 		SecurityType lastPrimary = null;
 		if(primaryKey){
-			//logger.info("Checking for existing primary key");
 			if(owner !=null) lastPrimary = getPrimarySymmetricKey(owner);
 			else if(organizationKey) lastPrimary = getPrimarySymmetricKey(organizationId);
 			if(lastPrimary != null) sec.setPreviousKeyId(lastPrimary.getId());
-			//else logger.info("No existing primary key found");
 		}
 
 		if(asymmetricKey != null){
-			if(asymmetricKey.getSecretKey() == null) throw new ArgumentException("Secret key was specified but is null");
-			//throw new ArgumentException("Not implemented");
+			if(asymmetricKey.getSecretKey() == null) throw new ArgumentException("Assymetric key was specified but is null");
 			
 			sec.setPublicKey(asymmetricKey.getPublicKey());
 			sec.setEncryptCipherKey(true);
 			sec.setAsymmetricKeyId(asymmetricKey.getId());
+			if(sec.getKeyAgreementSpec() != null) {
+				sec.setPrivateKey(asymmetricKey.getPrivateKey());
+			}
 			
 		}
 		sec.setOrganizationId(organizationId);
@@ -358,11 +368,13 @@ public class KeyService {
 			
 			logger.error(e.getMessage());
 		} 
-		//if(sec != null) sec.setPublicKey(null);
 		return sec;
 	}
 	private static SecurityBean newAsymmetricKey(String bulkSessionId, SecurityBean symmetricKey, UserType owner, long organizationId, boolean primaryKey, boolean organizationKey, boolean globalKey) throws ArgumentException {
 		SecurityBean sec = new SecurityBean();
+		return newAsymmetricKey(bulkSessionId, sec, symmetricKey, owner, organizationId, primaryKey, organizationKey, globalKey);
+	}
+	private static SecurityBean newAsymmetricKey(String bulkSessionId, SecurityBean sec, SecurityBean symmetricKey, UserType owner, long organizationId, boolean primaryKey, boolean organizationKey, boolean globalKey) throws ArgumentException {
 		sec.setOrganizationKey(organizationKey);
 		sec.setGlobalKey(globalKey);
 		sec.setPrimaryKey(primaryKey);
@@ -372,14 +384,14 @@ public class KeyService {
 			else if(organizationKey) lastPrimary = getPrimaryAsymmetricKey(organizationId);
 			if(lastPrimary != null) sec.setPreviousKeyId(lastPrimary.getId());
 		}
-		/*
+		
 		if(symmetricKey != null){
 			if(symmetricKey.getPublicKey() == null) throw new ArgumentException("Secret key was specified but is null");
 			sec.setSecretKey(symmetricKey.getSecretKey());
 			sec.setEncryptCipherKey(true);
 			sec.setSymmetricKeyId(symmetricKey.getId());
 		}
-		*/
+		
 		sec.setOrganizationId(organizationId);
 		sec.setOwnerId((owner != null ? owner.getId() : 0L));
 		sec.setNameType(NameEnumType.SECURITY);
