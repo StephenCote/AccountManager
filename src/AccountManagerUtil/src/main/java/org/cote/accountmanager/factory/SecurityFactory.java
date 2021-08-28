@@ -34,6 +34,7 @@ import java.security.KeyFactory;
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
 import java.security.NoSuchAlgorithmException;
+import java.security.NoSuchProviderException;
 import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.security.SecureRandom;
@@ -48,6 +49,7 @@ import java.security.spec.RSAPublicKeySpec;
 import java.security.spec.X509EncodedKeySpec;
 
 import javax.crypto.Cipher;
+import javax.crypto.KeyAgreement;
 import javax.crypto.KeyGenerator;
 import javax.crypto.NoSuchPaddingException;
 import javax.crypto.SecretKey;
@@ -106,7 +108,10 @@ public class SecurityFactory {
 			buff.append("<key>" + BinaryUtil.toBase64Str(key) + "</key>");
 			buff.append("<iv>" + BinaryUtil.toBase64Str(iv) + "</iv>");
 		}
-		return buff.toString().getBytes();
+		else {
+			logger.error((key == null || key.length == 0 ? "Key" : "IV") + " was null or empty");
+		}
+		return buff.toString().getBytes(StandardCharsets.UTF_8);
 	}
 	public byte[] serializePrivateKeyToRSAXml(SecurityBean bean){
 		StringBuilder buff = new StringBuilder();
@@ -117,7 +122,7 @@ public class SecurityFactory {
 		buff.append("<D>" + BinaryUtil.toBase64Str(keySpec.getPrivateExponent().toByteArray()) + "</D>");
 			
 		buff.append("</RSAKeyValue>\r\n");
-		return buff.toString().getBytes();
+		return buff.toString().getBytes(StandardCharsets.UTF_8);
 	}
 	public byte[] serializePublicKeyToRSAXml(SecurityBean bean){
 		StringBuilder buff = new StringBuilder();
@@ -133,7 +138,7 @@ public class SecurityFactory {
 			logger.error(e);
 		}
 		buff.append("</RSAKeyValue>\r\n");
-		return buff.toString().getBytes();
+		return buff.toString().getBytes(StandardCharsets.UTF_8);
 	}
 
 	/// TODO: 2015/06/23 - Need to refactor to use a CredentialType
@@ -176,7 +181,6 @@ public class SecurityFactory {
 			decKey = SecurityUtil.decrypt(bean, key);
 			decIv = SecurityUtil.decrypt(bean,  iv);	
 		}
-
 		bean.setSecretKey(new SecretKeySpec(decKey, bean.getSymmetricCipherKeySpec()));
 		bean.setCipherIV(decIv);
 		bean.setCipherKey(decKey);
@@ -235,7 +239,8 @@ public class SecurityFactory {
 				logger.error("Null Pem object");
 				return;
 			}
-			KeyFactory keyGen = KeyFactory.getInstance(bean.getAsymmetricCipherKeySpec());
+			/// KeyFactory keyGen = KeyFactory.getInstance(bean.getAsymmetricCipherKeySpec());
+			KeyFactory keyGen = KeyFactory.getInstance(bean.getKeyAgreementSpec());
 			PublicKey pubK = keyGen.generatePublic(new X509EncodedKeySpec(spki.getContent()));
         	bean.setPublicKey(pubK);
         	bean.setPublicKeyBytes(pubK.getEncoded());
@@ -254,7 +259,8 @@ public class SecurityFactory {
 				logger.error("Null Pem object");
 				return;
 			}
-			KeyFactory keyGen = KeyFactory.getInstance(bean.getAsymmetricCipherKeySpec());
+			/// KeyFactory keyGen = KeyFactory.getInstance(bean.getAsymmetricCipherKeySpec());
+			KeyFactory keyGen = KeyFactory.getInstance(bean.getKeyAgreementSpec());
 			PrivateKey privK = keyGen.generatePrivate(new PKCS8EncodedKeySpec(spki.getContent()));
         	bean.setPrivateKey(privK);
         	bean.setPrivateKeyBytes(privK.getEncoded());
@@ -270,8 +276,8 @@ public class SecurityFactory {
 		
 		Document xml = XmlUtil.getDocumentFromBytes(rsaKey);
 		
-		byte[] modBytes = BinaryUtil.fromBase64(XmlUtil.GetElementText(xml.getDocumentElement(), "Modulus").getBytes());
-		byte[] expBytes = BinaryUtil.fromBase64(XmlUtil.GetElementText(xml.getDocumentElement(), "Exponent").getBytes());
+		byte[] modBytes = BinaryUtil.fromBase64(XmlUtil.GetElementText(xml.getDocumentElement(), "Modulus").getBytes(StandardCharsets.UTF_8));
+		byte[] expBytes = BinaryUtil.fromBase64(XmlUtil.GetElementText(xml.getDocumentElement(), "Exponent").getBytes(StandardCharsets.UTF_8));
 
 		setPublicKey(bean, modBytes, expBytes);
 
@@ -279,8 +285,8 @@ public class SecurityFactory {
 	public void setRSAXMLPrivateKey(SecurityBean bean, byte[] rsaKey){
 		bean.setPrivateKeyBytes(rsaKey);
 		Document xml = XmlUtil.getDocumentFromBytes(rsaKey);
-		byte[] modBytes = BinaryUtil.fromBase64(XmlUtil.GetElementText(xml.getDocumentElement(), "Modulus").getBytes());
-		byte[] dBytes = BinaryUtil.fromBase64(XmlUtil.GetElementText(xml.getDocumentElement(), "D").getBytes());
+		byte[] modBytes = BinaryUtil.fromBase64(XmlUtil.GetElementText(xml.getDocumentElement(), "Modulus").getBytes(StandardCharsets.UTF_8));
+		byte[] dBytes = BinaryUtil.fromBase64(XmlUtil.GetElementText(xml.getDocumentElement(), "D").getBytes(StandardCharsets.UTF_8));
 		setPrivateKey(bean, modBytes, dBytes);
 	}
 	public void setPrivateKey(SecurityBean bean, byte[] modBytes, byte[] dBytes){
@@ -311,24 +317,24 @@ public class SecurityFactory {
 
 		String pubKey = XmlUtil.FindElementText(d.getDocumentElement(), "public", "key");
 		if(pubKey != null){
-			setRSAXMLPublicKey(bean, BinaryUtil.fromBase64(pubKey.getBytes()));
+			setRSAXMLPublicKey(bean, BinaryUtil.fromBase64(pubKey.getBytes(StandardCharsets.UTF_8)));
 		}
 		pubKey = XmlUtil.FindElementText(d.getDocumentElement(), "public", "ec-key");
 		if(pubKey != null){
-			setECDSAPublicKey(bean, BinaryUtil.fromBase64(pubKey.getBytes()));
+			setECDSAPublicKey(bean, BinaryUtil.fromBase64(pubKey.getBytes(StandardCharsets.UTF_8)));
 		}
 		String priKey = XmlUtil.FindElementText(d.getDocumentElement(), "private", "key");
 		if(priKey != null){
-			setRSAXMLPrivateKey(bean,BinaryUtil.fromBase64(priKey.getBytes()));
+			setRSAXMLPrivateKey(bean,BinaryUtil.fromBase64(priKey.getBytes(StandardCharsets.UTF_8)));
 		}
 		priKey = XmlUtil.FindElementText(d.getDocumentElement(), "private", "ec-key");
 		if(priKey != null){
-			setECDSAPrivateKey(bean,BinaryUtil.fromBase64(priKey.getBytes()));
+			setECDSAPrivateKey(bean,BinaryUtil.fromBase64(priKey.getBytes(StandardCharsets.UTF_8)));
 		}
 		String cipKey = XmlUtil.FindElementText(d.getDocumentElement(), "cipher", "key");
 		String cipIv = XmlUtil.FindElementText(d.getDocumentElement(), "cipher", "iv");
 		if(cipKey != null && cipIv != null){
-			setSecretKey(bean, BinaryUtil.fromBase64(cipKey.getBytes()),BinaryUtil.fromBase64(cipIv.getBytes()), encryptedCipher);
+			setSecretKey(bean, BinaryUtil.fromBase64(cipKey.getBytes(StandardCharsets.UTF_8)),BinaryUtil.fromBase64(cipIv.getBytes(StandardCharsets.UTF_8)), encryptedCipher);
 		}
 	}
 	public Cipher getEncryptCipherKey(SecurityBean bean){
@@ -354,7 +360,6 @@ public class SecurityFactory {
 		Cipher cipherKey = null;
        try {
 		cipherKey = Cipher.getInstance((bECD ? bean.getCipherKeySpec() : bean.getSymmetricCipherKeySpec()));
-
 		int mode = Cipher.ENCRYPT_MODE;
 		if(decrypt) mode = Cipher.DECRYPT_MODE;
 
@@ -389,12 +394,23 @@ public class SecurityFactory {
 			logger.error("Cannot encrypt secret key with missing PKI data.  Verify PKI is initialized.");
 			return false;
 		}
-		KeyGenerator kgen;
+
+		boolean bECD = (bean.getKeyAgreementSpec() != null);
 		SecretKey secretKey = null;
 		try {
-			kgen = KeyGenerator.getInstance(bean.getCipherKeySpec());
-			kgen.init(bean.getCipherKeySize());
-			secretKey = kgen.generateKey();
+			if(bECD) {
+				KeyAgreement keyAgreement = KeyAgreement.getInstance(bean.getKeyAgreementSpec());
+				keyAgreement.init(bean.getPrivateKey());
+				keyAgreement.doPhase(bean.getPublicKey(), true);
+			    /// secretKey = keyAgreement.generateSecret(bean.getAsymmetricCipherKeySpec());
+				secretKey = keyAgreement.generateSecret(bean.getSymmetricCipherKeySpec());
+			}
+			else {
+				KeyGenerator kgen = KeyGenerator.getInstance(bean.getCipherKeySpec());
+				/// KeyGenerator kgen = KeyGenerator.getInstance(bean.getSymmetricCipherKeySpec());
+				kgen.init(bean.getCipherKeySize());
+				secretKey = kgen.generateKey();
+			}
 			bean.setSecretKey(secretKey);
 			bean.setCipherKey(secretKey.getEncoded());
 			Cipher cipher = getCipherKey(bean, false);
@@ -408,7 +424,7 @@ public class SecurityFactory {
 				bean.setEncryptedCipherIV(SecurityUtil.encrypt(bean, bean.getCipherIV()));
 			}
 			ret = true;
-		} catch (NoSuchAlgorithmException e) {
+		} catch (NoSuchAlgorithmException | InvalidKeyException e) {
 			logger.error(e.getMessage());
 			logger.error(e);
 			e.printStackTrace();
