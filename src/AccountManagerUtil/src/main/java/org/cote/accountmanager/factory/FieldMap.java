@@ -129,7 +129,6 @@ public class FieldMap {
 	   columnMap.put(ColumnEnumType.USERID, "userid");
 	   columnMap.put(ColumnEnumType.DATAID, "dataid");
 	   columnMap.put(ColumnEnumType.ROLEID, "roleid");
-	   columnMap.put(ColumnEnumType.DATA, "data");
 	   columnMap.put(ColumnEnumType.SECURITYID, "securityid");
 	   columnMap.put(ColumnEnumType.SESSIONCREATED, "sessioncreated");
 	   columnMap.put(ColumnEnumType.SESSIONEXPIRATION, "sessionexpiration");
@@ -270,6 +269,7 @@ public class FieldMap {
 		columnMap.put(ColumnEnumType.ENDDATE, "enddate");
 		columnMap.put(ColumnEnumType.NOTEID, "noteid");
 		columnMap.put(ColumnEnumType.CURVENAME, "curvename");
+		columnMap.put(ColumnEnumType.KEYAGREEMENTSPEC, "keyagreementspec");
    }
 	   
 	public static final Map<ColumnEnumType,String> Columns = Collections.unmodifiableMap(columnMap);
