@@ -65,10 +65,11 @@
 					<excludes>
 						<!-- 
 						
-						<exclude>**/TestObjectEntitlementQuery.java</exclude>
-						 
+						<exclude>**/TestVaultService.java</exclude> 
+						 <exclude>TestCurveEncrypt</exclude> 
 						 -->
-						  
+						
+						  <exclude>**/TestObjectEntitlementQuery.java</exclude>
 						  <exclude>**/TestOrganizationFactory.java</exclude>
 						 <exclude>**/TestEffectiveAuthorization.java</exclude>
 						 
@@ -83,7 +84,7 @@
 						<exclude>**/TestBulkUser.java</exclude>
 						<exclude>**/TestBulkDelete.java</exclude>
 						<exclude>**/TestBulkUpdate.java</exclude>
-						<exclude>**/TestVaultService.java</exclude> 
+						
 						<exclude>**/TestDBStress.java</exclude>
 						<exclude>**/TestCachePerformance.java</exclude>
 						<exclude>**/TestRoleService.java</exclude>

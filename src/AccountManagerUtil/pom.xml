@@ -59,9 +59,9 @@
 					<excludes>
 
 						<!-- 
-						<exclude>**/TestSecurityFactory.java</exclude>
+						<exclude>**/TestECGeneration.java</exclude>
 						-->
-						
+						<exclude>**/TestSecurityFactory.java</exclude>
 						<exclude>**/TestDataUtil.java</exclude>
 						<exclude>**/TestAMCode.java</exclude>
 						<exclude>**/TestText.java</exclude>

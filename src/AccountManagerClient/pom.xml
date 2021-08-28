@@ -285,10 +285,10 @@
 					</includes>
 					<excludes>
 						<!-- 
-							<exclude>**/TestSearch.java</exclude>	
 							
+							<exclude>**/TestExporter.java</exclude>
 						 -->
-						 <exclude>**/TestExporter.java</exclude>	
+						 	<exclude>**/TestSearch.java</exclude>	
 						 <exclude>**/TestSCIM.java</exclude>	
 						 <exclude>**/TestVaultApi.java</exclude>	
 						 <exclude>**/TestCommunityProjectAccess.java</exclude>	
