@@ -802,7 +802,6 @@
 			<enumeration value="USERID"></enumeration>
 			<enumeration value="DATAID"></enumeration>
 			<enumeration value="ROLEID"></enumeration>
-			<enumeration value="DATA"></enumeration>
 			<enumeration value="SECURITYID"></enumeration>
 			<enumeration value="SESSIONCREATED"></enumeration>
 			<enumeration value="SESSIONEXPIRATION"></enumeration>
@@ -943,6 +942,8 @@
 			<enumeration value="ENDDATE"></enumeration>
 			<enumeration value="NOTEID"></enumeration>
 			<enumeration value="CURVENAME"></enumeration>
+			<enumeration value="KEYAGREEMENTSPEC"></enumeration>
+			<!-- <enumeration value="DATA"></enumeration> -->
     	</restriction>
     </simpleType>
 </schema>
