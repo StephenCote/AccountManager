@@ -155,7 +155,9 @@ public class SecurityUtil {
 	public static byte[] decipher(SecurityBean bean, byte[] data){
 
 		byte[] ret = new byte[0];
-		boolean bECD = bean.getCipherKeySpec().startsWith("EC");
+		/// boolean bECD = bean.getCipherKeySpec().startsWith("EC");
+		/// boolean bECD = (bean.getKeyAgreementSpec() != null);
+		boolean bECD = bean.getSymmetricCipherKeySpec().startsWith("EC");
 		Cipher cipher = SecurityFactory.getSecurityFactory().getDecryptCipherKey(bean);
 
 		if(cipher == null || ((!bECD && bean.getSecretKey() == null) && (bean.getPrivateKey() == null))) {
@@ -175,7 +177,9 @@ public class SecurityUtil {
 	}
 	public static byte[] encipher(SecurityBean bean, byte[] data){
 		byte[] ret = new byte[0];
-		boolean bECD = bean.getCipherKeySpec().startsWith("EC");
+		/// boolean bECD = bean.getCipherKeySpec().startsWith("EC");
+		///boolean bECD = (bean.getKeyAgreementSpec() != null);
+		boolean bECD = bean.getSymmetricCipherKeySpec().startsWith("EC");
 		Cipher cipher = SecurityFactory.getSecurityFactory().getEncryptCipherKey(bean);
 		if(cipher == null || ((!bECD && bean.getSecretKey() == null) && (bean.getPublicKey() == null))) {
 			logger.error("Expected keys not present");
@@ -202,8 +206,9 @@ public class SecurityUtil {
 			return ret;
 		}
 		try{
-			boolean bECD = bean.getAsymmetricCipherKeySpec().startsWith("EC");
-			Cipher cipher = Cipher.getInstance((bECD ? bean.getCipherKeySpec() : bean.getAsymmetricCipherKeySpec()));
+			/// boolean bECD = bean.getAsymmetricCipherKeySpec().startsWith("EC");
+			///Cipher cipher = Cipher.getInstance((bECD ? bean.getCipherKeySpec() : bean.getAsymmetricCipherKeySpec()));
+			Cipher cipher = Cipher.getInstance(bean.getAsymmetricCipherKeySpec());
 			if(cipher == null){
 				logger.error("Null Cipher");
 				return ret;
@@ -229,9 +234,10 @@ public class SecurityUtil {
 			return ret;
 		}
 		try{
-			boolean bECD = bean.getAsymmetricCipherKeySpec().startsWith("EC");
-			Cipher cipher = Cipher.getInstance((bECD ? bean.getCipherKeySpec() : bean.getAsymmetricCipherKeySpec()));
-    	    cipher.init(Cipher.DECRYPT_MODE, key);
+			/// boolean bECD = bean.getAsymmetricCipherKeySpec().startsWith("EC");
+			/// Cipher cipher = Cipher.getInstance((bECD ? bean.getCipherKeySpec() : bean.getAsymmetricCipherKeySpec()));
+			Cipher cipher = Cipher.getInstance(bean.getAsymmetricCipherKeySpec());
+			cipher.init(Cipher.DECRYPT_MODE, key);
 			ret = cipher.doFinal(data);
 		}
 		catch(Exception e){
