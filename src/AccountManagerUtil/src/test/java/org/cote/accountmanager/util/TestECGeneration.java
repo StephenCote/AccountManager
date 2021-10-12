@@ -46,6 +46,21 @@ public class TestECGeneration {
 	}
 	
 	@Test
+	public void TestEC256() {
+		SecurityBean bean = new SecurityBean();
+		bean.setKeyAgreementSpec("ECDH");
+		bean.setCipherKeySpec("AES/GCM/NoPadding");
+		bean.setAsymmetricCipherKeySpec("ECIES");
+		bean.setHashProvider("SHA256withECDSA");
+		bean.setCurveName("secp256k1");
+		bean.setEncryptCipherKey(true);
+		bean.setReverseEncrypt(false);
+		logger.info("Testing ES256 generation");
+		SecurityFactory.getSecurityFactory().generateKeyPair(bean);
+
+	}
+	
+	@Test
 	public void TestGeneration() {
 		logger.info("Testing generation");
 		
