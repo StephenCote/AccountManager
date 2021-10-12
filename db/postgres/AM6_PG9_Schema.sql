@@ -575,7 +575,14 @@ create table approval (
 
 -- REWORK
 
-
+CREATE OR REPLACE VIEW duplicateData as
+select D2.hashCount, D.id, D.urn, D.name, D.hash, D.groupid from Data D
+inner join (select count(hash) hashCount, hash from Data
+group by hash
+having count(hash) > 1
+order by count(hash)
+) D2 on D2.hash = D.hash
+order by D.hash, D.name;
 
 create or replace view permissionPersonRights as
 select U.id as personid,P.id as permissionid, P.name as PermissionName2, P.ownerid as permissionownerid,P.organizationid,
