@@ -56,7 +56,8 @@ public class OperationFactory extends NameIdGroupFactory {
 	
 	public OperationFactory(){
 		super();
-		this.tableNames.add("operation");
+		this.primaryTableName = "operation";
+		this.tableNames.add(primaryTableName);
 		this.hasObjectId = true;
 		this.hasUrn = true;
 		factoryType = FactoryEnumType.OPERATION;

@@ -60,7 +60,8 @@ public class PatternFactory extends NameIdGroupFactory {
 	
 	public PatternFactory(){
 		super();
-		this.tableNames.add("pattern");
+		this.primaryTableName = "pattern";
+		this.tableNames.add(primaryTableName);
 		this.hasObjectId = true;
 		this.hasUrn = true;
 		factoryType = FactoryEnumType.PATTERN;

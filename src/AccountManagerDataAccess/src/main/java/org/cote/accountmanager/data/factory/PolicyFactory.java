@@ -71,7 +71,8 @@ public class PolicyFactory extends NameIdGroupFactory {
 	
 	public PolicyFactory(){
 		super();
-		this.tableNames.add("policy");
+		this.primaryTableName = "policy";
+		this.tableNames.add(primaryTableName);
 		this.hasObjectId = true;
 		this.hasUrn = true;
 		factoryType = FactoryEnumType.POLICY;

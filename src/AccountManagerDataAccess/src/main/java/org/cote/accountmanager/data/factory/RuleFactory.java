@@ -67,9 +67,9 @@ public class RuleFactory extends NameIdGroupFactory {
 	/// static{ org.cote.accountmanager.data.Factories.registerClass(FactoryEnumType.RULE, RuleFactory.class); }
 	public RuleFactory(){
 		super();
-		this.tableNames.add("rule");
-		this.hasObjectId = true;
 		this.primaryTableName = "rule";
+		this.tableNames.add(primaryTableName);
+		this.hasObjectId = true;
 		this.hasUrn = true;
 		factoryType = FactoryEnumType.RULE;
 	}
