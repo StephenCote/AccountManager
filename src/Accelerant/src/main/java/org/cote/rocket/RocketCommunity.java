@@ -1819,7 +1819,8 @@ public class RocketCommunity implements ICommunityProvider {
 			if(dataStr == null){
 				AuditService.denyResult(audit, "Error pre-processing script source");
 			}
-			obj = ScriptService.run(user, data.getUrn(), dataStr, params);
+			/// user, data.getUrn(), 
+			obj = ScriptService.run(dataStr, params);
 			AuditService.permitResult(audit, "Executed script");
 		} catch (ArgumentException | DataException | FactoryException e) {
 			logger.error(e);

@@ -22,22 +22,14 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *******************************************************************************/
 package org.cote.accountmanager.data.services;
-
 import java.util.HashMap;
 import java.util.Map;
-import java.util.regex.Pattern;
 
-import javax.script.Bindings;
-import javax.script.Compilable;
 import javax.script.CompiledScript;
-import javax.script.ScriptEngine;
-import javax.script.ScriptEngineManager;
-import javax.script.ScriptException;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.cote.accountmanager.data.Factories;
-import org.cote.accountmanager.data.factory.DataFactory;
+
 import org.cote.accountmanager.exceptions.ArgumentException;
 import org.cote.accountmanager.exceptions.DataException;
 import org.cote.accountmanager.exceptions.FactoryException;
@@ -45,65 +37,62 @@ import org.cote.accountmanager.objects.DataType;
 import org.cote.accountmanager.objects.FunctionEnumType;
 import org.cote.accountmanager.objects.FunctionType;
 import org.cote.accountmanager.objects.UserType;
-import org.cote.accountmanager.objects.types.FactoryEnumType;
 import org.cote.accountmanager.util.DataUtil;
+import org.graalvm.polyglot.Context;
+import org.graalvm.polyglot.HostAccess;
+import org.graalvm.polyglot.Value;
 
-import jdk.nashorn.api.scripting.ClassFilter;
-import jdk.nashorn.api.scripting.NashornScriptEngineFactory;
-/*
- * TODO: 2016/08/18
- * There is still a big security gap  in that the package structure doesn't limit some of the base factory access
- * At the moment, a filter class is defined to limit scripted access to the factories.
- * 
- * This was resolved by adding a class filter.
- * 
- * 2020/09/02
- * 
- * Moving forward, this service will be replaced with the GraalVM version, and execution may be optionally deferred to a remote client service so that it is not running in the same VM as the core application
- * 
- */
-
-@SuppressWarnings("restriction")
 public class ScriptService {
 	public static final Logger logger = LogManager.getLogger(ScriptService.class);
-	@SuppressWarnings("unused")
+
 	private static final String scriptEngineJavaScript = "javascript";
 	private static final String scriptEngineNashorn = "nashorn";
-	private static String scriptEngineName = scriptEngineNashorn;
-	private static ScriptEngine jsEngine = null;
+	private static final String scriptEngineGraal = "graal.js";
+
+	private static String scriptEngineName = scriptEngineGraal;
+	private static Context jsEngine = null;
 	public static void setScriptEngineName(String s){
 		scriptEngineName = s;
 	}
 	private static Map<String,CompiledScript> jsCompiled = new HashMap<>();
 	
-	public static ScriptEngine getJavaScriptEngine(){
+	public static Context getJavaScriptEngine(){
 		if(jsEngine == null){
 			if(scriptEngineName.equals(scriptEngineNashorn)){
-			    NashornScriptEngineFactory factory = new NashornScriptEngineFactory();
-
-			    jsEngine = factory.getScriptEngine(
-			      new ScriptServiceFilter());
+				logger.error("Not supported");
+			}
+			else if(scriptEngineName.contentEquals(scriptEngineGraal)) {
+			    Context context = Context.newBuilder("js")
+			    	.allowIO(true)
+			    	//.allowPolyglotAccess(PolyglotAccess.ALL)
+			    	.allowHostAccess(HostAccess.ALL)
+			    	.allowHostClassLookup(className -> true)
+			    	.build();
+			    context.getBindings("js").putMember("ScriptResolver", new ScriptResolver());
+			    jsEngine = context;
 			}
 			else{
-				jsEngine = new ScriptEngineManager().getEngineByName(scriptEngineName);
-		
+				// jsEngine = new ScriptEngineManager().getEngineByName(scriptEngineName);
+				logger.error("Not supported");
 			}
 		}
 		return jsEngine;
 	}
-	public static Object run(UserType user,Map<String,Object> params,FunctionType func) throws FactoryException,ArgumentException{
+	public static Object run(Map<String,Object> params,FunctionType func) throws FactoryException,ArgumentException{
 
 		if(func.getFunctionType() != FunctionEnumType.JAVASCRIPT) throw new ArgumentException("FunctionType '" + func.getFunctionType().toString() + "' is not applicable");
 		DataType data = func.getFunctionData();
 		if(data == null && func.getSourceUrn() != null){
-			data = ((DataFactory)Factories.getFactory(FactoryEnumType.DATA)).getByUrn(func.getSourceUrn());
+			/// data = ((DataFactory)Factories.getFactory(FactoryEnumType.DATA)).getByUrn(func.getSourceUrn());
+			throw new FactoryException("TODO: Add getByUrn");
 		}
 		if(data == null) throw new ArgumentException("Function '" + func.getName() + "' data is null");
 		else if(data.getDetailsOnly()) throw new ArgumentException("Function data is not properly loaded");
 
-		return run(user,params,data);
+		return run(params,data);
 	}
-	public static Object run(UserType user,Map<String,Object> params,DataType data) throws ArgumentException{
+	public static Value run(Map<String,Object> params,DataType data) throws ArgumentException{
+
 		String value = null;
 		try {
 			value = DataUtil.getValueString(data);
@@ -111,47 +100,56 @@ public class ScriptService {
 			
 			logger.error(e.getMessage());
 		}
-		return run(user,data.getUrn(),value,params);
+		return run(value,params);
+		/*
+		return run(data.getUrn(),value,params);
+		*/
 	}
-	public static Object run(UserType user,String name, String script,Map<String,Object> params) throws ArgumentException{
+	/*
+	public static Object run(String name, String script,Map<String,Object> params) throws ArgumentException{
 		CompiledScript compScr = compileScript(name, script);
 
 		if(compScr == null) throw new ArgumentException("Compiled script for '" + name + "' is null");
 
-		return run(user, name, params);
+		return run(name, params);
 
 	}
+	*/
 	public static Map<String, Object> getCommonParameterMap(UserType user){
 		Map<String,Object> params = new HashMap<String,Object>();
 		params.put("logger", logger);
-		params.put("user", user);
-		if(user != null) params.put("organizationPath", user.getOrganizationPath());
+		if(user != null) {
+			params.put("user", user);
+			params.put("organizationPath", user.getOrganizationPath());
+		}
+		
+
 		return params;
 	}
 	public static String processTokens(UserType user, String scriptText){
-		String out_str = scriptText.replaceAll("\\$\\{userUrn\\}", user.getUrn());
-		return out_str;
+		return scriptText.replaceAll("\\$\\{userUrn\\}", user.getUrn());
+
 	}
-	public static Object run(UserType user,String name,Map<String,Object> params) throws ArgumentException{
-		CompiledScript compScr = jsCompiled.get(name);
-		Object resp = null;
-		if(compScr != null){
-			Bindings bd = compScr.getEngine().createBindings();
-			bd.putAll(params);
-			try{
-				resp = compScr.eval(bd);
-			} catch (ScriptException e) {
-				
-				logger.error(e.getMessage());
+	public static Value run(String script,Map<String,Object> params) throws ArgumentException{
+		//CompiledScript compScr = jsCompiled.get(name);
+		Context context = getJavaScriptEngine();
+		Value resp = null;
+		if(context != null){
+			for(String key : params.keySet()){
+				logger.info("Binding: " + key);
+				context.getBindings("js").putMember(key, params.get(key));
 			}
+			resp = context.eval("js",script);
 		}
 		else{
-			throw new ArgumentException("Compiled script for '" + name + "' is null");
+			throw new ArgumentException("Script context is null");
 		}
 		return resp;
 	}
+	/*
 	public static CompiledScript compileScript(String name, String script){
 		ScriptEngine jse = getJavaScriptEngine();
+	
 		CompiledScript out_scr = null;
 	  if (jse instanceof Compilable)
 	    {
@@ -173,7 +171,16 @@ public class ScriptService {
 
 	    return out_scr;
 	}
+	*/
+	public static class ScriptResolver {
+		public String contextPath() {
+			return System.getProperty("user.dir").replace("\\", "/");
+		}
+	}
 }
+
+
+/*
 @SuppressWarnings("restriction")
 class ScriptServiceFilter implements ClassFilter {
 
@@ -189,7 +196,7 @@ class ScriptServiceFilter implements ClassFilter {
     	Pattern.compile("^org\\.cote\\.rocket\\.Factories"),
     	Pattern.compile("^org\\.cote\\.rocket\\.services.TypeSanitizer")
     };
-
+    
 	@Override
     public boolean exposeToScripts(String s) {
 	  boolean outBool = true;
@@ -202,3 +209,4 @@ class ScriptServiceFilter implements ClassFilter {
       return outBool;
     }
   }
+  */

@@ -36,8 +36,8 @@
 				<configuration>
 					<meminitial>512m</meminitial>
 					<maxmem>2048m</maxmem>
-					<source>14</source>
-					<target>14</target>
+					<source>17</source>
+					<target>17</target>
 					<fork>true</fork>
 				</configuration>
 			</plugin>
@@ -151,7 +151,7 @@
 			<plugin>
               <groupId>org.jacoco</groupId>
               <artifactId>jacoco-maven-plugin</artifactId>
-              <version>0.8.6</version>
+              <version>0.8.7</version>
 		       <executions>
 		        <execution>
 		          <id>start-agent</id>
@@ -298,5 +298,16 @@
 			<artifactId>jjwt</artifactId>
 			<version>0.9.1</version>
 		</dependency>
+		<!-- GraalVM -->
+    <dependency>
+      <groupId>org.graalvm.js</groupId>
+      <artifactId>js</artifactId>
+      <version>20.0.0</version>
+    </dependency>  
+    <dependency>
+      <groupId>org.graalvm.js</groupId>
+      <artifactId>js-scriptengine</artifactId>
+      <version>20.0.0</version>
+    </dependency>
 	</dependencies>
 </project>

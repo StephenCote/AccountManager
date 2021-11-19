@@ -104,7 +104,7 @@ public class TestFunctionFactory extends BaseDataAccessTest{
 			params.put("debug",testUser);
 			/// Expecting an error here because the namespace is blocked
 			///
-			Double resp = (Double)ScriptService.run(testUser,params,func);
+			Double resp = (Double)ScriptService.run(params,func);
 			logger.info("Ran the script: " + resp.longValue());
 		}
 		catch(RuntimeException | FactoryException | ArgumentException  e) {

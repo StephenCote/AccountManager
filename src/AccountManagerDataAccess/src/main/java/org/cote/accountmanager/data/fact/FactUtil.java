@@ -287,7 +287,7 @@ public class FactUtil {
 			params.put("match", matchFact);
 	
 			if(func.getFunctionType() == FunctionEnumType.JAVASCRIPT){
-				outResponse = (T)ScriptService.run(prt.getContextUser(), params, func);
+				outResponse = (T)ScriptService.run(params, func);
 			}
 			else{
 				logger.warn("Intentionally ignoring BeanShell.");
