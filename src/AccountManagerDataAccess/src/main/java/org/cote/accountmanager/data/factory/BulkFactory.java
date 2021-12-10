@@ -25,6 +25,7 @@ package org.cote.accountmanager.data.factory;
 
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -58,9 +59,9 @@ public class BulkFactory {
 	private static final String BULK_SESSIONID_NULL = "Session id is null";
 	private static final String INVALID_SESSIONID = "Invalid session id: %s";
 	
-	protected static Map<String,BulkSessionType> sessions = new HashMap<>();
-	protected static Map<Long,String> sessionIdMap = new HashMap<>();
-	protected static Map<Long,Long> idMap = new HashMap<>();
+	protected static Map<String,BulkSessionType> sessions = null;
+	protected static Map<Long,String> sessionIdMap = null;
+	protected static Map<Long,Long> idMap = null;
 	/// Dirty write should be moved to the session object
 	///
 	protected static Set<FactoryEnumType> dirtyWrite = new HashSet<>();
@@ -82,6 +83,9 @@ public class BulkFactory {
 	private Random rand = null;
 	public BulkFactory(){
 		rand = new Random();
+		sessions = Collections.synchronizedMap(new HashMap<>());
+		sessionIdMap = Collections.synchronizedMap(new HashMap<>());
+		idMap = Collections.synchronizedMap(new HashMap<>());
 
 	}
 
@@ -90,6 +94,9 @@ public class BulkFactory {
 	}
 	public void setDirty(FactoryEnumType factoryType){
 		dirtyWrite.add(factoryType);
+	}
+	public Map<Long, String> getSessionIdMap(){
+		return sessionIdMap;
 	}
 	public String getSessionForBulkId(long id){
 		String outSess = null;
@@ -107,21 +114,24 @@ public class BulkFactory {
 			logger.error(String.format(INVALID_SESSIONID, sessionId));
 			throw new ArgumentException(String.format(INVALID_SESSIONID, sessionId));
 		}
-		sessions.remove(sessionId);
-		updateCache.remove(sessionId);
-		updateSet.remove(sessionId);
-		deleteSet.remove(sessionId);
-		deleteCache.remove(sessionId);
-
-
-		Iterator<Long> keys = sessionIdMap.keySet().iterator();
-		while(keys.hasNext()){
-			long val = keys.next();
-			if(sessionIdMap.get(val).equals(sessionId)){
-				keys.remove();
+		synchronized(sessionIdMap){
+			sessions.remove(sessionId);
+			updateCache.remove(sessionId);
+			updateSet.remove(sessionId);
+			deleteSet.remove(sessionId);
+			deleteCache.remove(sessionId);
+	
+	
+			Iterator<Long> keys = sessionIdMap.keySet().iterator();
+			while(keys.hasNext()){
+				long val = keys.next();
+				if(sessionIdMap.get(val).equals(sessionId)){
+					keys.remove();
+					if(idMap.containsKey(val)) idMap.remove(val);
+				}
+				
 			}
-			if(idMap.containsKey(val)) idMap.remove(val);
-			}
+		}
 
 	}
 	public void write(String sessionId) throws ArgumentException, FactoryException, DataAccessException{

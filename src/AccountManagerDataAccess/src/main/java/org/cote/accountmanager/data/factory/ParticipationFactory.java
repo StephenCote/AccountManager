@@ -240,10 +240,11 @@ public abstract class ParticipationFactory extends NameIdFactory implements IPar
 			if(this.factoryType == FactoryEnumType.UNKNOWN) throw new FactoryException("Invalid Factory Type for Bulk Identifiers");
 			/// One of the numbers is from a bulk session - find that bulk session
 			///
-			String sessionId = BulkFactories.getBulkFactory().getSessionForBulkId(participant.getParticipantId() < 0L ? participant.getParticipantId() : (participant.getParticipationId() < 0L ? participant.getParticipationId() : participant.getAffectId()));
+			long objId = participant.getParticipantId() < 0L ? participant.getParticipantId() : (participant.getParticipationId() < 0L ? participant.getParticipationId() : participant.getAffectId());
+			String sessionId = BulkFactories.getBulkFactory().getSessionForBulkId(objId);
 			if(sessionId == null){
-				logger.error("Invalid bulk session id");
-				throw new FactoryException("Invalid bulk session id");
+				logger.error("Invalid bulk session id for : " + objId);
+				throw new FactoryException("Invalid bulk session id: " + objId);
 			}
 			try {
 				BulkFactories.getBulkFactory().createBulkEntry(sessionId, factoryType, participant);

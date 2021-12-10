@@ -36,6 +36,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -125,15 +126,15 @@ public class EffectiveAuthorizationService {
 	/// This big ugly construct is used to hash the previous cache hashes against the object types for quick look-up and to avoid code duplication
 	/// {ActorType}->{AuthorizableFactoryType}->{ActorId}->{ObjectId}->{PermissionId}->{Value}
 	///
-	private static Map<NameEnumType,Map<NameEnumType,Map<Long,Map<Long,Map<Long,Boolean>>>>> actorMap = new HashMap<>();
-	private static Map<NameEnumType,Map<NameEnumType,AuthorizationMapType>> objectMap = new HashMap<>();
+	private static Map<NameEnumType,Map<NameEnumType,Map<Long,Map<Long,Map<Long,Boolean>>>>> actorMap = Collections.synchronizedMap(new HashMap<>());
+	private static Map<NameEnumType,Map<NameEnumType,AuthorizationMapType>> objectMap = Collections.synchronizedMap(new HashMap<>());
 	
-	private static Map<NameEnumType,RebuildMap> rebuildMap = new HashMap<>();
+	private static Map<NameEnumType,RebuildMap> rebuildMap = Collections.synchronizedMap(new HashMap<>());
 
 	
 	/// rebuildUsers and rebuildAccounts are currently not handled with rebuildMap as that map is predicated on registering an authorization provider for a factory, and users and accounts do not have one.
-	private static Map<Long,NameIdType> rebuildUsers = new HashMap<>();
-	private static Map<Long,NameIdType> rebuildAccounts = new HashMap<>();
+	private static Map<Long,NameIdType> rebuildUsers = Collections.synchronizedMap(new HashMap<>());
+	private static Map<Long,NameIdType> rebuildAccounts = Collections.synchronizedMap(new HashMap<>());
 
 	public static final int maximum_insert_size = 2500;
 	
@@ -162,22 +163,22 @@ public class EffectiveAuthorizationService {
 	}
 	
 	static{
-		actorMap.put(NameEnumType.PERSON, new HashMap<>());
-		actorMap.put(NameEnumType.USER, new HashMap<>());
-		actorMap.put(NameEnumType.ACCOUNT, new HashMap<>());
-		actorMap.put(NameEnumType.ROLE, new HashMap<>());
-		actorMap.get(NameEnumType.PERSON).put(NameEnumType.GROUP, new HashMap<>());
-		actorMap.get(NameEnumType.PERSON).put(NameEnumType.DATA, new HashMap<>());
-		actorMap.get(NameEnumType.PERSON).put(NameEnumType.ROLE, new HashMap<>());
-		actorMap.get(NameEnumType.ACCOUNT).put(NameEnumType.GROUP, new HashMap<>());
-		actorMap.get(NameEnumType.ACCOUNT).put(NameEnumType.DATA, new HashMap<>());
-		actorMap.get(NameEnumType.ACCOUNT).put(NameEnumType.ROLE, new HashMap<>());
-		actorMap.get(NameEnumType.USER).put(NameEnumType.GROUP, new HashMap<>());
-		actorMap.get(NameEnumType.USER).put(NameEnumType.DATA, new HashMap<>());
-		actorMap.get(NameEnumType.USER).put(NameEnumType.ROLE, new HashMap<>());
-		actorMap.get(NameEnumType.ROLE).put(NameEnumType.GROUP, new HashMap<>());
-		actorMap.get(NameEnumType.ROLE).put(NameEnumType.DATA, new HashMap<>());
-		actorMap.get(NameEnumType.ROLE).put(NameEnumType.ROLE, new HashMap<>());
+		actorMap.put(NameEnumType.PERSON, Collections.synchronizedMap(new HashMap<>()));
+		actorMap.put(NameEnumType.USER, Collections.synchronizedMap(new HashMap<>()));
+		actorMap.put(NameEnumType.ACCOUNT, Collections.synchronizedMap(new HashMap<>()));
+		actorMap.put(NameEnumType.ROLE, Collections.synchronizedMap(new HashMap<>()));
+		actorMap.get(NameEnumType.PERSON).put(NameEnumType.GROUP, Collections.synchronizedMap(new HashMap<>()));
+		actorMap.get(NameEnumType.PERSON).put(NameEnumType.DATA, Collections.synchronizedMap(new HashMap<>()));
+		actorMap.get(NameEnumType.PERSON).put(NameEnumType.ROLE, Collections.synchronizedMap(new HashMap<>()));
+		actorMap.get(NameEnumType.ACCOUNT).put(NameEnumType.GROUP, Collections.synchronizedMap(new HashMap<>()));
+		actorMap.get(NameEnumType.ACCOUNT).put(NameEnumType.DATA, Collections.synchronizedMap(new HashMap<>()));
+		actorMap.get(NameEnumType.ACCOUNT).put(NameEnumType.ROLE, Collections.synchronizedMap(new HashMap<>()));
+		actorMap.get(NameEnumType.USER).put(NameEnumType.GROUP, Collections.synchronizedMap(new HashMap<>()));
+		actorMap.get(NameEnumType.USER).put(NameEnumType.DATA, Collections.synchronizedMap(new HashMap<>()));
+		actorMap.get(NameEnumType.USER).put(NameEnumType.ROLE, Collections.synchronizedMap(new HashMap<>()));
+		actorMap.get(NameEnumType.ROLE).put(NameEnumType.GROUP, Collections.synchronizedMap(new HashMap<>()));
+		actorMap.get(NameEnumType.ROLE).put(NameEnumType.DATA, Collections.synchronizedMap(new HashMap<>()));
+		actorMap.get(NameEnumType.ROLE).put(NameEnumType.ROLE, Collections.synchronizedMap(new HashMap<>()));
 		
 	}
 	
@@ -1100,9 +1101,10 @@ public class EffectiveAuthorizationService {
 				role =roles.get(i);
 				/// negative id indicates possible bulk entry
 				/// 
-				if(role.getId() < 0){
-					logger.error("Role BulkEntry with id " + role.getId() + " detected.  The Bulk Session must be written before rebuilding the cache.");
-					throw new ArgumentException("Role BulkEntry with id " + role.getId() + " detected.  The Bulk Session must be written before rebuilding the cache.");
+				if(role.getId() < 0L){
+					logger.warn("Role BulkEntry with id " + role.getId() + " detected.  The Bulk Session must be written before rebuilding the cache.");
+					continue;
+					/// throw new ArgumentException("Role BulkEntry with id " + role.getId() + " detected.  The Bulk Session must be written before rebuilding the cache.");
 				}
 				if(role.getRoleType() == RoleEnumType.USER){
 					List<UserType> rusers = ((RoleParticipationFactory)Factories.getFactory(FactoryEnumType.ROLEPARTICIPATION)).getUsersInRole((UserRoleType)role);
@@ -1146,8 +1148,9 @@ public class EffectiveAuthorizationService {
 				/// negative id indicates possible bulk entry
 				/// 
 				if(group.getId() < 0L){
-					logger.error("Group BulkEntry with id " + group.getId() + " detected.  The Bulk Session must be written before rebuilding the cache.");
-					throw new ArgumentException("Group BulkEntry with id " + group.getId() + " detected.  The Bulk Session must be written before rebuilding the cache.");
+					logger.warn("Group BulkEntry with id " + group.getId() + " detected.  The Bulk Session must be written before rebuilding the cache.");
+					///throw new ArgumentException("Group BulkEntry with id " + group.getId() + " detected.  The Bulk Session must be written before rebuilding the cache.");
+					continue;
 				}
 				if(group.getGroupType() == GroupEnumType.USER){
 					List<UserType> gusers = ((GroupParticipationFactory)Factories.getFactory(FactoryEnumType.GROUPPARTICIPATION)).getUsersInGroup((UserGroupType)group);
@@ -1270,8 +1273,8 @@ public class EffectiveAuthorizationService {
 
 			/// negative id indicates possible bulk entry
 			/// 
-			if(object.getId() < 0){
-				logger.error("Skipping possible BulkEntry with id " + object.getId());
+			if(object.getId() < 0L){
+				logger.warn("Skipping possible BulkEntry with id " + object.getId());
 				continue;
 			}
 
@@ -1395,7 +1398,7 @@ public class EffectiveAuthorizationService {
 }
 class RebuildMap{
 	private NameEnumType objectType = NameEnumType.UNKNOWN;
-	private Map<Long,NameIdType> map = new HashMap<>();
+	private Map<Long,NameIdType> map = Collections.synchronizedMap(new HashMap<>());
 	public RebuildMap(NameEnumType oType){
 		objectType = oType;
 	}
@@ -1416,7 +1419,7 @@ class AuthorizationMapType{
 	/// Using current format to be backwards compat : Actor<->Object<->Permission<->Granted
 	/// XXXXXX Object<->Actor<->Permission<->Granted
 	///
-	private Map<Long,Map<Long,Map<Long,Boolean>>> map = new HashMap<>();
+	private Map<Long,Map<Long,Map<Long,Boolean>>> map = Collections.synchronizedMap(new HashMap<>());
 	public AuthorizationMapType(NameEnumType objectType, NameEnumType actorType){
 		actor = actorType;
 		object = objectType;
