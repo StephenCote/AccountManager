@@ -52,16 +52,17 @@
 				</dependencies>
 
 				<configuration>
-					<skipTests>true</skipTests>
+					<skipTests>false</skipTests>
 					<argLine>-Xmx4096m</argLine>
 					<includes>
 						<include>**/Test*.java</include>
 					</includes>
 					<excludes>
 						<!-- 
+						<exclude>**/TestBulkOperation.java</exclude>
 						
-						<exclude>**/TestCommunityAccessToken.java</exclude>
 						-->
+						<exclude>**/TestCommunityAccessToken.java</exclude>
 						<exclude>**/TestIdentityService.java</exclude>
 						<exclude>**/TestApi.java</exclude>
 						<exclude>**/TestCommunities.java</exclude>
@@ -160,6 +161,12 @@
 			<artifactId>junit</artifactId>
 			<version>4.13</version>
 			<scope>test</scope>
+		</dependency>
+		<dependency>
+		  <groupId>org.testng</groupId>
+		  <artifactId>testng</artifactId>
+		  <version>7.4.0</version>
+		  <scope>test</scope>
 		</dependency>
 		<dependency>
 			<groupId>com.sun.xml.bind</groupId>
