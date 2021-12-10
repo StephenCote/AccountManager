@@ -250,7 +250,7 @@ public class BaseService {
 		if(enableExtendedAttributes){
 			outBool = Factories.getAttributeFactory().deleteAttributes((NameIdType)inObj);
 			if(outBool == false){
-				logger.warn("No extended attributes deleted for " + ((NameIdType)inObj).getName());
+				logger.debug("No extended attributes deleted for " + ((NameIdType)inObj).getName());
 			}
 		}
 		
@@ -1337,7 +1337,7 @@ public class BaseService {
 		try {
 			BaseGroupType dir = ((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).findGroup(user, groupType, path, user.getOrganizationId());
 			if(dir == null){
-				AuditService.denyResult(audit, "Invalid path: " + groupType.toString() + " " + path);
+				AuditService.denyResult(audit, "Invalid type: " + groupType.toString() + " " + path);
 				return bean;
 			}
 			if(!AuthorizationService.canView(user, dir)){
