@@ -931,7 +931,7 @@ public abstract class NameIdFactory extends FactoryBase implements INameIdFactor
 			+ "\ntypeMap\t" + typeMap.size() + "\n"
 		;
 	}
-	public void clearCache(){
+	public synchronized void clearCache(){
 		typeNameIdMap.clear();
 		typeNameMap.clear();
 		typeIdMap.clear();
@@ -940,7 +940,7 @@ public abstract class NameIdFactory extends FactoryBase implements INameIdFactor
 		cacheExpires = System.currentTimeMillis() + (cacheExpiry * 60000);
 	}
 	
-	protected void checkCacheExpires(){
+	protected synchronized void checkCacheExpires(){
 		if(cacheExpires <= System.currentTimeMillis()){
 			logger.debug("Expire cache");
 			clearCache();
@@ -1028,11 +1028,11 @@ public abstract class NameIdFactory extends FactoryBase implements INameIdFactor
 
 	@SuppressWarnings("unchecked")
 	public <T> T readCache(long id){
-
 		checkCacheExpires();
 		if(typeIdMap.containsKey(id)){
 			return (T)typeMap.get(typeIdMap.get(id));
 		}
+	
 		return null;
 	}
 	public <T> String getUrnCacheKey(T obj){
@@ -1045,7 +1045,7 @@ public abstract class NameIdFactory extends FactoryBase implements INameIdFactor
 	public boolean updateToCache(NameIdType obj) throws ArgumentException{
 		return updateToCache(obj, getCacheKeyName(obj));
 	}
-	public boolean updateToCache(NameIdType obj,String keyName) throws ArgumentException{
+	public synchronized boolean updateToCache(NameIdType obj,String keyName) throws ArgumentException{
 		if(this.haveCacheId(obj.getId()) || (keyName != null && typeNameMap.containsKey(keyName))) removeFromCache(obj,keyName);
 		return addToCache(obj, keyName);
 	}
@@ -1054,7 +1054,8 @@ public abstract class NameIdFactory extends FactoryBase implements INameIdFactor
 
 		return addToCache(map,getCacheKeyName(map));
 	}
-	public boolean addToCache(NameIdType map, String keyName) throws ArgumentException{
+	public synchronized boolean addToCache(NameIdType map, String keyName) throws ArgumentException{
+
 		if(keyName == null) throw new ArgumentException("Key name is null");
 		if(map == null){
 			logger.error("Map with key '" + keyName + "' is null");
@@ -1069,7 +1070,6 @@ public abstract class NameIdFactory extends FactoryBase implements INameIdFactor
 		typeIdMap.put(map.getId(), length);
 		if(hasObjectId) typeObjectIdMap.put(map.getObjectId(), length);
 		typeNameIdMap.put(map.getId(), map.getName());
-
 		return true;
 	}
 	
