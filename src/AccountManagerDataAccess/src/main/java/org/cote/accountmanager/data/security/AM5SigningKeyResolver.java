@@ -49,7 +49,7 @@ public class AM5SigningKeyResolver implements SigningKeyResolver{
 		if(fetStr != null && fetStr.length() > 0) fet = FactoryEnumType.fromValue(fetStr);
 		Key key = null;
 		if(urn != null){
-			logger.info("Resolving: '" + urn + "' as " + fet);
+			// logger.info("Resolving: '" + urn + "' as " + fet);
 			NameIdType persona = null;
 			try{
 				INameIdFactory iFact = Factories.getFactory(fet);
@@ -63,6 +63,12 @@ public class AM5SigningKeyResolver implements SigningKeyResolver{
 				if(bean != null && bean.getSecretKey() != null){
 					key = bean.getSecretKey();
 				}
+				else {
+					logger.error("Invalid security key for " + urn);
+				}
+			}
+			else {
+				logger.error("Failed to retrieve persona by urn " + urn);
 			}
 		}
 		return key;

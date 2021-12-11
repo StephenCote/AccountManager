@@ -82,7 +82,13 @@ public class SessionSecurity {
 		if(session.getSessionStatus().equals(SessionStatusEnumType.AUTHENTICATED)){
 			user = ((UserFactory)Factories.getNameIdFactory(FactoryEnumType.USER)).getUserBySession(session);
 		}
-		if(user == null) return null;
+		else {
+			logger.info("Unauthenticated user with session id " + session_id);
+		}
+		if(user == null) {
+			logger.info("No user associated with session id " + session_id);
+			return null;
+		}
 		user.setSession(session);
 		user.setSessionStatus(session.getSessionStatus());
 		return user;

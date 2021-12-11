@@ -212,6 +212,7 @@ public class MimeUtil {
 		types.put("jpg","image/jpeg");
 		types.put("jps","image/x-jps");
 		types.put("js","application/x-javascript");
+		types.put("json","application/json");
 		types.put("jut","image/jutvision");
 		types.put("kar","music/x-karaoke");
 		types.put("ksh","application/x-ksh");

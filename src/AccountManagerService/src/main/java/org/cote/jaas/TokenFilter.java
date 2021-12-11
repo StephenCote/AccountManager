@@ -55,9 +55,7 @@ public class TokenFilter implements Filter{
 	    int idx = -1;
 	    if (stringToken != null && (idx = stringToken.indexOf("Bearer")) > -1) {
 	    	String token = stringToken.substring(idx + 7, stringToken.length()).trim();
-	    	logger.debug("Filtering: '" + token + "'");
 	    	String urn = Jwts.parser().setSigningKeyResolver(new AM5SigningKeyResolver()).parseClaimsJws(token).getBody().getId();
-	    	logger.debug("Processing: " + urn);
 	    	UserType user = null;
 	    	try{
 		    	INameIdFactory iFact = Factories.getFactory(FactoryEnumType.USER);
@@ -68,22 +66,20 @@ public class TokenFilter implements Filter{
 		    		didChain = true;
 		    		chain.doFilter(new AM5RequestWrapper(user, (HttpServletRequest)request), response);
 		    	}
+		    	else {
+		    		logger.warn("Null user for urn " + urn);
+		    	}
 	    	}
 	    	catch(FactoryException | ArgumentException f){
 	    		logger.error(f);
 	    	}	    	
 	    }
+	    else {
+	    	/// logger.warn("No bearer");
+	    }
 	    if(didChain == false){
 	    	chain.doFilter(request, response);
 	    }
-	    //stringToken = stringToken.substring(authorizationSchema.length()).trim();
-	    /*
-	    <YourLibraryJWT> jwtToken = <YourLibraryJWTParser>.parse(stringToken);
-	    if (!<YourLibraryJWTVerifier.verify(jwtToken)){
-	      throw new Exception("JWT corrupt");
-	    }
-	    */
-	    //chain.doFilter(request,response);
 	  }
 
 	@Override

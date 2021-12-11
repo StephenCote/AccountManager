@@ -59,10 +59,11 @@
 					</includes>
 					<excludes>
 						<!-- 
-						<exclude>**/TestBulkOperation.java</exclude>
+						<exclude>**/TestCommunityAccessToken.java</exclude>
 						
 						-->
-						<exclude>**/TestCommunityAccessToken.java</exclude>
+						<exclude>**/TestBulkOperation.java</exclude>
+						
 						<exclude>**/TestIdentityService.java</exclude>
 						<exclude>**/TestApi.java</exclude>
 						<exclude>**/TestCommunities.java</exclude>

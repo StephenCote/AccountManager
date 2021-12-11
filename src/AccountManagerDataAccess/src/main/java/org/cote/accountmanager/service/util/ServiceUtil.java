@@ -24,6 +24,7 @@
 package org.cote.accountmanager.service.util;
 
 import java.security.Principal;
+import java.util.Enumeration;
 import java.util.UUID;
 import java.util.regex.Pattern;
 
@@ -169,7 +170,7 @@ public class ServiceUtil {
 		String sessionId = getSessionId(request);
 		return getUserFromSession(request, sessionId);
 	}
-	public static UserType getUserFromSession(HttpServletRequest request,String sessionId){
+	public synchronized static UserType getUserFromSession(HttpServletRequest request,String sessionId){
 
 		UserType user = null;
 		OrganizationType org = null;
