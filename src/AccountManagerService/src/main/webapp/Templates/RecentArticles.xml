@@ -19,25 +19,34 @@
 			oS.recordCount = 6;
 			var bPictBook = (window.pictureBookMode && window.pictureBookMode.enabled ? 1 : 0);
 	
-			AM6Client.find("GROUP","DATA","~/Articles",function(s,v){
-				var oG = (v && typeof v.json != "undefined" ? v.json : v);
-				if(!oG || oG == null) return;
-
-				AM6Client.findBy("DATA", oG.objectId, oS,function(s, v){
-						if(v && v.json && v.json.length){
-							if(!v.json[0].dataBytesStore || v.json[0].dataBytesStore.length == 0){
-								Hemi.xml.setInnerXHTML(ctl.getElementByRID("content"),"Error translating blog content");
-							}
-							else{
-								for(var j = 0; j < v.json.length; j++){
-									ctl.renderArticle(v.json[j], bPictBook);
+			uwm.getUser().then((u)=>{
+				ctl.getObjects().user = u;
+				AM6Client.find("GROUP","DATA","~/Articles",function(s,v){
+					var oG = (v && typeof v.json != "undefined" ? v.json : v);
+					if(!oG || oG == null) return;
+	
+					AM6Client.findBy("DATA", oG.objectId, oS,function(s, v){
+							if(v && v.json && v.json.length){
+								if(!v.json[0].dataBytesStore || v.json[0].dataBytesStore.length == 0){
+									Hemi.xml.setInnerXHTML(ctl.getElementByRID("content"),"Error translating blog content");
+								}
+								else{
+									var oH = document.createElement("h1");
+									var oL = document.createElement("a");
+									oL.appendChild(document.createTextNode("🗞 Articles"));
+									oL.setAttribute("href","/AccountManagerService/article/" + AM6Client.dotPath(u.organizationPath) + "/" + u.name);
+									oH.appendChild(oL);
+									ctl.getElementByRID("content").appendChild(oH);
+									for(var j = 0; j < v.json.length; j++){
+										ctl.renderArticle(v.json[j], bPictBook);
+									}
 								}
 							}
-						}
-						else{
-							Hemi.xml.setInnerXHTML(ctl.getElementByRID("content"),"Articles Not Available");
-						}
-					});
+							else{
+								Hemi.xml.setInnerXHTML(ctl.getElementByRID("content"),"Articles Not Available");
+							}
+						});
+				});
 			});
 		});
 	},
@@ -111,7 +120,7 @@
 		var aOD = oCtr.getElementsByTagName("div");
 		
 		bbConverter.copyInto(uwm.base64Decode(o.dataBytesStore),(bMode ? oACont : oCont),(j > 0));
-
+		
 		if(bMode){
 			var aD = oACont.getElementsByTagName("div");
 			if(aD.length > 0){
@@ -185,6 +194,15 @@
 				uwm.openPopInImage(this.href);
 				return false;
 			}
+		}
+		
+		aL = oCont.getElementsByTagName("h1");
+		if(aL.length){
+			var oL = document.createElement("a");
+			oL.insertBefore(document.createTextNode("📰 "), oL.firstChild);
+			
+			oL.setAttribute("href","/AccountManagerService/article/" + AM6Client.dotPath(o.organizationPath) + "/" + this.getObjects().user.name + "/" + o.name);
+			aL[0].appendChild(oL);
 		}
 	}
 	
