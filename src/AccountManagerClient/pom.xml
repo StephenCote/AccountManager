@@ -159,7 +159,7 @@
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
-			<version>4.13</version>
+			<version>4.13.2</version>
 			<scope>test</scope>
 		</dependency>
 
@@ -278,7 +278,7 @@
 				</dependencies>
 
 				<configuration>
-					<skipTests>false</skipTests>
+					<skipTests>true</skipTests>
 					<argLine>-Xmx4096m</argLine>
 					<includes>
 						<include>**/Test*.java</include>
