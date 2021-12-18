@@ -33,7 +33,7 @@
 								else{
 									var oH = document.createElement("h1");
 									var oL = document.createElement("a");
-									oL.appendChild(document.createTextNode("🗞 Articles"));
+									oL.appendChild(document.createTextNode("Articles"));
 									oL.setAttribute("href","/AccountManagerService/article/" + AM6Client.dotPath(u.organizationPath) + "/" + u.name);
 									oH.appendChild(oL);
 									ctl.getElementByRID("content").appendChild(oH);
@@ -199,7 +199,7 @@
 		aL = oCont.getElementsByTagName("h1");
 		if(aL.length){
 			var oL = document.createElement("a");
-			oL.insertBefore(document.createTextNode("📰 "), oL.firstChild);
+			oL.insertBefore(document.createTextNode(". "), oL.firstChild);
 			
 			oL.setAttribute("href","/AccountManagerService/article/" + AM6Client.dotPath(o.organizationPath) + "/" + this.getObjects().user.name + "/" + o.name);
 			aL[0].appendChild(oL);
