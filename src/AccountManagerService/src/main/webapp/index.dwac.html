@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+<title>Account Manager Service</title>
+		<link rel="shortcut icon" href="/AccountManagerService/favicon.ico">
+   		<link rel="stylesheet" href="/AccountManagerService/Style/uwm.css" type="text/css" title = "uwm" />
+   		<link rel="stylesheet" href="/AccountManagerService/Style/rocket.css" type="text/css" />
+		<link rel="stylesheet" href="/AccountManagerService/Style/flyout.css" type="text/css" />
+<script type = "text/javascript" src = "Scripts/bootstrap.jsp"></script>
+<script type = "text/javascript">
+function doLogout(){
+	AM6Client.logout(function(){ });
+}
+
+function switchForm(sForm){
+	var oS = Hemi.app.space.service.getPrimarySpace();
+	var oA = oS.getSpaceObjectByName("mainForm").object.getApplicationComponent();
+	oA.loadTemplate(g_application_path + "/am5.xml", sForm + ".xml");
+}
+</script>
+
+</head>
+<body>
+<nav class="main-nav" id="main-nav">
+	<a href="#" onclick = "switchForm('Dashboard')">Dashboard</a>
+	<a href="#" onclick = "switchForm('AlertMain')">Alert</a>
+	<a href="#" onclick = "switchForm('AssetMain')">Assets</a>
+	<a href="#" onclick = "switchForm('BusinessMain')">Business</a>
+	<a href="#" onclick = "switchForm('DevelopmentMain')">Development</a>
+	<a href="#" onclick = "switchForm('EventMain')">Events</a>
+	<a href="#" onclick = "switchForm('FormMain')">Form</a>
+	<a href="#" onclick = "switchForm('IdentityMain')">Identity</a>
+	<a href="#" onclick = "switchForm('MethodMain')">Process</a>
+	<a href="#" onclick = "switchForm('ProjectMain')">Project</a>
+	<a href="#" onclick = "switchForm('PolicyMain')">Policy</a>
+	<a href="#" onclick = "switchForm('ResourceMain')">Resource</a>
+</nav>
+<div class = "page-wrap">
+	<header class = "main-header">
+	<a href="#main-nav" class="open-menu">
+      ☰
+    </a>
+    <a href="#" class="close-menu">
+      ☰
+    </a>
+    <h1>Account Manager Service</h1>
+    <div template = "/AccountManagerService/Forms/UnauthIn.xml"></div>
+  </header>
+    <div class="content">
+		<!--    
+    	<div rid = "mainForm" style = "min-height:500px;" template = "/AccountManagerService/Templates/Dashboard.xml"></div>
+    	-->
+    	<div rid = "mainForm" style = "min-height:500px;"  is-dwac = "1" DWacControlUri = "/AccountManagerService/am5.xml" DWacTemplateId = "Dashboard.xml"></div>
+    	
+ 	 </div>
+</div>
+</body>
+</html>
