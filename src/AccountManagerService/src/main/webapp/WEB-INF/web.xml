@@ -138,6 +138,13 @@
     <param-name>tokenizer.vault.urn</param-name>
     <param-value>am:data:development:data:home.tokenuser..vault:dg9rzw5z</param-value>
   </context-param>
+
+<context-param>
+    <description>WebAuthN Landing Template</description>
+    <param-name>template.webauthn.landing</param-name>
+    <param-value>WEB-INF/resource/basicTemplate.xhtml</param-value>
+  </context-param>
+
   
 <context-param>
     <description>Article Template</description>
@@ -252,7 +259,38 @@
    <url-pattern>/rest/*</url-pattern>
    <url-pattern>/scim/*</url-pattern>
 </filter-mapping>
-
+<filter>
+  <filter-name>CorsFilter</filter-name>
+  <filter-class>org.apache.catalina.filters.CorsFilter</filter-class>
+  <init-param>
+  <param-name>cors.support.credentials</param-name>
+  <param-value>true</param-value>
+</init-param>
+  <init-param>
+  <param-name>cors.allowed.methods</param-name>
+  <param-value>GET,POST,HEAD,OPTIONS,PUT,DELETE</param-value>
+</init-param>
+<init-param>
+    <param-name>cors.allowed.origins</param-name>
+    <param-value>http://localhost:8899,http://localhost;http://localhost:8080,http://localhost:8888</param-value>
+</init-param>
+<init-param>
+    <param-name>cors.allowed.headers</param-name>
+    <param-value>Content-Type,X-Requested-With,Accept,Accept-Encoding,Accept-Language,Origin,Access-Control-Request-Method,Access-Control-Request-Headers,Connection,Host,authorization</param-value>
+</init-param>
+<init-param>
+    <param-name>cors.exposed.headers</param-name>
+    <param-value>Access-Control-Allow-Origin,Access-Control-Allow-Credentials</param-value>
+</init-param>
+<init-param>
+    <param-name>cors.preflight.maxage</param-name>
+    <param-value>10</param-value>
+</init-param>
+</filter>
+<filter-mapping>
+  <filter-name>CorsFilter</filter-name>
+  <url-pattern>/*</url-pattern>
+</filter-mapping>
     <servlet>
         <servlet-name>JerseyService</servlet-name>
         <servlet-class>org.glassfish.jersey.servlet.ServletContainer</servlet-class>
