@@ -15,7 +15,7 @@
 		template : {
 			type  : "Templates",
 			source : "/AccountManagerService/Templates/",
-			files : ["AlertActivities.xml", "AlertMain.xml", "AssetMain.xml", "Blank.xml", "BusinessMain.xml", "Console.xml", "Dashboard.xml", "Designer.xml", "DevelopmentMain.xml", "EventMain.xml", "FormMain.xml", "IdentityMain.xml", "MethodMain.xml", "PolicyMain.xml", "ProjectDesigner.xml", "ProjectMain.xml", "RecentArticles.xml", "ResourceMain.xml", "SelectCommunity.xml", "TestField1.xml", "TestField2.xml", "TestTemplate.xml"],
+			files : ["AlertActivities.xml", "AlertMain.xml", "AssetMain.xml", "Blank.xml", "BusinessMain.xml", "Console.xml", "Dashboard.xml", "Designer.xml", "DevelopmentMain.xml", "EventMain.xml", "FormMain.xml", "IdentityMain.xml", "MethodMain.xml", "PolicyMain.xml", "ProjectDesigner.xml", "ProjectMain.xml", "RecentArticles.xml", "ResourceMain.xml", "SelectCommunity.xml", "TestTemplate.xml"],
 		}
 	};
 	
@@ -103,7 +103,7 @@
 			.replaceAll(/\/AccountManagerService\/Templates/gi,getDWACPath("Templates"))
 		;
 		if(sType == 'Templates' && sName){
-			sV = sV.replace(/<Template>/,'<Template id="' + sName + '">');
+			sV = sV.replace(/<Template/,'<Template id="' + sName + '"');
 		}
 		return sV;
 	}
