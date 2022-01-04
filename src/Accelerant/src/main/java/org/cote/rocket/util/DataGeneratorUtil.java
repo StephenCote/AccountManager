@@ -77,6 +77,7 @@ import org.cote.accountmanager.objects.types.AccountStatusEnumType;
 import org.cote.accountmanager.objects.types.ActionEnumType;
 import org.cote.accountmanager.objects.types.AuditEnumType;
 import org.cote.accountmanager.objects.types.ComparatorEnumType;
+import org.cote.accountmanager.objects.types.ContactEnumType;
 import org.cote.accountmanager.objects.types.FactoryEnumType;
 import org.cote.accountmanager.objects.types.GroupEnumType;
 import org.cote.accountmanager.objects.types.LocationEnumType;
@@ -573,9 +574,20 @@ public class DataGeneratorUtil {
 		 email.setContactValue((person.getFirstName() + (person.getMiddleName() != null ? "." + person.getMiddleName() : "") + "." + person.getLastName() + "@" + tradeName + ".com").toLowerCase());
 		 email.setName(person.getName() + " Work Email");
 		 email.setLocationType(LocationEnumType.WORK);
+		 email.setContactType(ContactEnumType.EMAIL);;
 		 BulkFactories.getBulkFactory().createBulkEntry(sessionId, FactoryEnumType.CONTACT, email);
 		 cit.getContacts().add(email);
 		 person.getAttributes().add(Factories.getAttributeFactory().newAttribute(person, "email", email.getContactValue()));
+		 
+		 
+		 ContactType phone = ((ContactFactory)Factories.getFactory(FactoryEnumType.CONTACT)).newContact(user, contactsDir.getId());
+		 phone.setContactValue("000-000-0000");
+		 phone.setName(person.getName() + " Work Phone");
+		 phone.setLocationType(LocationEnumType.WORK);
+		 phone.setContactType(ContactEnumType.PHONE);
+		 BulkFactories.getBulkFactory().createBulkEntry(sessionId, FactoryEnumType.CONTACT, phone);
+		 cit.getContacts().add(phone);
+		 person.getAttributes().add(Factories.getAttributeFactory().newAttribute(person, "phone", phone.getContactValue()));
 		 
 		 AddressType home = DataGeneratorData.randomAddress(this, location, addressesDir);
 		 home.setName(person.getName() + " Home Address");
