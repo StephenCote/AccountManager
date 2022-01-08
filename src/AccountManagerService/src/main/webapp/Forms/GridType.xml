@@ -227,18 +227,31 @@
 			var oM = AM6Client.newFieldMatch("TEXT","NAME","LIKE","*" + sFilter + "*");
 			var oS = AM6Client.newSortQuery("NAME","ASCENDING");
 			var oReq = AM6Client.newSearchRequest(this.getProperties().typeName.toUpperCase(),0,0,0,10,false,oS,[oM]);
-			var ctl = this;
-			AM6Client.search(oReq,function(s,v){
-				if(v && v.json){
-					///alert(v.json);
-					var oL = ctl.getList();
-					oL.clearItems();
-					ctl.setTotalCount(v.json.length);
-					for(var i = 0; i < v.json.length; i++){
-						var sn = (ctl.decorateListItemName ? ctl.decorateListItemName(v.json[i]) : v.json[i].name);
-						oL.addItem(sn, v.json[i]);
-					}
+			var ctl = this, _s = this.getProperties(), _o = this.getObjects();
+			((_s.noGroup || _o.groupScope) ? Promise.resolve(_o.groupScope)
+				: new Promise((res,rej)=>{
+					AM6Client.find("GROUP","DATA",_s.contextPath,function(s,v){
+						res(v.json);
+					})
+				})
+			).then((g)=>{
+				if(g && g != null){
+					console.log("Scope to " + g.path);
+					oReq.groupScope = g.objectId;
+					_o.groupScope = g;
 				}
+				AM6Client.search(oReq,function(s,v){
+					if(v && v.json){
+						///alert(v.json);
+						var oL = ctl.getList();
+						oL.clearItems();
+						ctl.setTotalCount(v.json.length);
+						for(var i = 0; i < v.json.length; i++){
+							var sn = (ctl.decorateListItemName ? ctl.decorateListItemName(v.json[i]) : v.json[i].name);
+							oL.addItem(sn, v.json[i]);
+						}
+					}
+				});
 			});
 		},
 		configList : function(){
@@ -548,6 +561,9 @@
 			if(!_s.noGroup){
 				sPath = this.getPath();
 			}
+			_s.contextPath = sPath;
+			delete _o.groupScope;
+			
 			var oL = this.getList();
 			oL.clearItems();
 			this.setStatus("");
@@ -677,7 +693,7 @@
 				var oI = document.createElement("img");
 				oI.setAttribute("class","alignright");
 				var sIco = "/AccountManagerService/Media/Icons/user_48x48.png";
-				var sPid = AM6Client.getAttributeValue(o,"v1-profile",0);
+				var sPid = AM6Client.getAttributeValue(o,"v1-profile-path",0);
 				
 				oP.appendChild(oI);
 				oP.appendChild(document.createTextNode(o.name));
@@ -689,16 +705,17 @@
 				oP2.setAttribute("class","clearalign");
 				oL.appendChild(oP2);
 				if(sPid){
-					AM6Client.get("DATA", sPid, function(s, v){
-						if(v && v.json) v = v.json;
-						if(v && v != null){;
-							var sOrg = AM6Client.dotPath(v.organizationPath);
-							oI.setAttribute("src","/AccountManagerService/thumbnail/" + sOrg + "/Data" + v.groupPath + "/" + v.name + "/" + w + "x" + h);
-						}
-						else{
-							oI.setAttribute("src",sIco);
-						}
-					});
+				//	AM6Client.get("DATA", sPid, function(s, v){
+				//		if(v && v.json) v = v.json;
+				//		if(v && v != null){;
+				//			var sOrg = AM6Client.dotPath(v.organizationPath);
+				//			oI.setAttribute("src","/AccountManagerService/thumbnail/" + sOrg + "/Data" + v.groupPath + "/" + v.name + "/" + w + "x" + h);
+							oI.setAttribute("src","/AccountManagerService/thumbnail/" + sPid + "/" + w + "x" + h);
+				//		}
+				//		else{
+				//			oI.setAttribute("src",sIco);
+				//		}
+				//	});
 				}
 				else{
 					oI.setAttribute("src",sIco);
