@@ -253,6 +253,7 @@ public class AuthorizedSearchService {
 			if(group != null) {
 				groupScopeId = group.getId();
 				groupScope = true;
+				logger.info("Scope query to " + group.getUrn());
 			}
 			
 		}
@@ -262,15 +263,16 @@ public class AuthorizedSearchService {
 		/// 1 - objtype
 		+ "\nSELECT D.id as participationid,  -1 as affectid, 'UNKNOWN' as affecttype, D.ownerId as referenceid, 'USER' as referencetype from %s D"
 		/// 2  = token 1 ownerid
-		+ (groupScope ? "\n INNER JOIN groups_from_branch(" + groupScopeId + ") GB on GB.groupid = D.groupid" : "")
+		// + (groupScope ? "\n INNER JOIN groups_from_branch(" + groupScopeId + ") GB on GB.groupid = D.groupid" : "")
 		+ (objectType.equals(NameEnumType.DATA) && !request.getIncludeThumbnail() ? " INNER JOIN groups G on G.id = D.groupId AND NOT G.name = '.thumbnail'" : "")
 		+ " WHERE D.ownerId = %s"
+		+  (groupScope ? "\n AND D.groupid in (select groupid from groups_from_branch(" + groupScopeId + "))" : "")
 		+ "\n UNION ALL"
 		/// START GROUPID
 		+ " SELECT D.id, GP.affectid,GP.affecttype,GP.participantid as referenceid, GP.participanttype as referencetype"
 		/// 3 = objtype
 		+ " FROM %s D"
-		+ (groupScope ? "\n INNER JOIN groups_from_branch(" + groupScopeId + ") GB on GB.groupid = D.groupid" : "")
+		//+ (groupScope ? "\n INNER JOIN groups_from_branch(" + groupScopeId + ") GB on GB.groupid = D.groupid" : "")
 		+ " INNER JOIN groups G on G.id = " + (objectType.equals(NameEnumType.GROUP) ? "D.parentId" : "D.groupid")
 		/// 4 = token 2 referencetype
 		/// 4.5 = token 2.5 referenceid
@@ -278,8 +280,22 @@ public class AuthorizedSearchService {
 		/// 5 = token 3 permissionIds
 		/// 6 = token 4 permissionIds
 		+ " WHERE (0 = cardinality(%s) OR GP.affectId = ANY(%s))"
+		+  (groupScope ? "\n AND GP.participationid in (select groupid from groups_from_branch(" + groupScopeId + "))" : "")
 		+ (request.getIncludeThumbnail() ? "" : " AND G.name <> '.thumbnail'")
 		/// END GROUPID
+		
+		/// NEED TO ADD LOOKUP FOR ROLE TO GROUP CONTAINER
+		/*
+		 * 
+		 * 	SELECT D.id, GP.affectid,GP.affecttype,GP.participantid as referenceid, GP.participanttype as referencetype FROM persons D
+			INNER JOIN groups_from_branch(5826) GB on GB.groupid = D.groupid 
+			INNER JOIN groups G on G.id = GB.groupid
+			INNER JOIN groupparticipation GP on GP.participationid = GB.groupId AND GP.participanttype = 'ROLE' 
+			INNER JOIN role_membership(GP.participantid) RM on RM.roleid = GP.participantid AND RM.referencetype = 'USER'
+			AND RM.referenceid = 32 
+			WHERE (0 = cardinality(Array[107,122]) OR GP.affectId = ANY(Array[107,122])) AND G.name <> '.thumbnail'
+		 */
+		
 		+ "\n UNION ALL"
 		+ " SELECT PP.participationid,PP.affectid,PP.affecttype,"
 		+"	CASE WHEN GM.referenceid > 0 THEN GM.referenceid"
@@ -333,8 +349,10 @@ public class AuthorizedSearchService {
 		/// 26 = token 26 referenceid
 		+ ") DM "
 		+ "\n INNER JOIN " + tblType + " on " + tblType + ".id = DM.participationid " 
-		+ (groupScope ? "\n INNER JOIN groups_from_branch(" + groupScopeId + ") GB on GB.groupid = " + tblType + ".groupid" : "")
+		//+ (groupScope ? "\n INNER JOIN groups_from_branch(" + groupScopeId + ") GB on GB.groupid = " + tblType + ".groupid" : "")
 		+ "\n WHERE (%s = '' OR referencetype = %s) AND (%s = 0 OR DM.referenceid =%s) AND affectid <> 0"
+		+  (groupScope ? "\n AND " + tblType + ".groupId in (select groupid from groups_from_branch(" + groupScopeId + "))" : "")
+
 		,tblType,token,tblType,token,token,token,token,lowType,token,token,token,token,token,token,lowType
 		,token,token,token,token,token,token,lowType
 		,token,token,token,token,token,token,token,token,token,token
@@ -386,7 +404,7 @@ public class AuthorizedSearchService {
 			statement.setLong(27, referenceId);	
 	
 			DBFactory.setStatementParameters(fields, 28, statement);
-
+			logger.info(statement);
 			rset = statement.executeQuery();
 			while(rset.next()){
 				EntitlementType ent = new EntitlementType();
