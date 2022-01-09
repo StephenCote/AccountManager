@@ -227,6 +227,7 @@
 			var oM = AM6Client.newFieldMatch("TEXT","NAME","LIKE","*" + sFilter + "*");
 			var oS = AM6Client.newSortQuery("NAME","ASCENDING");
 			var oReq = AM6Client.newSearchRequest(this.getProperties().typeName.toUpperCase(),0,0,0,10,false,oS,[oM]);
+			oReq.distinct = true;
 			var ctl = this, _s = this.getProperties(), _o = this.getObjects();
 			((_s.noGroup || _o.groupScope) ? Promise.resolve(_o.groupScope)
 				: new Promise((res,rej)=>{
