@@ -38,7 +38,10 @@
 			</annotation>
 		</attribute>
 		<attribute name="contextActorId" type="string"></attribute>
-		<attribute name="contextActorType" type="Q1:NameEnumType" default="UNKNOWN"></attribute>
+		<attribute name="contextActorType" type="Q1:NameEnumType"
+			default="UNKNOWN">
+		</attribute>
+		<attribute name="distinct" type="boolean" default="false"></attribute>
 	</complexType>
 
 	<complexType name="ObjectSearchRequestType">
