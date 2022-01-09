@@ -87,7 +87,10 @@ public class AuthorizedSearchService {
 		pi.setStartIndex(request.getStartRecord());
 		pi.setRecordCount(request.getRecordCount());
 		if(request.getSort() != null) {
-			pi.setOrderClause(request.getSort().getSortField().toString().toLowerCase() + " " + (request.getSort().getSortOrder().equals(OrderEnumType.ASCENDING) ? "ASC" : "DESC"));
+			pi.setOrderClause((request.getDistinct() ? "participationid, " : "") + request.getSort().getSortField().toString().toLowerCase() + " " + (request.getSort().getSortOrder().equals(OrderEnumType.ASCENDING) ? "ASC" : "DESC"));
+		}
+		else if(request.getDistinct()) {
+			pi.setOrderClause("participationid ASC");
 		}
 		return pi;
 	}
@@ -259,7 +262,9 @@ public class AuthorizedSearchService {
 		}
 		String sqlBaseQuery =
 		String.format(
-		"SELECT participationid as id, affectid, affecttype, DM.referenceid, referencetype FROM ("
+		"SELECT "
+		+ (request.getDistinct() ? "DISTINCT ON(participationid)" : "")
+		+ " participationid as id, affectid, affecttype, DM.referenceid, referencetype FROM ("
 		/// 1 - objtype
 		+ "\nSELECT D.id as participationid,  -1 as affectid, 'UNKNOWN' as affecttype, D.ownerId as referenceid, 'USER' as referencetype from %s D"
 		/// 2  = token 1 ownerid
@@ -275,10 +280,10 @@ public class AuthorizedSearchService {
 		//+ (groupScope ? "\n INNER JOIN groups_from_branch(" + groupScopeId + ") GB on GB.groupid = D.groupid" : "")
 		+ " INNER JOIN groups G on G.id = " + (objectType.equals(NameEnumType.GROUP) ? "D.parentId" : "D.groupid")
 		/// 4 = token 2 referencetype
-		/// 4.5 = token 2.5 referenceid
+		/// 4.5 = token 3 referenceid
 		+ " INNER JOIN groupparticipation GP on GP.participationid = G.id AND GP.participanttype = %s AND GP.participantid = %s"
-		/// 5 = token 3 permissionIds
-		/// 6 = token 4 permissionIds
+		/// 5 = token 4 permissionIds
+		/// 6 = token 5 permissionIds
 		+ " WHERE (0 = cardinality(%s) OR GP.affectId = ANY(%s))"
 		+  (groupScope ? "\n AND GP.participationid in (select groupid from groups_from_branch(" + groupScopeId + "))" : "")
 		+ (request.getIncludeThumbnail() ? "" : " AND G.name <> '.thumbnail'")
@@ -295,8 +300,24 @@ public class AuthorizedSearchService {
 			AND RM.referenceid = 32 
 			WHERE (0 = cardinality(Array[107,122]) OR GP.affectId = ANY(Array[107,122])) AND G.name <> '.thumbnail'
 		 */
-		
-		+ "\n UNION ALL"
+		/// 7 - objectType
+		+ "\n UNION ALL\n"
+		/// 8 - token 6 referenceid
+		/// 9 - token 7 referencetype
+		+ " SELECT D.id, GP.affectid,GP.affecttype,%s as referenceid, '%s' as referencetype "
+		+ " FROM %s D "
+		+ " INNER JOIN groups G on G.id = " + (objectType.equals(NameEnumType.GROUP) ? "D.parentId" : "D.groupid")
+		+ " INNER JOIN groupparticipation GP on GP.participationid = G.id AND GP.participanttype = 'ROLE'"
+
+		/// 8 = token 6 permissionIds
+		/// 9 = token 7 permissionIds
+		+ " WHERE (0 = cardinality(%s) OR GP.affectId = ANY(%s))"
+		/// 10 = token 8 referencetype
+		/// 11 - token 9 referenceid
+		+ " AND GP.participantid IN (SELECT roleid FROM role_membership(GP.participantid) RM WHERE RM.referencetype = %s AND RM.referenceid = %s)"
+		+  (groupScope ? "\n AND GP.participationid in (select groupid from groups_from_branch(" + groupScopeId + "))" : "")
+		+ (request.getIncludeThumbnail() ? "" : " AND G.name <> '.thumbnail'")
+		+ "\n UNION ALL\n"
 		+ " SELECT PP.participationid,PP.affectid,PP.affecttype,"
 		+"	CASE WHEN GM.referenceid > 0 THEN GM.referenceid"
 		+"	ELSE PP.participantid END as referenceid,"
@@ -312,7 +333,7 @@ public class AuthorizedSearchService {
 		/// 12 = token 9 permissionIds
 		/// 13 = token 10 permissionIds
 		+"	WHERE (0 = cardinality(%s) OR PP.affectId = ANY(%s)) AND PP.participanttype = 'GROUP'"
-		+"\n	UNION ALL"
+		+"\n UNION ALL\n"
 		+"	SELECT PP.participationid,PP.affectid,PP.affecttype,"
 		+"	CASE WHEN GM.referenceid > 0 THEN GM.referenceid"
 		+"	ELSE PP.participantid END as referenceid,"
@@ -328,7 +349,7 @@ public class AuthorizedSearchService {
 		/// 19 = token 15 permissionids
 		/// 20 = token 16 permissionids
 		+"	WHERE (0 = cardinality(%s) OR PP.affectId = ANY(%s)) AND PP.participanttype = 'ROLE'	"
-		+"\n UNION ALL"
+		+"\n UNION ALL\n"
 		+"	SELECT PP.participationid,PP.affectid,PP.affecttype,"
 		+"	PP.participantid as referenceid,PP.participanttype as referencetype"
 		/// 21 = objtype
@@ -353,7 +374,8 @@ public class AuthorizedSearchService {
 		+ "\n WHERE (%s = '' OR referencetype = %s) AND (%s = 0 OR DM.referenceid =%s) AND affectid <> 0"
 		+  (groupScope ? "\n AND " + tblType + ".groupId in (select groupid from groups_from_branch(" + groupScopeId + "))" : "")
 
-		,tblType,token,tblType,token,token,token,token,lowType,token,token,token,token,token,token,lowType
+		,tblType,token,tblType,token,token,token,token,referenceId,referenceType,tblType,token,token,token,token
+		,lowType,token,token,token,token,token,token,lowType
 		,token,token,token,token,token,token,lowType
 		,token,token,token,token,token,token,token,token,token,token
 		);
@@ -378,33 +400,45 @@ public class AuthorizedSearchService {
 			statement.setLong(3, referenceId);
 			statement.setArray(4, conn.createArrayOf("bigint", permissionIds));
 			statement.setArray(5, conn.createArrayOf("bigint", permissionIds));
-			statement.setString(6, referenceType);
-			statement.setString(7, referenceType);
-			statement.setLong(8, referenceId);
+
+			/// add in role->parent unwind here
+			///
+			
+			statement.setArray(6, conn.createArrayOf("bigint", permissionIds));
+			statement.setArray(7, conn.createArrayOf("bigint", permissionIds));
+			statement.setString(8, referenceType);
 			statement.setLong(9, referenceId);
-			statement.setArray(10, conn.createArrayOf("bigint", permissionIds));
-			statement.setArray(11, conn.createArrayOf("bigint", permissionIds));
 			
-			statement.setString(12, referenceType);
-			statement.setString(13, referenceType);
-			statement.setLong(14, referenceId);
-			statement.setLong(15, referenceId);
-			statement.setArray(16, conn.createArrayOf("bigint", permissionIds));
-			statement.setArray(17, conn.createArrayOf("bigint", permissionIds));
+			/// end role->parent unwind
+			///
 			
-			statement.setArray(18, conn.createArrayOf("bigint", permissionIds));
-			statement.setArray(19, conn.createArrayOf("bigint", permissionIds));
-			statement.setString(20, referenceType);
-			statement.setString(21, referenceType);
-			statement.setLong(22, referenceId);
-			statement.setLong(23, referenceId);
+			statement.setString(10, referenceType);
+			statement.setString(11, referenceType);
+			statement.setLong(12, referenceId);
+			statement.setLong(13, referenceId);
+			statement.setArray(14, conn.createArrayOf("bigint", permissionIds));
+			statement.setArray(15, conn.createArrayOf("bigint", permissionIds));
+			
+			statement.setString(16, referenceType);
+			statement.setString(17, referenceType);
+			statement.setLong(18, referenceId);
+			statement.setLong(19, referenceId);
+			statement.setArray(20, conn.createArrayOf("bigint", permissionIds));
+			statement.setArray(21, conn.createArrayOf("bigint", permissionIds));
+			
+			statement.setArray(22, conn.createArrayOf("bigint", permissionIds));
+			statement.setArray(23, conn.createArrayOf("bigint", permissionIds));
 			statement.setString(24, referenceType);
 			statement.setString(25, referenceType);
 			statement.setLong(26, referenceId);
-			statement.setLong(27, referenceId);	
+			statement.setLong(27, referenceId);
+			statement.setString(28, referenceType);
+			statement.setString(29, referenceType);
+			statement.setLong(30, referenceId);
+			statement.setLong(31, referenceId);	
 	
-			DBFactory.setStatementParameters(fields, 28, statement);
-			logger.info(statement);
+			DBFactory.setStatementParameters(fields, 32, statement);
+			/// logger.info(statement);
 			rset = statement.executeQuery();
 			while(rset.next()){
 				EntitlementType ent = new EntitlementType();
