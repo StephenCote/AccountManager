@@ -64,9 +64,10 @@
 					</includes>
 					<excludes>
 						<!-- 
-						<exclude>**/TestObjectEntitlementQuery.java</exclude>
-
+						
+						<exclude>**/TestListParticipation.java</exclude>
 						 -->
+						 <exclude>**/TestObjectEntitlementQuery.java</exclude>
 						<exclude>**/TestVaultService.java</exclude> 
 						 <exclude>TestCurveEncrypt</exclude> 
 						  
