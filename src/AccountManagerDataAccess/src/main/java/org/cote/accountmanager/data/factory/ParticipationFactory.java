@@ -23,6 +23,8 @@
  *******************************************************************************/
 package org.cote.accountmanager.data.factory;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -31,10 +33,13 @@ import java.util.List;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cote.accountmanager.data.BulkFactories;
+import org.cote.accountmanager.data.ConnectionFactory;
+import org.cote.accountmanager.data.DBFactory;
 import org.cote.accountmanager.data.DataAccessException;
 import org.cote.accountmanager.data.DataRow;
 import org.cote.accountmanager.data.DataTable;
 import org.cote.accountmanager.data.Factories;
+import org.cote.accountmanager.data.DBFactory.CONNECTION_TYPE;
 import org.cote.accountmanager.data.query.QueryField;
 import org.cote.accountmanager.data.query.QueryFields;
 import org.cote.accountmanager.data.services.AuthorizationService;
@@ -45,6 +50,7 @@ import org.cote.accountmanager.objects.AddressParticipantType;
 import org.cote.accountmanager.objects.BaseParticipantType;
 import org.cote.accountmanager.objects.BasePermissionType;
 import org.cote.accountmanager.objects.BaseRoleType;
+import org.cote.accountmanager.objects.BaseTagType;
 import org.cote.accountmanager.objects.ContactParticipantType;
 import org.cote.accountmanager.objects.DataParticipantType;
 import org.cote.accountmanager.objects.FactParticipantType;
@@ -552,6 +558,133 @@ public abstract class ParticipationFactory extends NameIdFactory implements IPar
 		outParticipant.setAffectType(affectType);
 
 		return outParticipant;
+	}
+	
+	public <T> List<T> listParticipations(ParticipantEnumType type, NameIdType[] objects, long startRecord, int recordCount, long organizationId) throws FactoryException, ArgumentException{
+		ProcessingInstructionType instruction = new ProcessingInstructionType();
+		instruction.setPaginate(true);
+		instruction.setStartIndex(startRecord);
+		instruction.setRecordCount(recordCount);
+		List<BaseParticipantType> parts = listParticipations(objects, instruction,type);
+		if(parts.isEmpty()) return new ArrayList<>();
+		/// Don't apply pagination to the secondary query because it's already been paginated from the parts list
+		///
+		return getListFromParticipations(FactoryEnumType.valueOf(type.toString()), parts.toArray(new BaseParticipantType[0]), true, 0, 0, organizationId);
+	}
+	
+	public <T> List<T> listParticipations(NameIdType[] objects, ProcessingInstructionType instruction,ParticipantEnumType type) throws FactoryException, ArgumentException
+	{
+		
+		List<T> outList = new ArrayList<T>();
+		if(objects.length == 0) return outList;
+		if(instruction == null) instruction = new ProcessingInstructionType();
+		long org = objects[0].getOrganizationId();
+		
+		
+		List<QueryField> matches = new ArrayList<>();
+		if(type != ParticipantEnumType.UNKNOWN) matches.add(QueryFields.getFieldParticipantType(type));
+		StringBuilder buff = new StringBuilder();
+		for (int i = 0; i < objects.length; i++)
+		{
+			if (i > 0) buff.append(",");
+			buff.append(objects[i].getId());
+		}
+		QueryField field = new QueryField(SqlDataEnumType.BIGINT,"participationid",buff.toString());
+		field.setComparator(ComparatorEnumType.ANY);
+		matches.add(field);
+		instruction.setHavingClause("count(" + Columns.get(ColumnEnumType.PARTICIPANTID) + ") = " + objects.length);
+		instruction.setGroupClause(Columns.get(ColumnEnumType.PARTICIPANTID));
+		instruction.setOrderClause(Columns.get(ColumnEnumType.PARTICIPANTID));
+
+		// Get a list of participantids 
+		//
+		Connection connection = ConnectionFactory.getInstance().getConnection();
+		CONNECTION_TYPE connectionType = DBFactory.getConnectionType(connection);
+		PreparedStatement statement = null;
+		ResultSet rset = null;
+		try{
+			String sql = assembleQueryString("SELECT " + Columns.get(ColumnEnumType.PARTICIPANTID) + " FROM " + dataTables.get(0).getName(),matches.toArray(new QueryField[0]), connectionType, instruction, org);
+
+			statement = connection.prepareStatement(sql);
+			DBFactory.setStatementParameters(matches.toArray(new QueryField[0]), statement);
+			rset = statement.executeQuery();
+		
+			while (rset.next())
+			{
+				BaseParticipantType bpt = newParticipant(type);
+				bpt.setOrganizationId(org);
+				bpt.setParticipantId(rset.getLong(1));
+				outList.add((T)bpt);
+			}
+		}
+		catch(SQLException sqe){
+			logger.error(FactoryException.LOGICAL_EXCEPTION,sqe);
+			throw new FactoryException(sqe.getMessage());
+		}
+		finally{
+			try {
+				if(rset != null) rset.close();
+				if(statement != null) statement.close();
+				connection.close();
+			} catch (SQLException e) {
+				
+				logger.error(FactoryException.LOGICAL_EXCEPTION,e);
+			}
+		}
+
+		return outList;
+	}
+	
+	public int countParticipations(NameIdType[] objects, ParticipantEnumType type) throws FactoryException
+	{
+		int count = 0;
+		if(objects.length == 0) return count;
+
+		long org = objects[0].getOrganizationId();
+
+		StringBuilder buff = new StringBuilder();
+		for (int i = 0; i < objects.length; i++)
+		{
+			if (i > 0) buff.append(",");
+			buff.append(objects[i].getId());
+		}
+
+		Connection connection = ConnectionFactory.getInstance().getConnection();
+		String token = DBFactory.getParamToken(DBFactory.getConnectionType(connection));
+		String partType =  (type != ParticipantEnumType.UNKNOWN? " AND participanttype = " + token : "");
+		PreparedStatement statement = null;
+		ResultSet rset = null;
+		try{
+			String sql = String.format("SELECT count(%s) FROM (SELECT %s FROM %s WHERE %s IN (%s) %s AND %s = %s GROUP BY %s HAVING count(*) = %s ORDER BY %s) as tc",Columns.get(ColumnEnumType.PARTICIPANTID), Columns.get(ColumnEnumType.PARTICIPANTID), this.primaryTableName, Columns.get(ColumnEnumType.PARTICIPATIONID), buff.toString(),partType,Columns.get(ColumnEnumType.ORGANIZATIONID),token,Columns.get(ColumnEnumType.PARTICIPANTID),token,Columns.get(ColumnEnumType.PARTICIPANTID));
+			statement = connection.prepareStatement(sql);
+			int paramCount = 1;
+			if(type != ParticipantEnumType.UNKNOWN) statement.setString(paramCount++, type.toString());
+			statement.setLong(paramCount++, org);
+			statement.setInt(paramCount++, objects.length);
+			rset = statement.executeQuery();
+		
+			if (rset.next())
+			{
+				count = rset.getInt(1);
+			}
+			
+		}
+		catch(SQLException sqe){
+			logger.error(FactoryException.LOGICAL_EXCEPTION,sqe);
+			throw new FactoryException(sqe.getMessage());
+		}
+		finally{
+			try {
+				if(rset != null) rset.close();
+				if(statement != null) statement.close();
+				connection.close();
+			} catch (SQLException e) {
+				
+				logger.error(FactoryException.LOGICAL_EXCEPTION,e);
+			}
+		}
+		return count;
+
 	}
 
 

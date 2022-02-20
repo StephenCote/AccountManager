@@ -251,6 +251,8 @@ public class TagFactory extends NameIdGroupFactory {
 		return getForTags(FactoryEnumType.valueOf(tag.getTagType().toString()),new BaseTagType[]{tag}, 0L,0, organizationId);
 	}
 	public <T> List<T> getForTags(FactoryEnumType type, BaseTagType[] tags, long startRecord, int recordCount, long organizationId) throws FactoryException, ArgumentException{
+		return ((TagParticipationFactory)Factories.getFactory(FactoryEnumType.TAGPARTICIPATION)).listParticipations(type, tags, startRecord, recordCount, organizationId);
+		/*
 		ProcessingInstructionType instruction = new ProcessingInstructionType();
 		instruction.setPaginate(true);
 		instruction.setStartIndex(startRecord);
@@ -260,7 +262,7 @@ public class TagFactory extends NameIdGroupFactory {
 		/// Don't apply pagination to the secondary query because it's already been paginated from the parts list
 		///
 		return ((TagParticipationFactory)Factories.getFactory(FactoryEnumType.TAGPARTICIPATION)).getListFromParticipations(type, parts.toArray(new BaseParticipantType[0]), true, 0, 0, organizationId);
-	
+		*/
 	}
 
 }

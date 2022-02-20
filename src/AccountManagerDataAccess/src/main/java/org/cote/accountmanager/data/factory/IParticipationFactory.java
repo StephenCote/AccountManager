@@ -30,7 +30,9 @@ import org.cote.accountmanager.exceptions.FactoryException;
 import org.cote.accountmanager.objects.BaseParticipantType;
 import org.cote.accountmanager.objects.BasePermissionType;
 import org.cote.accountmanager.objects.NameIdType;
+import org.cote.accountmanager.objects.ProcessingInstructionType;
 import org.cote.accountmanager.objects.types.AffectEnumType;
+import org.cote.accountmanager.objects.types.FactoryEnumType;
 import org.cote.accountmanager.objects.types.ParticipantEnumType;
 import org.cote.accountmanager.objects.types.PermissionEnumType;
 
@@ -72,5 +74,8 @@ public interface IParticipationFactory extends INameIdFactory {
 		AffectEnumType affectType
 	) throws ArgumentException;
 	
+	public <T> List<T> listParticipations(ParticipantEnumType type, NameIdType[] objects, long startRecord, int recordCount, long organizationId) throws FactoryException, ArgumentException;
+	public <T> List<T> listParticipations(NameIdType[] objects, ProcessingInstructionType instruction,ParticipantEnumType type) throws FactoryException, ArgumentException;
+	public int countParticipations(NameIdType[] objects, ParticipantEnumType type) throws FactoryException;
 	
 }

@@ -171,54 +171,7 @@ public class TagParticipationFactory extends ParticipationFactory {
 	}
 	public int countTagParticipations(BaseTagType[] tags, ParticipantEnumType type) throws FactoryException
 	{
-		int count = 0;
-		if(tags.length == 0) return count;
-
-		long org = tags[0].getOrganizationId();
-
-		StringBuilder buff = new StringBuilder();
-		for (int i = 0; i < tags.length; i++)
-		{
-			if (i > 0) buff.append(",");
-			buff.append(tags[i].getId());
-		}
-
-		Connection connection = ConnectionFactory.getInstance().getConnection();
-		String token = DBFactory.getParamToken(DBFactory.getConnectionType(connection));
-		String partType =  (type != ParticipantEnumType.UNKNOWN? " AND participanttype = " + token : "");
-		PreparedStatement statement = null;
-		ResultSet rset = null;
-		try{
-			String sql = String.format("SELECT count(%s) FROM (SELECT %s FROM %s WHERE %s IN (%s) %s AND %s = %s GROUP BY %s HAVING count(*) = %s ORDER BY %s) as tc",Columns.get(ColumnEnumType.PARTICIPANTID), Columns.get(ColumnEnumType.PARTICIPANTID), this.primaryTableName, Columns.get(ColumnEnumType.PARTICIPATIONID), buff.toString(),partType,Columns.get(ColumnEnumType.ORGANIZATIONID),token,Columns.get(ColumnEnumType.PARTICIPANTID),token,Columns.get(ColumnEnumType.PARTICIPANTID));
-			statement = connection.prepareStatement(sql);
-			int paramCount = 1;
-			if(type != ParticipantEnumType.UNKNOWN) statement.setString(paramCount++, type.toString());
-			statement.setLong(paramCount++, org);
-			statement.setInt(paramCount++, tags.length);
-			rset = statement.executeQuery();
-		
-			if (rset.next())
-			{
-				count = rset.getInt(1);
-			}
-			
-		}
-		catch(SQLException sqe){
-			logger.error(FactoryException.LOGICAL_EXCEPTION,sqe);
-			throw new FactoryException(sqe.getMessage());
-		}
-		finally{
-			try {
-				if(rset != null) rset.close();
-				if(statement != null) statement.close();
-				connection.close();
-			} catch (SQLException e) {
-				
-				logger.error(FactoryException.LOGICAL_EXCEPTION,e);
-			}
-		}
-		return count;
-
+		return countParticipations(tags, type);
 	}
 	public GroupParticipantType getGroupParticipant(BaseTagType tag,BaseGroupType group) throws FactoryException, ArgumentException
 	{
