@@ -54,6 +54,7 @@ import org.cote.accountmanager.objects.FunctionType;
 import org.cote.accountmanager.objects.ObjectSearchRequestType;
 import org.cote.accountmanager.objects.OperationType;
 import org.cote.accountmanager.objects.OrganizationType;
+import org.cote.accountmanager.objects.ParticipationSearchRequest;
 import org.cote.accountmanager.objects.PatternType;
 import org.cote.accountmanager.objects.PersonType;
 import org.cote.accountmanager.objects.PolicyDefinitionType;
@@ -175,6 +176,7 @@ public class EntitySchema {
 	private AccountType accountType = null;
 	private BaseTagType baseTagType = null;
 	private DataTagSearchRequest dataTagSearchRequest = null;
+	private ParticipationSearchRequest participationSearchRequest = null;
 	private BaseSearchRequestType baseSearchRequestType = null;
 	private SortQueryType sortQueryType = null;
 	private ObjectSearchRequestType objectSearchRequestType = null;
@@ -193,6 +195,7 @@ public class EntitySchema {
 		authenticationRequestType = new AuthenticationRequestType();
 		authenticationResponseType = new AuthenticationResponseType();
 		dataTagSearchRequest = new DataTagSearchRequest();
+		participationSearchRequest = new ParticipationSearchRequest();
 		baseTagType = new BaseTagType();
 		authorizationPolicyType = new AuthorizationPolicyType();
 		addressType = new AddressType();
@@ -260,6 +263,18 @@ public class EntitySchema {
 	}
 
 	
+
+	public ParticipationSearchRequest getParticipationSearchRequest() {
+		return participationSearchRequest;
+	}
+
+
+
+	public void setParticipationSearchRequest(ParticipationSearchRequest participationSearchRequest) {
+		this.participationSearchRequest = participationSearchRequest;
+	}
+
+
 
 	public FieldMatch getFieldMatch() {
 		return fieldMatch;
