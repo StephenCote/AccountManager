@@ -211,7 +211,7 @@ public class GenericSearchService {
 	@POST
 	@Path("/{type:[A-Za-z]+}/tags/count")
 	@Produces(MediaType.APPLICATION_JSON) @Consumes(MediaType.APPLICATION_JSON)
-	public int countByTag(DataTagSearchRequest searchRequest,@Context HttpServletRequest request){
+	public int countByTag(DataTagSearchRequest searchRequest, @Context HttpServletRequest request){
 		int count = 0;
 		logger.warn("AuthZ Not Implemented Yet For countByTags");
 		logger.info("Counting for " + searchRequest.getTags().size() + " tags");
