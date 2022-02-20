@@ -152,9 +152,7 @@ public class TestRoleService extends BaseDataAccessTest{
 		String errStr = "Failed to authorize " + actor.getUrn() + " (#" + actor.getId() + ") access to " + object.getUrn() + " (#" + object.getId() + ") to ";
 		boolean error = false;
 		try {
-			/// EffectiveAuthorizationService.clearCache();
-			/// logger.info(JSONUtil.exportObject(EffectiveAuthorizationService.getObjectMap()));
-			/// logger.info("Cache Report: " + EffectiveAuthorizationService.reportCacheSize());
+
 			if(canView) assertTrue(errStr + "view",AuthorizationService.canView(actor, object));
 			if(canEdit) assertTrue(errStr + "view",AuthorizationService.canChange(actor, object));
 			if(canDelete) assertTrue(errStr + "view",AuthorizationService.canDelete(actor, object));
@@ -183,16 +181,13 @@ public class TestRoleService extends BaseDataAccessTest{
 		boolean inRole = false;
 		try {
 			inRole = RoleService.getIsUserInRole(role, user);
-			/// logger.info("Check 1 " + user.getUrn() + " in " + role.getUrn() + " " + inRole);
 			if(inRole && RoleService.removeUserFromRole(role, user)) {
 				EffectiveAuthorizationService.rebuildPendingRoleCache();
 				inRole = RoleService.getIsUserInRole(role, user);
-				/// logger.info("Check 2 " + user.getUrn() + " in " + role.getUrn() + " " + inRole);
 			}
 			else {
 				logger.warn("Failed to remove " + user.getUrn() + " from " + role.getUrn());
 			}
-			/// logger.info("Check 3 " + user.getUrn() + " in " + role.getUrn() + " " + inRole);
 			assertFalse("User " + user.getUrn() + " shouldn't be in role " + role.getUrn(), inRole);
 			
 			if(!add) return true;

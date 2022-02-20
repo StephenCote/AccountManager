@@ -958,7 +958,7 @@ public class BaseService {
 		if(user==null) return 0;
 		return count(audit,type, user, parentGroup);
 	}
-	public static int countByGroup(AuditEnumType type, BaseGroupType parentGroup,UserType user){
+	public static int countByGroup(AuditEnumType type, BaseGroupType parentGroup, UserType user){
 		AuditType audit = AuditService.beginAudit(ActionEnumType.READ, "count",AuditEnumType.USER, user.getUrn());
 		AuditService.targetAudit(audit, type, parentGroup.getUrn());
 		return count(audit,type, user, parentGroup);
