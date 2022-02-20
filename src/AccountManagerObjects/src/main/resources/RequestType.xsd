@@ -63,4 +63,17 @@
 			</extension>
 		</complexContent>
 	</complexType>
+
+	<complexType name="ParticipationSearchRequest">
+		<complexContent>
+			<extension base="tns:BaseSearchRequestType">
+				<sequence>
+					<element name="participations" type="tns:NameIdType"
+						minOccurs="0" maxOccurs="unbounded">
+					</element>
+				</sequence>
+				<attribute name="participantFactoryType" type="Q1:ParticipantEnumType"></attribute>
+			</extension>
+		</complexContent>
+	</complexType>
 </schema>
