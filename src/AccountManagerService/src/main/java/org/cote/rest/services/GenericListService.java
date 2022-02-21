@@ -95,25 +95,26 @@ public class GenericListService {
 	
 	@RolesAllowed({"user"})
 	@POST
-	@Path("/member/count")
+	@Path("/participants/count")
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response countMembers(@PathParam("type") String type, ParticipationSearchRequest searchRequest, @Context HttpServletRequest request){
 		AuditEnumType auditType = AuditEnumType.valueOf(type);
 
 		int count = 0;
-		if(searchRequest == null || searchRequest.getParticipations().size() == 0) {
+		if(searchRequest == null || searchRequest.getParticipationList().size() == 0) {
 			logger.warn("Null or empty request");
 			return Response.status(200).entity(count).build();
 		}
 		UserType user = ServiceUtil.getUserFromSession(request);
 		try{
 			int canRead = 0;
-			for(NameIdType obj : searchRequest.getParticipations()) {
-				if(!obj.getNameType().toString().equals(type)) {
-					logger.warn("Mixed participation types not supported");
-					continue;
+			searchRequest.getParticipations().clear();
+			for(String objectId : searchRequest.getParticipationList()) {
+				NameIdType obj = BaseService.readByObjectId(auditType, objectId, user);
+				if(obj != null) {
+					searchRequest.getParticipations().add(obj);
+					canRead++;
 				}
-				if(BaseService.canViewType(auditType, user, obj)) canRead++;
 			}
 			if(canRead != searchRequest.getParticipations().size()) {
 				logger.error("One or more provided participations is not visible to the current user");
@@ -127,7 +128,7 @@ public class GenericListService {
 			count = pFact.countParticipations(searchRequest.getParticipations().toArray(new NameIdType[0]), searchRequest.getParticipantFactoryType());
 			
 		}
-		catch(FactoryException | ArgumentException f){
+		catch(FactoryException f){
 			logger.error(f);
 		}
 		return Response.status(200).entity(count).build();
@@ -135,24 +136,25 @@ public class GenericListService {
 	
 	@RolesAllowed({"user"})
 	@POST
-	@Path("/member/list")
+	@Path("/participants")
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response listMembers(@PathParam("type") String type, ParticipationSearchRequest searchRequest, @Context HttpServletRequest request){
 		AuditEnumType auditType = AuditEnumType.valueOf(type);
 		List<Object> objs = new ArrayList<>();
-		if(searchRequest == null || searchRequest.getParticipations().size() == 0) {
+		if(searchRequest == null || searchRequest.getParticipationList().size() == 0) {
 			logger.warn("Null or empty request");
 			return Response.status(200).entity(objs).build();
 		}
 		UserType user = ServiceUtil.getUserFromSession(request);
 		try{
 			int canRead = 0;
-			for(NameIdType obj : searchRequest.getParticipations()) {
-				if(!obj.getNameType().toString().equals(type)) {
-					logger.warn("Mixed participation types not supported");
-					continue;
+			searchRequest.getParticipations().clear();
+			for(String objectId : searchRequest.getParticipationList()) {
+				NameIdType obj = BaseService.readByObjectId(auditType, objectId, user);
+				if(obj != null) {
+					searchRequest.getParticipations().add(obj);
+					canRead++;
 				}
-				if(BaseService.canViewType(auditType, user, obj)) canRead++;
 			}
 			if(canRead != searchRequest.getParticipations().size()) {
 				logger.error("One or more provided participations is not visible to the current user");
