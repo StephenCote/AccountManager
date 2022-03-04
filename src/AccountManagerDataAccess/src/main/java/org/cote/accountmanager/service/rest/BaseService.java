@@ -56,6 +56,7 @@ import org.cote.accountmanager.data.services.AuthorizationService;
 import org.cote.accountmanager.data.services.EffectiveAuthorizationService;
 import org.cote.accountmanager.data.services.GroupService;
 import org.cote.accountmanager.data.services.ITypeSanitizer;
+import org.cote.accountmanager.data.services.PermissionService;
 import org.cote.accountmanager.data.services.RoleService;
 import org.cote.accountmanager.data.services.UserService;
 import org.cote.accountmanager.data.util.UrnUtil;
@@ -411,6 +412,9 @@ public class BaseService {
 	public static boolean canDeleteType(AuditEnumType type, UserType user, NameIdType obj) throws ArgumentException, FactoryException{
 		return AuthorizationService.canDelete(user, obj);
 	}
+	public static boolean canExecuteType(AuditEnumType type, UserType user, NameIdType obj) throws ArgumentException, FactoryException{
+		return AuthorizationService.canExecute(user, obj);
+	}
 	
 	/// Duped in AuthorizationService, except the type is taken from the object instead of from the AuditEnumType
 	private static <T> boolean authorizeRoleType(AuditEnumType type, UserType adminUser, BaseRoleType targetRole, T bucket, boolean view, boolean edit, boolean delete, boolean create) throws FactoryException, DataAccessException, ArgumentException{
@@ -649,6 +653,7 @@ public class BaseService {
 
 		return outBool;
 	}
+	
 	
 	public static <T> T readByUrn(AuditEnumType type, String urn,HttpServletRequest request){
 		AuditType audit = AuditService.beginAudit(ActionEnumType.READ, "readByUrn",AuditEnumType.SESSION, ServiceUtil.getSessionId(request));
@@ -1098,6 +1103,49 @@ public class BaseService {
 	private static int countInParent(AuditEnumType type, NameIdType parent) throws FactoryException {
 		NameIdFactory factory = getFactory(type);
 		return factory.countInParent(parent);
+	}
+	
+	public static <T> List<T> listSystemEntitlements(AuditEnumType type, HttpServletRequest request){
+		AuditType audit = AuditService.beginAudit(ActionEnumType.READ, "listSystemEntitlements",AuditEnumType.SESSION, ServiceUtil.getSessionId(request));
+		UserType user = ServiceUtil.getUserFromSession(audit,request);
+		return listSystemEntitlements(type, user);
+	}
+	
+	public static <T> List<T> listSystemEntitlements(AuditEnumType type, UserType user){
+		AuditType audit = AuditService.beginAudit(ActionEnumType.READ, "listSystemEntitlements",AuditEnumType.USER, user.getUrn());
+		AuditService.targetAudit(audit, type, "System entitlements");
+
+		List<T> outList = new ArrayList<>();
+		boolean canRead = false;
+		BaseRoleType roleReader = null;
+		if(type != AuditEnumType.ROLE && type != AuditEnumType.PERMISSION) {
+			AuditService.denyResult(audit, "Only role and permission entitlement types are supported");
+			return outList;
+		}
+		try {
+			boolean accountAdmin = RoleService.isFactoryAdministrator(user,((AccountFactory)Factories.getFactory(FactoryEnumType.ACCOUNT)));
+			boolean dataAdmin = RoleService.isFactoryAdministrator(user, ((DataFactory)Factories.getFactory(FactoryEnumType.DATA)));
+			if(accountAdmin || dataAdmin) {
+				canRead = true;
+			}
+			else {
+				if(type == AuditEnumType.ROLE) roleReader = RoleService.getRoleReaderUserRole(user.getOrganizationId());
+				else if(type == AuditEnumType.PERMISSION) roleReader = RoleService.getPermissionReaderUserRole(user.getOrganizationId());
+				canRead = RoleService.getIsUserInRole(roleReader, user);
+			}
+			
+		} catch (FactoryException | ArgumentException e) {
+			e.printStackTrace();
+		}
+		if(!canRead) {
+			AuditService.permitResult(audit, "User is not authorized to read system roles");
+			return outList;
+		}
+		if(type == AuditEnumType.ROLE) outList = FactoryBase.convertList(RoleService.getSystemRoles(user.getOrganizationId()));
+		else if(type == AuditEnumType.PERMISSION) outList = FactoryBase.convertList(PermissionService.getSystemPermissions(user.getOrganizationId()));
+		
+		AuditService.permitResult(audit, "Returning " + outList.size() + " entitlements");
+		return outList;
 	}
 	
 	public static <T> List<T> listByParentObjectId(AuditEnumType type, String parentType, String parentId, long startRecord, int recordCount, HttpServletRequest request){
