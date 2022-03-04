@@ -48,10 +48,13 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cote.accountmanager.data.DataAccessException;
 import org.cote.accountmanager.data.Factories;
+import org.cote.accountmanager.data.factory.AccountFactory;
+import org.cote.accountmanager.data.factory.DataFactory;
 import org.cote.accountmanager.data.factory.GroupFactory;
 import org.cote.accountmanager.data.factory.NameIdFactory;
 import org.cote.accountmanager.data.factory.PermissionFactory;
 import org.cote.accountmanager.data.factory.RoleFactory;
+import org.cote.accountmanager.data.services.PermissionService;
 import org.cote.accountmanager.data.services.RoleService;
 import org.cote.accountmanager.exceptions.ArgumentException;
 import org.cote.accountmanager.exceptions.FactoryException;
@@ -63,6 +66,7 @@ import org.cote.accountmanager.objects.NameIdType;
 import org.cote.accountmanager.objects.UserType;
 import org.cote.accountmanager.objects.types.AuditEnumType;
 import org.cote.accountmanager.objects.types.FactoryEnumType;
+import org.cote.accountmanager.objects.types.NameEnumType;
 import org.cote.accountmanager.objects.types.PermissionEnumType;
 import org.cote.accountmanager.objects.types.RoleEnumType;
 import org.cote.accountmanager.service.rest.BaseService;
@@ -99,9 +103,19 @@ public class AuthorizationService {
 	@Produces(MediaType.APPLICATION_JSON)
 	@Consumes(MediaType.APPLICATION_JSON)
 	public Response getSystemRoles(@Context HttpServletRequest request){
-		UserType user = ServiceUtil.getUserFromSession(request);
-		List<BaseRoleType> outList = RoleService.getSystemRoles(user.getOrganizationId());
-		logger.info("Get system roles for " + user.getOrganizationPath() + ": " + outList.size() + " roles returned");
+		List<BasePermissionType> outList = BaseService.listSystemEntitlements(AuditEnumType.ROLE, request);
+		return Response.status(200).entity(outList).build();
+	}
+	
+	@RolesAllowed({"admin","user"})
+	@GET
+	@Path("/systemPermissions")
+	@Produces(MediaType.APPLICATION_JSON)
+	@Consumes(MediaType.APPLICATION_JSON)
+	public Response getSystemPermissions(@Context HttpServletRequest request){
+		
+
+		List<BasePermissionType> outList = BaseService.listSystemEntitlements(AuditEnumType.PERMISSION, request);
 		return Response.status(200).entity(outList).build();
 	}
 	
@@ -251,4 +265,91 @@ public class AuthorizationService {
 		}
 		return Response.status(200).entity(BaseService.aggregateEntitlementsForMember(user, obj)).build();
 	}
+	
+	@GET @Path("/system/{objectId:[0-9A-Za-z\\\\-]+}")
+	@Produces(MediaType.APPLICATION_JSON)
+	@Consumes(MediaType.APPLICATION_JSON)
+	@RolesAllowed({"admin","user"})
+	public Response getSystemAuthorizationForObject(@PathParam("type") String objectType,@PathParam("objectId") String objectId,@Context HttpServletRequest request){
+		UserType user = ServiceUtil.getUserFromSession(request);
+		NameIdType obj = BaseService.readByObjectId(AuditEnumType.fromValue(objectType), objectId, user);
+		ObjectAuthorization authZ = new ObjectAuthorization(NameEnumType.valueOf(objectType), objectId);
+		if(obj == null) {
+			logger.error(objectType + " " + objectId + " was not accessible or does not exist");
+			return Response.status(200).entity(authZ).build();
+		}
+		authZ.setView(true);
+		AuditEnumType type = AuditEnumType.valueOf(objectType);
+		try {
+			authZ.setCreate(BaseService.canCreateType(type, user, obj));
+			authZ.setDelete(BaseService.canDeleteType(type, user, obj));
+			authZ.setExecute(BaseService.canExecuteType(type, user, obj));
+			authZ.setChange(BaseService.canChangeType(type, user, obj));
+		}
+		catch(FactoryException | ArgumentException e) {
+			logger.error(e);
+		}
+		return Response.status(200).entity(authZ).build();
+	}
+	
+	class ObjectAuthorization{
+		
+		private NameEnumType objectType = NameEnumType.UNKNOWN;
+		private String objectId = null;
+		private boolean view = false;
+		private boolean change = false;
+		private boolean delete = false;
+		private boolean create = false;
+		private boolean execute = false;
+		
+		public ObjectAuthorization(NameEnumType type, String objectId) {
+			this.objectId = objectId;
+			this.objectType = type;
+		}
+		
+		public NameEnumType getObjectType() {
+			return objectType;
+		}
+		public void setObjectType(NameEnumType objectType) {
+			this.objectType = objectType;
+		}
+		public String getObjectId() {
+			return objectId;
+		}
+		public void setObjectId(String objectId) {
+			this.objectId = objectId;
+		}
+		public boolean isView() {
+			return view;
+		}
+		public void setView(boolean view) {
+			this.view = view;
+		}
+		public boolean isChange() {
+			return change;
+		}
+		public void setChange(boolean change) {
+			this.change = change;
+		}
+		public boolean isDelete() {
+			return delete;
+		}
+		public void setDelete(boolean delete) {
+			this.delete = delete;
+		}
+		public boolean isCreate() {
+			return create;
+		}
+		public void setCreate(boolean create) {
+			this.create = create;
+		}
+		public boolean isExecute() {
+			return execute;
+		}
+		public void setExecute(boolean execute) {
+			this.execute = execute;
+		}
+		
+	}
+	
 }
