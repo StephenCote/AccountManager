@@ -506,6 +506,7 @@
 			<element name="user" type="tns:UserType"></element>
 
 			<element name="person" type="tns:PersonType"></element>
+			<element name="systemPermissions" type="tns:BasePermissionType" minOccurs="0" maxOccurs="unbounded"></element>
 		</sequence>
 		<attribute name="organizationPath" type="string"></attribute>
 	</complexType>
