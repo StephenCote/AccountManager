@@ -126,7 +126,9 @@ public class PrincipalService {
 					||
 					RoleService.isFactoryReader(user, ((RoleFactory)Factories.getFactory(FactoryEnumType.ROLE)))
 			) {
-				app.getSystemRoles().addAll(RoleService.getSystemRoles(user.getOrganizationId()));
+				//app.getSystemRoles().addAll(RoleService.getSystemRoles(user.getOrganizationId()));
+				app.getSystemRoles().addAll(BaseService.listSystemEntitlements(AuditEnumType.ROLE, user));
+				app.getSystemPermissions().addAll(BaseService.listSystemEntitlements(AuditEnumType.PERMISSION, user));
 			}
 		} catch (ArgumentException | FactoryException e1) {
 			logger.error(FactoryException.LOGICAL_EXCEPTION,e1);
