@@ -68,21 +68,21 @@ public class FactoryDefaults {
 	
 	
 	
-	protected static final String[] DEFAULT_APPLICATION_PERMISSIONS = new String[]{
+	public static final String[] DEFAULT_APPLICATION_PERMISSIONS = new String[]{
 		"ApplicationView",
 		"ApplicationEdit",
 		"ApplicationDelete",
 		"ApplicationCreate",
 		"ApplicationExecute"
 	};
-	protected static final String[] DEFAULT_OBJECT_PERMISSIONS = new String[]{
+	public static final String[] DEFAULT_OBJECT_PERMISSIONS = new String[]{
 		"ObjectView",
 		"ObjectEdit",
 		"ObjectDelete",
 		"ObjectCreate",
 		"ObjectExecute"
 	};
-	protected static final String[] DEFAULT_ACCOUNT_PERMISSIONS = new String[]{
+	public static final String[] DEFAULT_ACCOUNT_PERMISSIONS = new String[]{
 		"AccountView",
 		"AccountEdit",
 		"AccountDelete",
