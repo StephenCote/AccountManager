@@ -18,6 +18,7 @@ import org.cote.accountmanager.data.DBFactory;
 import org.cote.accountmanager.data.DBFactory.CONNECTION_TYPE;
 import org.cote.accountmanager.data.Factories;
 import org.cote.accountmanager.data.factory.FactoryBase;
+import org.cote.accountmanager.data.factory.INameIdFactory;
 import org.cote.accountmanager.data.factory.NameIdFactory;
 import org.cote.accountmanager.data.query.QueryField;
 import org.cote.accountmanager.exceptions.ArgumentException;
@@ -47,6 +48,7 @@ public class AuthorizedSearchService {
 	 */
 	private static String getTableNameByType(NameEnumType objectType) {
 		String outName = null;
+		
 		switch(objectType) {
 			case ADDRESS:
 				outName = "addresses";
@@ -68,6 +70,9 @@ public class AuthorizedSearchService {
 				break;
 			case TAG:
 				outName = "tags";
+				break;
+			case USER:
+				outName = "users";
 				break;
 			default:
 				outName = objectType.toString().toLowerCase();
@@ -438,7 +443,7 @@ public class AuthorizedSearchService {
 			statement.setLong(31, referenceId);	
 	
 			DBFactory.setStatementParameters(fields, 32, statement);
-			/// logger.info(statement);
+			// logger.info(statement);
 			rset = statement.executeQuery();
 			while(rset.next()){
 				EntitlementType ent = new EntitlementType();
