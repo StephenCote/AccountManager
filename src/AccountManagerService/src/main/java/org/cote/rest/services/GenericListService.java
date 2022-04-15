@@ -207,6 +207,51 @@ public class GenericListService {
 	
 	@RolesAllowed({"user"})
 	@GET
+	@Path("/parent/{objectId:[0-9A-Za-z\\-]+}/{startIndex:[\\d]+}/{count:[\\d]+}")
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response listObjectsInParent(@PathParam("type") String type, @PathParam("objectId") String objectId, @PathParam("startIndex") long startIndex, @PathParam("count") int recordCount, @Context HttpServletRequest request){
+
+		AuditEnumType auditType = AuditEnumType.valueOf(type);
+		List<Object> objs = new ArrayList<>();
+		try{
+			INameIdFactory iFact = BaseService.getFactory(auditType);
+			if(iFact.isClusterByParent()){
+				logger.info("Request to list " + type + " objects by parent in " + type + " " + objectId);
+				objs = BaseService.listByParentObjectId(auditType, "UNKNOWN", objectId, startIndex, recordCount, request);
+			}
+		}
+		catch(FactoryException f){
+			logger.error(f);
+		}
+		return Response.status(200).entity(objs).build();
+	}
+	
+	@RolesAllowed({"user"})
+	@GET
+	@Path("/parent/{objectId:[0-9A-Za-z\\-]+}/count")
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response countObjectsInParent(@PathParam("type") String type, @PathParam("objectId") String objectId, @Context HttpServletRequest request){
+		AuditEnumType auditType = AuditEnumType.valueOf(type);
+
+		int count = 0;
+		try{
+			INameIdFactory iFact = BaseService.getFactory(auditType);
+			if(iFact.isClusterByParent()){
+				NameIdType parent = (NameIdType)BaseService.readByObjectId(auditType, objectId, request);
+				if(parent != null){
+					logger.debug("Counting " + type + " objects in parent " + parent.getUrn());
+					count = BaseService.countInParent(auditType, parent, request);
+				}
+			}
+		}
+		catch(FactoryException f){
+			logger.error(f);
+		}
+		return Response.status(200).entity(count).build();
+	}
+	
+	@RolesAllowed({"user"})
+	@GET
 	@Path("/{objectId:[0-9A-Za-z\\-]+}/count")
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response countObjects(@PathParam("type") String type, @PathParam("objectId") String objectId, @Context HttpServletRequest request){
