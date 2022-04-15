@@ -567,10 +567,18 @@ public abstract class NameIdFactory extends FactoryBase implements INameIdFactor
 		return row;
 	}
 	public <T> List<T> listInParent(long parentId, long startRecord, int recordCount, long organizationId) throws FactoryException,ArgumentException{
-		throw new FactoryException("Method must be overridden by implementing class");
+		if(clusterByParent) {
+			List<QueryField> fields = new ArrayList<>();
+			fields.add(QueryFields.getFieldParent(parentId));
+			return paginateList(fields.toArray(new QueryField[0]), startRecord, recordCount, organizationId);
+		}
+		else throw new FactoryException("Method not supported for this factory type");
 	}
 	public <T> List<T> listInParent(String type, long parentId, long startRecord, int recordCount, long organizationId) throws FactoryException,ArgumentException{
-		throw new FactoryException("Method must be overridden by implementing class to define type enum");
+		if(type == null || type.equals("UNKNOWN")) {
+			return listInParent(parentId, startRecord, recordCount, organizationId);
+		}
+		else throw new FactoryException("Method must be overridden by implementing class to define type enum");
 	}
 	public <T> T getByNameInParent(String name, String type, long parentId, long organizationId) throws FactoryException, ArgumentException
 	{
