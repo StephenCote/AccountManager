@@ -63,6 +63,7 @@ public class LocationFactory extends NameIdGroupFactory {
 		this.tableNames.add(primaryTableName);
 		this.hasParentId = true;
 		factoryType = FactoryEnumType.LOCATION;
+		this.clusterByParent = true;
 	}
 	
 	@Override

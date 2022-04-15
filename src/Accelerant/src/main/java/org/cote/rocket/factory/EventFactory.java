@@ -67,6 +67,7 @@ public class EventFactory extends NameIdGroupFactory {
 		this.tableNames.add(primaryTableName);
 		this.hasParentId = true;
 		factoryType = FactoryEnumType.EVENT;
+		this.clusterByParent = true;
 	}
 	
 	@Override
