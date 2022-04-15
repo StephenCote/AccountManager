@@ -520,7 +520,7 @@ public class DataGeneratorUtil {
 		AlignmentEnumType alignment = ObjectUtil.randomEnum(AlignmentEnumType.class);
 
 		/// People can't be neutral
-		while(alignment == AlignmentEnumType.NEUTRAL) alignment = ObjectUtil.randomEnum(AlignmentEnumType.class);
+		while(alignment == AlignmentEnumType.UNKNOWN || alignment == AlignmentEnumType.NEUTRAL) alignment = ObjectUtil.randomEnum(AlignmentEnumType.class);
 		attr2.getValues().add(alignment.toString());
 		person.getAttributes().add(attr2);
 		
@@ -754,8 +754,11 @@ public class DataGeneratorUtil {
 			case LAWFULNEUTRAL:
 				title = "Quiet of " + adjWord + " " + nouWord;
 				break;
-			case NEUTRAL:
+			case UNKNOWN:
 				title = "Stillness of " + nouWord;
+				break;
+			case NEUTRAL:
+				title = "A " + adjWord + " " + nouWord + " mystery"; 
 				break;
 			case NEUTRALEVIL:
 				title = "The " + adjWord + " " + nouWord + " confusion";
@@ -965,7 +968,7 @@ public class DataGeneratorUtil {
 		}
 		
 		AlignmentEnumType alignment = ObjectUtil.randomEnum(AlignmentEnumType.class);
-		/// Epoch's can't be neutral
+		/// Epoch's can't be neutral (but can be mysterious 'UNKNOWN')
 		while(alignment == AlignmentEnumType.NEUTRAL) alignment = ObjectUtil.randomEnum(AlignmentEnumType.class);
 
 		int alignmentScore = DataGeneratorData.getAlignmentScore(alignment);

@@ -35,6 +35,7 @@ public class DataGeneratorData {
 		alignmentScoreMap.put(AlignmentEnumType.LAWFULEVIL, -2);
 		alignmentScoreMap.put(AlignmentEnumType.CHAOTICNEUTRAL, -1);
 		alignmentScoreMap.put(AlignmentEnumType.NEUTRAL, 0);
+		alignmentScoreMap.put(AlignmentEnumType.UNKNOWN, 0);
 		alignmentScoreMap.put(AlignmentEnumType.LAWFULNEUTRAL, 1);
 		alignmentScoreMap.put(AlignmentEnumType.CHAOTICGOOD, 2);
 		alignmentScoreMap.put(AlignmentEnumType.NEUTRALGOOD, 3);
