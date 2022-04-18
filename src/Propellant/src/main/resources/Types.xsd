@@ -283,6 +283,7 @@
 
     <xsd:simpleType name="AlignmentEnumType">
     	<xsd:restriction base="xsd:string">
+    		<xsd:enumeration value="UNKNOWN"></xsd:enumeration>
     		<xsd:enumeration value="LAWFULGOOD"></xsd:enumeration>
     		<xsd:enumeration value="NEUTRALGOOD"></xsd:enumeration>
     		<xsd:enumeration value="CHAOTICGOOD"></xsd:enumeration>
