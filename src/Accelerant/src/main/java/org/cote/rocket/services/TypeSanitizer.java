@@ -364,6 +364,8 @@ public class TypeSanitizer implements ITypeSanitizer{
 				new_location.setGeographyType(locbean.getGeographyType());
 				new_location.setClassification(locbean.getClassification());
 				new_location.setDescription(locbean.getDescription());
+				new_location.setLongitude(locbean.getLongitude());
+				new_location.setLatitude(locbean.getLatitude());
 				out_obj = (T)new_location;
 				break;
 			case TRAIT:
