@@ -271,7 +271,9 @@ CREATE TABLE formparticipation (
 DROP TABLE IF EXISTS location CASCADE;
 create table location (
            GeographyType varchar(32) not null,
-           Classification varchar(32)
+           Classification varchar(32),
+	   Longitude double precision not null default 0,
+	   Latitude double precision not null default 0
 ) inherits (uniquenameparentgroup,objectdescription);
 
 DROP TABLE IF EXISTS locationparticipation CASCADE;
