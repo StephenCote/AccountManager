@@ -282,4 +282,10 @@ public class QueryFields extends org.cote.accountmanager.data.query.QueryFields 
 	public static QueryField getFieldText(String s){
 		return getBytesField(FieldMap.Columns.get(ColumnEnumType.TEXT),s.getBytes(StandardCharsets.UTF_8));
 	}
+	public static QueryField getFieldLongitude(double l){
+		return getDoubleField("longitude", l);
+	}
+	public static QueryField getFieldLatitude(double l){
+		return getDoubleField("latitude", l);
+	}
 }
