@@ -130,6 +130,8 @@ public class LocationFactory extends NameIdGroupFactory {
 		try{
 			row.setCellValue(Columns.get(ColumnEnumType.GEOGRAPHYTYPE), obj.getGeographyType().toString());
 			row.setCellValue(Columns.get(ColumnEnumType.GROUPID), obj.getGroupId());
+			row.setCellValue("longitude", obj.getLongitude());
+			row.setCellValue("latitude", obj.getLatitude());
 			row.setCellValue(Columns.get(ColumnEnumType.CLASSIFICATION), obj.getClassification());
 			row.setCellValue(Columns.get(ColumnEnumType.DESCRIPTION), obj.getDescription());
 			if (insertRow(row)){
@@ -181,6 +183,8 @@ public class LocationFactory extends NameIdGroupFactory {
 		newObj.setClassification(rset.getString(Columns.get(ColumnEnumType.CLASSIFICATION)));
 		newObj.setGeographyType(GeographyEnumType.valueOf(rset.getString(Columns.get(ColumnEnumType.GEOGRAPHYTYPE))));
 		newObj.setDescription(rset.getString(Columns.get(ColumnEnumType.DESCRIPTION)));
+		newObj.setLongitude(rset.getDouble("longitude"));
+		newObj.setLatitude(rset.getDouble("latitude"));
 		return newObj;
 	}
 	@Override
@@ -236,6 +240,8 @@ public class LocationFactory extends NameIdGroupFactory {
 		fields.add(QueryFields.getFieldDescription(useMap.getDescription()));
 		fields.add(QueryFields.getFieldClassification(useMap.getClassification()));
 		fields.add(QueryFields.getFieldGroup(useMap.getGroupId()));
+		fields.add(QueryFields.getFieldLongitude(useMap.getLongitude()));
+		fields.add(QueryFields.getFieldLatitude(useMap.getLatitude()));
 	}
 	public int deleteLocationsByUser(UserType user) throws FactoryException
 	{
