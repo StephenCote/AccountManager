@@ -23,8 +23,10 @@
  *******************************************************************************/
 package org.cote.rest.services;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import javax.annotation.security.DeclareRoles;
@@ -45,6 +47,7 @@ import javax.ws.rs.core.UriInfo;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.cote.accountmanager.data.BulkFactories;
 import org.cote.accountmanager.data.DataAccessException;
 import org.cote.accountmanager.data.Factories;
 import org.cote.accountmanager.data.factory.INameIdFactory;
@@ -62,6 +65,11 @@ import org.cote.accountmanager.service.rest.SchemaBean;
 import org.cote.accountmanager.service.rest.ServiceSchemaBuilder;
 import org.cote.accountmanager.service.util.ServiceUtil;
 import org.cote.accountmanager.util.JSONUtil;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.type.CollectionType;
 
 /*
   GET
@@ -234,6 +242,48 @@ public class GenericResourceService {
 			}
 			else{
 				logger.error("Failed to restore object", json);
+			}
+		}
+		return Response.status(200).entity(updated).build();
+	}
+	
+	@RolesAllowed({"user"})
+	@POST
+	@Path("/bulk")
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response updateObjects(String json, @PathParam("type") String type, @Context HttpServletRequest request){
+		int updated = 0;
+		AuditEnumType auditType = AuditEnumType.valueOf(type);
+		UserType user = ServiceUtil.getUserFromSession(request);
+		Class<?> cls = Factories.getFactoryTypeClasses().get(FactoryEnumType.valueOf(type));
+		if(cls != null){
+			ObjectMapper mapper = new ObjectMapper();
+			CollectionType listType =  mapper.getTypeFactory().constructCollectionType(ArrayList.class, cls);
+			try {
+			List<?> objs = mapper.readValue(json, listType);
+			if(objs != null){
+				String sessionId = BulkFactories.getBulkFactory().newBulkSession();
+				for(Object obj : objs) {
+					NameIdType objNT = (NameIdType)obj;
+					if(objNT.getObjectId() == null || objNT.getObjectId().length() == 0 || objNT.getObjectId().equalsIgnoreCase("undefined")){
+						if(BaseService.add(auditType, obj, user, sessionId)) {
+							updated++;
+						}
+					}
+					else{
+						if(BaseService.update(auditType, obj, user, sessionId)) {
+							updated++;
+						}
+					}
+				}
+				BulkFactories.getBulkFactory().write(sessionId);
+			}
+			else{
+				logger.error("Failed to restore object");
+			}
+			}
+			catch(JsonProcessingException | ArgumentException | FactoryException | DataAccessException jme) {
+				logger.error(jme);
 			}
 		}
 		return Response.status(200).entity(updated).build();
