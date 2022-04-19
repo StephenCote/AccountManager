@@ -34,6 +34,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.cote.accountmanager.data.BulkFactories;
 import org.cote.accountmanager.data.DataAccessException;
 import org.cote.accountmanager.data.Factories;
 import org.cote.accountmanager.data.factory.AccountFactory;
@@ -205,7 +206,8 @@ public class BaseService {
 
 	/// don't blindly accept values 
 	///
-	private static <T> boolean sanitizeAddNewObject(AuditEnumType type, UserType user, T inObj) throws ArgumentException, FactoryException, DataException, DataAccessException{
+
+	private static <T> boolean sanitizeAddNewObject(AuditEnumType type, UserType user, T inObj, String sessionId) throws ArgumentException, FactoryException, DataException, DataAccessException{
 		boolean outBool = false;
 		INameIdFactory iFact = Factories.getNameIdFactory(FactoryEnumType.valueOf(type.toString()));
 		ITypeSanitizer sanitizer = Factories.getSanitizer(NameEnumType.valueOf(type.toString()));
@@ -218,7 +220,11 @@ public class BaseService {
 			outBool = sanitizer.add(type, user, sanObj);
 		}
 		else{
-			outBool = iFact.add(sanObj);
+			if(sessionId != null) {
+				BulkFactories.getBulkFactory().createBulkEntry(sessionId, FactoryEnumType.valueOf(type.toString()), (NameIdType)sanObj);
+				outBool = true;
+			}
+			else outBool = iFact.add(sanObj);
 		}
 		return outBool;
 	}
@@ -542,6 +548,9 @@ public class BaseService {
 		return add(addType, bean, user);
 	}
 	public static <T> boolean add(AuditEnumType addType, T bean, UserType user){
+		return add(addType, bean, user, null);
+	}
+	public static <T> boolean add(AuditEnumType addType, T bean, UserType user, String sessionId){
 		
 		boolean outBool = false;
 		AuditType audit = AuditService.beginAudit(ActionEnumType.ADD, "add", AuditEnumType.USER, user.getUrn());
@@ -561,9 +570,9 @@ public class BaseService {
 
 			if(canCreateType(addType, user, dirBean)){
 
-				outBool = sanitizeAddNewObject(addType, user, bean);
+				outBool = sanitizeAddNewObject(addType, user, bean, sessionId);
 
-				if(outBool && enableExtendedAttributes){
+				if(sessionId == null && outBool && enableExtendedAttributes){
 					NameIdType beanObj = (NameIdType)bean;
 					if(beanObj.getAttributes().size() > 0){
 						NameIdType obj = null;
@@ -608,6 +617,9 @@ public class BaseService {
 		return update(type, bean, user);
 	}
 	public static <T> boolean update(AuditEnumType type, T bean,UserType user){
+		return update(type, bean, user, null);
+	}
+	public static <T> boolean update(AuditEnumType type, T bean,UserType user, String sessionId){
 		boolean outBool = false;
 		
 		AuditType audit = AuditService.beginAudit(ActionEnumType.MODIFY, "update",AuditEnumType.USER, user.getUrn());
@@ -638,7 +650,10 @@ public class BaseService {
 			}
 
 			if(canChangeType(type, user, dirBean)){
-				outBool = updateObject(type, user, bean); 	
+				if(sessionId == null) outBool = updateObject(type, user, bean);
+				else {
+					 BulkFactories.getBulkFactory().modifyBulkEntry(sessionId, FactoryEnumType.valueOf(type.toString()), (NameIdType)bean);
+				}
 				if(outBool) AuditService.permitResult(audit, "Updated " + dirBean.getName() + " (#" + dirBean.getId() + ")");
 				else AuditService.denyResult(audit, "Unable to update " + dirBean.getName() + " (#" + dirBean.getId() + ")");
 			}
