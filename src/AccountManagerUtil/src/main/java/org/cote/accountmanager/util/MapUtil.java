@@ -41,6 +41,6 @@ public class MapUtil {
 		if(src.getNameType() != null && src.getNameType() != NameEnumType.UNKNOWN) targ.setNameType(src.getNameType());
 		if(src.getOrganizationId() != null) targ.setOrganizationId(src.getOrganizationId());
 		if(src.getOrganizationPath() != null) targ.setOrganizationPath(src.getOrganizationPath());
-		if(targ.getUrn() != null) targ.setUrn(src.getUrn());
+		targ.getAttributes().addAll(src.getAttributes());
 	}
 }
