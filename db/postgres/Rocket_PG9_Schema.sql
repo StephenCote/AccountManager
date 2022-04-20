@@ -325,7 +325,10 @@ where (groupid not in (select id from Groups G1)
 and R1.groupid > 0)
 or
 organizationid not in (select id from organizations)
+or
+parentid not in (select id from location)
 ;
+
 create or replace view orphanLocationParticipations as
 select id from LocationParticipation RP1
 where 
@@ -341,6 +344,8 @@ where (groupid not in (select id from Groups G1)
 and R1.groupid > 0)
 or
 organizationid not in (select id from organizations)
+or
+parentid not in (select id from location)
 ;
 
 create or replace view orphanEventParticipations as
