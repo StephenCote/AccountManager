@@ -569,9 +569,7 @@ public class BaseService {
 			normalize(user,bean);
 
 			if(canCreateType(addType, user, dirBean)){
-
 				outBool = sanitizeAddNewObject(addType, user, bean, sessionId);
-
 				if(sessionId == null && outBool && enableExtendedAttributes){
 					NameIdType beanObj = (NameIdType)bean;
 					if(beanObj.getAttributes().size() > 0){
@@ -580,7 +578,9 @@ public class BaseService {
 						if(iFact.isClusterByGroup() || addType == AuditEnumType.DATA) obj = readByName(addType,((NameIdDirectoryGroupType)bean).getGroupId(),((NameIdDirectoryGroupType)bean).getName(),user);
 						else obj = readByName(addType,beanObj.getName(),user);
 						if(obj != null){
+							obj.getAttributes().addAll(beanObj.getAttributes());
 							outBool = Factories.getAttributeFactory().updateAttributes((NameIdType)obj);
+							if(!outBool) logger.warn("Failed to persist attributes");
 						}
 						else{
 							logger.warn("Failed to update extended attributes");
@@ -589,6 +589,9 @@ public class BaseService {
 					else{
 						logger.info("No attributes defined for add operation");
 					}
+				}
+				else {
+					logger.debug("Skip adding attributes because " + sessionId + " || " + outBool + " || " + enableExtendedAttributes + " was false");
 				}
 
 				if(outBool) AuditService.permitResult(audit, "Added " + dirBean.getName());
