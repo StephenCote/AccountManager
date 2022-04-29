@@ -319,7 +319,7 @@ public class AuthorizedSearchService {
 		+ " WHERE (0 = cardinality(%s) OR GP.affectId = ANY(%s))"
 		/// 10 = token 8 referencetype
 		/// 11 - token 9 referenceid
-		+ " AND GP.participantid IN (SELECT roleid FROM role_membership(GP.participantid) RM WHERE RM.referencetype = %s AND RM.referenceid = %s)"
+		+ " AND GP.participantid IN (SELECT roleid FROM role_membership_refid(GP.participantid, '" + referenceType + "', " + referenceId + ") RM WHERE RM.referencetype = %s AND RM.referenceid = %s)"
 		+  (groupScope ? "\n AND GP.participationid in (select groupid from groups_from_branch(" + groupScopeId + "))" : "")
 		+ (request.getIncludeThumbnail() ? "" : " AND G.name <> '.thumbnail'")
 		+ "\n UNION ALL\n"
@@ -334,7 +334,7 @@ public class AuthorizedSearchService {
 		/// 9 = token 6 referencetype
 		/// 10 = token 7 referenceid
 		/// 11 = token 8 referenceid
-		+"	LEFT JOIN group_membership(PP.participantid) GM ON (%s = '' OR GM.referencetype = %s) AND (%s = 0 OR GM.referenceid = %s) "
+		+"	LEFT JOIN group_membership_refid(PP.participantid, '" + referenceType + "', " + referenceId + ") GM ON (%s = '' OR GM.referencetype = %s) AND (%s = 0 OR GM.referenceid = %s) "
 		/// 12 = token 9 permissionIds
 		/// 13 = token 10 permissionIds
 		+"	WHERE (0 = cardinality(%s) OR PP.affectId = ANY(%s)) AND PP.participanttype = 'GROUP'"
@@ -350,7 +350,7 @@ public class AuthorizedSearchService {
 		///	16 token 12 referencetype
 		/// 17 = token 13 referenceid
 		/// 18 = token 14 referenceid
-		+"	LEFT JOIN role_membership(PP.participantid) GM ON (%s = '' OR GM.referencetype = %s)  AND (%s = 0 OR GM.referenceid = %s)"
+		+"	LEFT JOIN role_membership_refid(PP.participantid, '" + referenceType + "', " + referenceId + ") GM ON (%s = '' OR GM.referencetype = %s)  AND (%s = 0 OR GM.referenceid = %s)"
 		/// 19 = token 15 permissionids
 		/// 20 = token 16 permissionids
 		+"	WHERE (0 = cardinality(%s) OR PP.affectId = ANY(%s)) AND PP.participanttype = 'ROLE'	"
@@ -443,7 +443,7 @@ public class AuthorizedSearchService {
 			statement.setLong(31, referenceId);	
 	
 			DBFactory.setStatementParameters(fields, 32, statement);
-			// logger.info(statement);
+			//logger.info(statement);
 			rset = statement.executeQuery();
 			while(rset.next()){
 				EntitlementType ent = new EntitlementType();
