@@ -829,10 +829,46 @@ CREATE OR REPLACE FUNCTION roles_to_leaf(root_id BIGINT)
         $$ LANGUAGE 'sql';
 
 
+
+CREATE OR REPLACE FUNCTION role_membership_refid(IN root_id bigint, IN reftype text, in refid bigint)
+	RETURNS TABLE(pid bigint,branchid bigint, roleid bigint, parentid bigint, referencetype text,referenceid bigint,organizationid bigint)
+	AS $$
+	WITH RECURSIVE role_membership(pid,branchid,roleid, parentid, referencetype,referenceid,organizationid) AS MATERIALIZED (
+	   SELECT CAST(0 as bigint),$1 as branchid, R.id as roleid, R.parentid, CASE WHEN P.participanttype <> '' THEN P.participanttype ELSE CAST('' as text) END, CASE WHEN P.participantid > 0 THEN P.participantid ELSE CAST(0 as bigint) END,R.organizationid
+	      FROM roles R
+		  LEFT JOIN roleparticipation P ON P.participationid = R.id AND ($2 = '' OR participanttype = 'ROLE' OR (participanttype = $2 AND participantid = $3))
+		  
+	      WHERE R.id = $1
+	   UNION
+	   SELECT P.id as pid,$1 as branchid, P.participationid, RT.roleid, P.participanttype as referencetype,P.participantid as referenceid,P.organizationid
+	      FROM role_membership RT, roleparticipation P
+	      WHERE RT.parentid = P.participationid  AND ($2 = '' OR participanttype = 'ROLE' OR (participanttype = $2 AND participantid = $3))
+	      --and R.participanttype = 'ROLE'
+	)
+	select * from role_membership;
+	$$ LANGUAGE 'sql';
+
+
+CREATE OR REPLACE FUNCTION group_membership_refid(IN root_id bigint, IN reftype text, in refid bigint)
+	RETURNS TABLE(pid bigint,branchid bigint, groupid bigint, parentid bigint, referencetype text,referenceid bigint, organizationid bigint)
+	AS $$
+	WITH RECURSIVE group_membership(pid,branchid,groupid, parentid, referencetype,referenceid, organizationid) AS MATERIALIZED (
+	   SELECT CAST(0 as bigint),$1 as branchid, G.id as groupid, G.parentid, CASE WHEN P.participanttype <> '' THEN P.participanttype ELSE CAST('' as text) END, CASE WHEN P.participantid > 0 THEN P.participantid ELSE CAST(0 as bigint) END,G.organizationid
+	      FROM groups G
+		LEFT JOIN groupparticipation P on P.participationid = G.id  AND ($2 = '' OR participanttype = 'GROUP' OR (participanttype = $2 AND participantid = $3))
+	      WHERE G.id = $1
+	   UNION
+	   SELECT P.id as pid,$1 as branchid, P.participationid, RT.groupid, P.participanttype as referencetype,P.participantid as referenceid, P.organizationid
+	      FROM group_membership RT, groupparticipation P
+	      WHERE RT.groupid = P.participationid AND ($2 = ''  OR participanttype = 'GROUP' OR (participanttype = $2 AND participantid = $3))
+	)
+	select * from group_membership;
+	$$ LANGUAGE 'sql';
+
 CREATE OR REPLACE FUNCTION role_membership(IN root_id bigint)
 	RETURNS TABLE(pid bigint,branchid bigint, roleid bigint, parentid bigint, referencetype text,referenceid bigint,organizationid bigint)
 	AS $$
-	WITH RECURSIVE role_membership(pid,branchid,roleid, parentid, referencetype,referenceid,organizationid) AS (
+	WITH RECURSIVE role_membership(pid,branchid,roleid, parentid, referencetype,referenceid,organizationid) AS MATERIALIZED (
 	   SELECT CAST(0 as bigint),$1 as branchid, R.id as roleid, R.parentid, CASE WHEN P.participanttype <> '' THEN P.participanttype ELSE CAST('' as text) END, CASE WHEN P.participantid > 0 THEN P.participantid ELSE CAST(0 as bigint) END,R.organizationid
 	      FROM roles R
 		  LEFT JOIN roleparticipation P ON P.participationid = R.id
@@ -850,7 +886,7 @@ CREATE OR REPLACE FUNCTION role_membership(IN root_id bigint)
 CREATE OR REPLACE FUNCTION group_membership(IN root_id bigint)
 	RETURNS TABLE(pid bigint,branchid bigint, groupid bigint, parentid bigint, referencetype text,referenceid bigint, organizationid bigint)
 	AS $$
-	WITH RECURSIVE group_membership(pid,branchid,groupid, parentid, referencetype,referenceid, organizationid) AS (
+	WITH RECURSIVE group_membership(pid,branchid,groupid, parentid, referencetype,referenceid, organizationid) AS MATERIALIZED (
 	   SELECT CAST(0 as bigint),$1 as branchid, G.id as groupid, G.parentid, CASE WHEN P.participanttype <> '' THEN P.participanttype ELSE CAST('' as text) END, CASE WHEN P.participantid > 0 THEN P.participantid ELSE CAST(0 as bigint) END,G.organizationid
 	      FROM groups G
 		LEFT JOIN groupparticipation P on P.participationid = G.id
