@@ -100,6 +100,15 @@ public class QueryFields extends org.cote.accountmanager.data.query.QueryFields 
 	{
 		return getBigIntField(FieldMap.Columns.get(ColumnEnumType.ACTUALCOSTID), value);
 	}
+	public static QueryField getFieldStartDate(XMLGregorianCalendar val)
+	{
+		return getTimestampField(FieldMap.Columns.get(ColumnEnumType.STARTDATE), val);
+	}
+	public static QueryField getFieldEndDate(XMLGregorianCalendar val)
+	{
+		return getTimestampField(FieldMap.Columns.get(ColumnEnumType.ENDDATE), val);
+	}
+
 	public static QueryField getFieldDueDate(XMLGregorianCalendar val)
 	{
 		return getTimestampField(FieldMap.Columns.get(ColumnEnumType.DUEDATE), val);

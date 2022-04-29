@@ -309,10 +309,6 @@ public class QueryFields {
 	{
 		return getTimestampField(FieldMap.Columns.get(ColumnEnumType.CREATEDDATE), val);
 	}
-	public static QueryField getFieldStartDate(XMLGregorianCalendar val)
-	{
-		return getTimestampField(FieldMap.Columns.get(ColumnEnumType.STARTDATE), val);
-	}
 
 	public static QueryField getFieldModifiedDate(XMLGregorianCalendar val)
 	{
