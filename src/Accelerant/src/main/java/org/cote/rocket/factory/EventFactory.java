@@ -387,6 +387,8 @@ public class EventFactory extends NameIdGroupFactory {
 		EventType useMap = (EventType)map;
 		fields.add(QueryFields.getFieldDescription(useMap.getDescription()));
 		fields.add(QueryFields.getFieldEventType(useMap.getEventType()));
+		fields.add(QueryFields.getFieldStartDate(useMap.getStartDate()));
+		fields.add(QueryFields.getFieldEndDate(useMap.getEndDate()));
 		fields.add(QueryFields.getFieldLocationId((useMap.getLocation() != null ? useMap.getLocation().getId() : 0L)));
 		fields.add(QueryFields.getFieldGroup(useMap.getGroupId()));
 	}
