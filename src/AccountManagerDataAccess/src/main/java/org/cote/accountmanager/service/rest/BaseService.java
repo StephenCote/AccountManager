@@ -656,6 +656,7 @@ public class BaseService {
 				if(sessionId == null) outBool = updateObject(type, user, bean);
 				else {
 					 BulkFactories.getBulkFactory().modifyBulkEntry(sessionId, FactoryEnumType.valueOf(type.toString()), (NameIdType)bean);
+					 outBool = true;
 				}
 				if(outBool) AuditService.permitResult(audit, "Updated " + dirBean.getName() + " (#" + dirBean.getId() + ")");
 				else AuditService.denyResult(audit, "Unable to update " + dirBean.getName() + " (#" + dirBean.getId() + ")");
