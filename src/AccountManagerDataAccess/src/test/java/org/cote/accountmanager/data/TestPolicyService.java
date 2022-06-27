@@ -483,6 +483,7 @@ public class TestPolicyService extends BaseDataAccessTest{
 					//op.setUrn(oname);
 					op.setOperationType(OperationEnumType.INTERNAL);
 					op.setOperation("org.cote.accountmanager.data.operation.ComparePersonLinkAttributeOperation");
+					logger.info("Op: " + oname + " in " + odir.getPath());
 					((OperationFactory)Factories.getFactory(FactoryEnumType.OPERATION)).add(op);
 				}
 				

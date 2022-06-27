@@ -25,6 +25,8 @@ package org.cote.accountmanager.data;
 
 import static org.junit.Assert.assertNotNull;
 
+import java.io.BufferedInputStream;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -60,16 +62,17 @@ import org.cote.accountmanager.objects.RuleType;
 import org.cote.accountmanager.objects.UserRoleType;
 import org.cote.accountmanager.objects.UserType;
 import org.cote.accountmanager.objects.types.FactoryEnumType;
+import org.cote.accountmanager.util.StreamUtil;
 import org.junit.Test;
 public class TestFunctionFactory extends BaseDataAccessTest{
 	public static final Logger logger = LogManager.getLogger(TestFunctionFactory.class);
-	
+
 	private static String getDebugJavaScript(){
 		StringBuffer buff = new StringBuffer();
 		buff.append("print('test');\nvar dt = new Date().getTime();\n");
 		buff.append("var pub = org.cote.accountmanager.data.Factories.getPublicOrganization();");
 		buff.append("\nprint('name: ' + user.getName());");
-		buff.append("var u2 = org.cote.accountmanager.data.Factories.getNameIdFactory(FactoryEnumType.USER).getByName('RocketQAUser2',user.getOrganizationId());");
+		buff.append("var u2 = org.cote.accountmanager.data.Factories.getNameIdFactory(org.cote.accountmanager.objects.types.FactoryEnumType.USER).getByName('RocketQAUser2',user.getOrganizationId());");
 		buff.append("dt;");
 		return buff.toString();
 	}
@@ -102,6 +105,7 @@ public class TestFunctionFactory extends BaseDataAccessTest{
 			assertNotNull("Function is null",func);
 			Map<String,Object> params = new HashMap<String,Object>();
 			params.put("debug",testUser);
+			params.put("user",testUser);
 			/// Expecting an error here because the namespace is blocked
 			///
 			Double resp = (Double)ScriptService.run(params,func);
@@ -198,8 +202,8 @@ public class TestFunctionFactory extends BaseDataAccessTest{
 
 			//FactType credParamFact = getCreateCredentialParamFact(user,"Credential Parameter",fdir);
 			
-			DataType bsh = getCreateTextData(user,"TestOperation.bsh",getOperationShellScript(),ddir); 
-			FunctionType func = getCreateFunction(user,"TestBshOperation",FunctionEnumType.JAVA,bsh,fudir);
+			DataType bsh = getCreateTextData(user,"TestOperation.js",getOperationShellScript("./operationShellScript1.js"), ddir); 
+			FunctionType func = getCreateFunction(user,"TestJsOperation",FunctionEnumType.JAVASCRIPT, bsh, fudir);
 			OperationType rgOp = getCreateOperation(user,"Test Function Operation",func.getUrn(),odir);
 			rgOp.setOperationType(OperationEnumType.FUNCTION);
 			((OperationFactory)Factories.getFactory(FactoryEnumType.OPERATION)).update(rgOp);
@@ -229,7 +233,18 @@ public class TestFunctionFactory extends BaseDataAccessTest{
 		return pol;
 	}
 	
-	private static String getOperationShellScript(){
+	
+	private static String getOperationShellScript(String path) {
+		String scriptStr = null;
+		try {
+			scriptStr = StreamUtil.streamToString(new BufferedInputStream(ClassLoader.getSystemResourceAsStream(path)));
+		} catch (IOException e) {
+			logger.error(e);
+		} 
+		return scriptStr;
+	}
+	
+	private static String getOperationShellScriptXXX(){
 		StringBuffer  buff = new StringBuffer();
 		//buff.append("import org.apache.logging.log4j.LogManager;\nimport org.apache.logging.log4j.Logger;\n");
 		//buff.append("import org.cote.accountmanager.objects.DirectoryGroupType;\n");
@@ -239,7 +254,7 @@ public class TestFunctionFactory extends BaseDataAccessTest{
 		//buff.append("Logger logger = LogManager.getLogger(\"BeanShell\");\n");
 		
 		buff.append("DirectoryGroupType dir = ((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).findGroup(null, GroupEnumType.DATA, \"/Home/TestUser1\", ((OrganizationFactory)Factories.getFactory(FactoryEnumType.ORGANIZATION)).findOrganization(\"/Accelerant/Rocket\").getId());");
-		buff.append("logger.info(\"BeanShell: \" + dir.getName());");
+		buff.append("console.log(\"OperationShell: \" + dir.getName());");
 		buff.append("OperationResponseEnumType respError = OperationResponseEnumType.ERROR;");
 		buff.append("OperationResponseEnumType respSucceeded = OperationResponseEnumType.SUCCEEDED;");
 		buff.append("OperationResponseEnumType respFailed = OperationResponseEnumType.FAILED;");
@@ -247,7 +262,6 @@ public class TestFunctionFactory extends BaseDataAccessTest{
 		buff.append("logger.info(\"Comparing \" + fact.getUrn() + \" to \" + match.getUrn());\n");
 		buff.append("return respSucceeded;");
 
-		
 		return buff.toString();
 	}
 	

@@ -40,8 +40,9 @@ import org.cote.accountmanager.data.factory.OrganizationFactory;
 import org.cote.accountmanager.data.operation.IOperation;
 import org.cote.accountmanager.data.operation.OperationUtil;
 import org.cote.accountmanager.data.rule.RuleUtil;
-import org.cote.accountmanager.data.services.BshService;
+//import org.cote.accountmanager.data.services.BshService;
 import org.cote.accountmanager.data.services.EffectiveAuthorizationService;
+import org.cote.accountmanager.data.services.ScriptService;
 import org.cote.accountmanager.data.sod.SoDPolicyUtil;
 import org.cote.accountmanager.exceptions.ArgumentException;
 import org.cote.accountmanager.exceptions.FactoryException;
@@ -470,17 +471,19 @@ public class PolicyEvaluator {
 				if(func == null){
 					throw new ArgumentException("Operation Function '" + op.getOperation() + "' is null");
 				}
-				Map<String,Object> params = new HashMap<>();
+				Map<String,Object> params = ScriptService.getCommonParameterMap(null);
 				params.put("pattern", pattern);
 				params.put("fact", fact);
 				params.put("match", matchFact);
-				Object resp = BshService.run(null, params, func);
+				// Object resp = BshService.run(null, params, func);
+				Object resp = ScriptService.run(params, func);
 				if(resp == null){
-					logger.error("BeanShell did not return an OperationResponseEnumType value");
+					logger.error("Script did not return an OperationResponseEnumType value");
 					outResponse = OperationResponseEnumType.ERROR;
 				}
 				else{
-					outResponse = (OperationResponseEnumType)resp;
+					//outResponse = (OperationResponseEnumType)resp;
+					outResponse = ((org.graalvm.polyglot.Value)resp).as(OperationResponseEnumType.class);
 				}
 				
 				break;

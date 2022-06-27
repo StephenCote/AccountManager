@@ -29,7 +29,8 @@ import javax.script.CompiledScript;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-
+import org.cote.accountmanager.data.Factories;
+import org.cote.accountmanager.data.factory.DataFactory;
 import org.cote.accountmanager.exceptions.ArgumentException;
 import org.cote.accountmanager.exceptions.DataException;
 import org.cote.accountmanager.exceptions.FactoryException;
@@ -37,16 +38,18 @@ import org.cote.accountmanager.objects.DataType;
 import org.cote.accountmanager.objects.FunctionEnumType;
 import org.cote.accountmanager.objects.FunctionType;
 import org.cote.accountmanager.objects.UserType;
+import org.cote.accountmanager.objects.types.FactoryEnumType;
 import org.cote.accountmanager.util.DataUtil;
 import org.graalvm.polyglot.Context;
 import org.graalvm.polyglot.HostAccess;
+import org.graalvm.polyglot.PolyglotAccess;
 import org.graalvm.polyglot.Value;
 
 public class ScriptService {
 	public static final Logger logger = LogManager.getLogger(ScriptService.class);
 
-	private static final String scriptEngineJavaScript = "javascript";
-	private static final String scriptEngineNashorn = "nashorn";
+	// private static final String scriptEngineJavaScript = "javascript";
+	// private static final String scriptEngineNashorn = "nashorn";
 	private static final String scriptEngineGraal = "graal.js";
 
 	private static String scriptEngineName = scriptEngineGraal;
@@ -58,13 +61,14 @@ public class ScriptService {
 	
 	public static Context getJavaScriptEngine(){
 		if(jsEngine == null){
+			/*
 			if(scriptEngineName.equals(scriptEngineNashorn)){
 				logger.error("Not supported");
 			}
-			else if(scriptEngineName.contentEquals(scriptEngineGraal)) {
+			else */ if(scriptEngineName.contentEquals(scriptEngineGraal)) {
 			    Context context = Context.newBuilder("js")
 			    	.allowIO(true)
-			    	//.allowPolyglotAccess(PolyglotAccess.ALL)
+			    	.allowPolyglotAccess(PolyglotAccess.ALL)
 			    	.allowHostAccess(HostAccess.ALL)
 			    	.allowHostClassLookup(className -> true)
 			    	.build();
@@ -83,8 +87,8 @@ public class ScriptService {
 		if(func.getFunctionType() != FunctionEnumType.JAVASCRIPT) throw new ArgumentException("FunctionType '" + func.getFunctionType().toString() + "' is not applicable");
 		DataType data = func.getFunctionData();
 		if(data == null && func.getSourceUrn() != null){
-			/// data = ((DataFactory)Factories.getFactory(FactoryEnumType.DATA)).getByUrn(func.getSourceUrn());
-			throw new FactoryException("TODO: Add getByUrn");
+			data = ((DataFactory)Factories.getFactory(FactoryEnumType.DATA)).getByUrn(func.getSourceUrn());
+			//throw new FactoryException("TODO: Add getByUrn");
 		}
 		if(data == null) throw new ArgumentException("Function '" + func.getName() + "' data is null");
 		else if(data.getDetailsOnly()) throw new ArgumentException("Function data is not properly loaded");

@@ -222,6 +222,20 @@ public class GenericResourceService {
 		return Response.status(200).entity(obj).build();
 	}
 
+	/// Specifically to allow for the variation where a factory is clustered by both group and parent
+	/// To retrieve an object using a parent id vs. the group id
+	///
+	@RolesAllowed({"user"})
+	@GET
+	@Path("/urn/{urn: [\\(\\)@%\\sa-zA-Z_0-9\\-\\.:]+}")
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response getByUrn(@PathParam("type") String type, @PathParam("urn") String urn, @Context HttpServletRequest request){
+
+		AuditEnumType auditType = AuditEnumType.valueOf(type);
+		Object obj = BaseService.readByUrn(auditType, urn, request);
+		return Response.status(200).entity(obj).build();
+	}
+	
 	@RolesAllowed({"user"})
 	@POST
 	@Path("/")
