@@ -466,7 +466,7 @@ public class PolicyEvaluator {
 				
 				break;
 			case FUNCTION:
-				logger.error("NEED TO REFACTOR. THIS IS ONLY AN INITIAL STUB");
+				//logger.error("NEED TO REFACTOR. THIS IS ONLY AN INITIAL STUB");
 				FunctionType func = Factories.getNameIdFactory(FactoryEnumType.FUNCTION).getByUrn(op.getOperation());
 				if(func == null){
 					throw new ArgumentException("Operation Function '" + op.getOperation() + "' is null");
@@ -476,7 +476,8 @@ public class PolicyEvaluator {
 				params.put("fact", fact);
 				params.put("match", matchFact);
 				// Object resp = BshService.run(null, params, func);
-				Object resp = ScriptService.run(params, func);
+				outResponse = ScriptService.run(OperationResponseEnumType.class, params, func);
+				/*
 				if(resp == null){
 					logger.error("Script did not return an OperationResponseEnumType value");
 					outResponse = OperationResponseEnumType.ERROR;
@@ -485,7 +486,7 @@ public class PolicyEvaluator {
 					//outResponse = (OperationResponseEnumType)resp;
 					outResponse = ((org.graalvm.polyglot.Value)resp).as(OperationResponseEnumType.class);
 				}
-				
+				*/
 				break;
 			default:
 				logger.error("Unhandled operation type: " + op.getOperationType());
