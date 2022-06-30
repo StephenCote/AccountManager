@@ -305,15 +305,18 @@ public class FactoryDefaults {
 		RoleService.getDataReaderUserRole(adminUser);
 		RoleService.getGroupReaderUserRole(adminUser);
 		RoleService.getObjectReaderUserRole(adminUser);
-
+		UserRoleType scriptExecRole = RoleService.getScriptExectorsUserRole(adminUser);
 		RoleService.addUserToRole(rootUser,userAdminRole);
 		RoleService.addUserToRole(rootUser,userDataAdminRole);
 		RoleService.addUserToRole(rootUser,userObjectAdminRole);
 		RoleService.addUserToRole(rootUser,userSystemAdminRole);
+		RoleService.addUserToRole(rootUser, scriptExecRole);
 		RoleService.addUserToRole(adminUser, userAdminRole);
 		RoleService.addUserToRole(adminUser, userDataAdminRole);
 		RoleService.addUserToRole(adminUser, userObjectAdminRole);
 		RoleService.addUserToRole(adminUser,userSystemAdminRole);
+		RoleService.addUserToRole(adminUser, scriptExecRole);
+
 		
 		RoleFactory rFact = Factories.getFactory(FactoryEnumType.ROLE);
 		rFact.addDefaultRoles(organization.getId());
@@ -331,8 +334,6 @@ public class FactoryDefaults {
 		DirectoryGroupType pDir = ((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getCreateDirectory(adminUser, "Persons", ((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getRootDirectory(organization.getId()), organization.getId());
 		DirectoryGroupType cDir = ((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getCreateDirectory(adminUser, "Contacts", ((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getRootDirectory(organization.getId()), organization.getId());
 
-		
-		
 		AuthorizationService.authorizeType(adminUser, usersUsersReadersRole, pDir, true, false, false, false);
 		AuthorizationService.authorizeType(adminUser, usersUsersReadersRole, cDir, true, false, false, false);
 		AuthorizationService.authorizeType(adminUser, userAdminRole, pDir, true, true, false, true);
