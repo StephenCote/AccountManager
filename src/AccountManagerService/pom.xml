@@ -206,6 +206,22 @@
 		    <scope>runtime</scope>
 		    -->
 		</dependency>
+				<!-- GraalVM -->
+    <dependency>
+      <groupId>org.graalvm.js</groupId>
+      <artifactId>js</artifactId>
+      <version>21.1.0</version>
+    </dependency>  
+    <dependency>
+      <groupId>org.graalvm.js</groupId>
+      <artifactId>js-scriptengine</artifactId>
+      <version>21.1.0</version>
+    </dependency>
+        <dependency>
+      <groupId>org.graalvm.sdk</groupId>
+      <artifactId>graal-sdk</artifactId>
+      <version>21.1.0</version>
+    </dependency>
 	</dependencies>
 	<build>
 		<testSourceDirectory>${basedir}/src/test/java</testSourceDirectory>
