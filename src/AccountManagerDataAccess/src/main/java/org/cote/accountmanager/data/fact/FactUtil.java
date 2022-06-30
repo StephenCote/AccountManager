@@ -120,7 +120,7 @@ public class FactUtil {
 				outVal = matchFact.getFactData();
 				break;
 			case FUNCTION:
-				outVal = evaluateFunctionFact(prt, prr, sourceFact, matchFact);
+				outVal = evaluateFunctionFact(String.class, prt, prr, sourceFact, matchFact);
 				break;
 			default:
 				logger.error("Unhandled fact type: " + matchFact.getFactType());
@@ -257,7 +257,7 @@ public class FactUtil {
 		return outObj;
 	}
 	@SuppressWarnings("unchecked")
-	public static <T> T evaluateFunctionFact(PolicyRequestType prt,PolicyResponseType prr, FactType fact, FactType matchFact){
+	public static <T> T evaluateFunctionFact(Class<T> cls, PolicyRequestType prt,PolicyResponseType prr, FactType fact, FactType matchFact){
 		if(matchFact.getFactType() != FactEnumType.FUNCTION){
 			logger.error("Match fact must be a function fact");
 			return null;
@@ -287,7 +287,7 @@ public class FactUtil {
 			params.put("match", matchFact);
 	
 			if(func.getFunctionType() == FunctionEnumType.JAVASCRIPT){
-				outResponse = (T)ScriptService.run(params, func);
+				outResponse = ScriptService.run(cls, params, func);
 			}
 			else{
 				logger.warn("Intentionally ignoring BeanShell.");
