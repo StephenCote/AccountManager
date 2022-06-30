@@ -14,7 +14,8 @@
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-
+        <compiler.dir>${project.build.directory}/compiler</compiler.dir>
+        <graalvm.version>22.1.0</graalvm.version>
 	</properties>
 
 	<build>
@@ -44,7 +45,8 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-surefire-plugin</artifactId>
-				<version>2.19</version>
+				<version>2.22.1</version>
+
 				<dependencies>
 
 					<dependency>
@@ -57,30 +59,36 @@
 
 				<configuration>
 					<skipTests>false</skipTests>
-					<argLine>-Xmx4096m ${argLine}</argLine>
+					<argLine>-Xmx4096m -XX:+UnlockExperimentalVMOptions -XX:+EnableJVMCI --module-path=${compiler.dir} --upgrade-module-path=${compiler.dir}/compiler.jar${path.separator}${compiler.dir}/compiler-management.jar ${argLine}</argLine>
 
 					<includes>
 						<include>**/Test*.java</include>
 					</includes>
 					<excludes>
 						<!-- 
+							 <exclude>**/TestSoD.java</exclude>		
 						
-						<exclude>**/TestListParticipation.java</exclude>
 						 -->
+						 <exclude>**/TestFunctionFactory.java</exclude>
+						 <exclude>**/TestScriptService.java</exclude>
+						 
+						 <exclude>**/TestFunctionFactPolicy.java</exclude>
+						
+						 <exclude>**/TestListParticipation.java</exclude>
 						 <exclude>**/TestObjectEntitlementQuery.java</exclude>
 						<exclude>**/TestVaultService.java</exclude> 
 						 <exclude>TestCurveEncrypt</exclude> 
-						  
+						  <exclude>**/TestPolicyService.java</exclude>
 						  <exclude>**/TestOrganizationFactory.java</exclude>
 						 <exclude>**/TestEffectiveAuthorization.java</exclude>
 						 
-						  <exclude>**/TestPolicyService.java</exclude>
+						  <exclude>**/TestEffectiveAuthorizationServiceExtension.java</exclude>
 						 <exclude>**/TestPermissions.java</exclude>
 						
 						 <exclude>**/TestPolicyOperation.java</exclude>
 						 <exclude>**/TestDataService.java</exclude>
 						<exclude>**/TestAccessApproval.java</exclude>
-						<exclude>**/TestSoD.java</exclude>						
+									
 						<exclude>**/TestBulkPerson.java</exclude>
 						<exclude>**/TestBulkUser.java</exclude>
 						<exclude>**/TestBulkDelete.java</exclude>
@@ -91,13 +99,12 @@
 						<exclude>**/TestRoleService.java</exclude>
 						<exclude>**/TestPermissionAuthorization.java</exclude>
 						<exclude>**/TestDataAuthorization.java</exclude>
-						<exclude>**/TestEffectiveAuthorizationServiceExtension.java</exclude>
+						
 						<exclude>**/TestKnowledgeBasedVerification.java</exclude>
 						
 						<exclude>**/TestGroupAuthorization.java</exclude>
 						
-						<exclude>**/TestFunctionFactPolicy.java</exclude>
-						<exclude>**/TestFunctionFactory.java</exclude>
+						
 						<exclude>**/TestFactoryInterfaces.java</exclude>
 						<exclude>**/TestDataFactory.java</exclude>
 						<exclude>**/TestFactoryCache.java</exclude>
@@ -149,6 +156,57 @@
 					</systemProperties>
 				</configuration>
 			</plugin>
+                   <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-dependency-plugin</artifactId>
+                        <version>2.10</version>
+                        <executions>
+                            <execution>
+                                <id>copy</id>
+                                <phase>process-test-classes</phase>
+                                <goals>
+                                    <goal>copy</goal>
+                                </goals>
+                                <configuration>
+                                    <artifactItems>
+                                        <artifactItem>
+                                            <groupId>org.graalvm.compiler</groupId>
+                                            <artifactId>compiler</artifactId>
+                                            <version>${graalvm.version}</version>
+                                            <type>jar</type>
+                                            <overWrite>true</overWrite>
+                                            <destFileName>compiler.jar</destFileName>
+                                        </artifactItem>
+                                        <artifactItem>
+                                            <groupId>org.graalvm.compiler</groupId>
+                                            <artifactId>compiler-management</artifactId>
+                                            <version>${graalvm.version}</version>
+                                            <type>jar</type>
+                                            <overWrite>true</overWrite>
+                                            <destFileName>compiler-management.jar</destFileName>
+                                        </artifactItem>
+                                        <artifactItem>
+                                            <groupId>org.graalvm.truffle</groupId>
+                                            <artifactId>truffle-api</artifactId>
+                                            <version>${graalvm.version}</version>
+                                            <type>jar</type>
+                                            <overWrite>true</overWrite>
+                                            <destFileName>truffle-api.jar</destFileName>
+                                        </artifactItem>
+                                        <artifactItem>
+                                            <groupId>org.graalvm.sdk</groupId>
+                                            <artifactId>graal-sdk</artifactId>
+                                            <version>${graalvm.version}</version>
+                                            <type>jar</type>
+                                            <overWrite>true</overWrite>
+                                            <destFileName>graal-sdk.jar</destFileName>
+                                        </artifactItem>
+                                    </artifactItems>
+                                    <outputDirectory>${compiler.dir}</outputDirectory>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
 			<plugin>
               <groupId>org.jacoco</groupId>
               <artifactId>jacoco-maven-plugin</artifactId>
@@ -303,12 +361,17 @@
     <dependency>
       <groupId>org.graalvm.js</groupId>
       <artifactId>js</artifactId>
-      <version>20.0.0</version>
+      <version>22.1.0</version>
     </dependency>  
     <dependency>
       <groupId>org.graalvm.js</groupId>
       <artifactId>js-scriptengine</artifactId>
-      <version>20.0.0</version>
+      <version>22.1.0</version>
+    </dependency>
+    <dependency>
+        <groupId>org.graalvm.sdk</groupId>
+        <artifactId>graal-sdk</artifactId>
+        <version>22.1.0</version>
     </dependency>
 	</dependencies>
 </project>
