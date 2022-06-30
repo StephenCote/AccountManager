@@ -76,12 +76,12 @@ public class RoleService {
 	public static final String ROLE_ROLE_ADMINISTRATORS = "RoleAdministrators";
 	public static final String ROLE_PERMISSION_ADMINISTRATORS = "PermissionAdministrators";
 	public static final String ROLE_GROUP_READERS = "GroupReaders";
-
+	public static final String ROLE_SCRIPT_EXECUTORS = "ScriptExecutors";
 	
 	protected static final String[] SYSTEM_ROLE_NAMES = new String[]{
 		ROLE_SYSTEM_ADMINISTRATOR, ROLE_DATA_ADMINISTRATOR, ROLE_DATA_READERS,ROLE_ARTICLE_AUTHORS,
 		ROLE_ACCOUNT_ADMINISTRATOR, ROLE_ACCOUNT_DEVELOPERS, ROLE_ACCOUNT_USERS, ROLE_ACCOUNT_USERS_READERS, ROLE_API_USERS,ROLE_PERMISSION_ADMINISTRATORS,
-		ROLE_PERMISSION_READERS, ROLE_ROLE_READERS, ROLE_ROLE_ADMINISTRATORS, ROLE_GROUP_READERS, ROLE_OBJECT_READERS, ROLE_OBJECT_ADMINISTRATOR
+		ROLE_PERMISSION_READERS, ROLE_ROLE_READERS, ROLE_ROLE_ADMINISTRATORS, ROLE_GROUP_READERS, ROLE_OBJECT_READERS, ROLE_OBJECT_ADMINISTRATOR, ROLE_SCRIPT_EXECUTORS
 	};
 	
 	protected static final Map<Long,List<BaseRoleType>> SYSTEM_ROLE_OBJECTS = new HashMap<>();
@@ -123,7 +123,8 @@ public class RoleService {
 					RoleService.getDataReaderUserRole(organizationId),
 					RoleService.getGroupReaderUserRole(organizationId),
 					RoleService.getObjectReaderUserRole(organizationId),
-					RoleService.getArticleAuthorUserRole(organizationId)
+					RoleService.getArticleAuthorUserRole(organizationId),
+					RoleService.getScriptExecutorsUserRole(organizationId)
 				));
 				
 				SYSTEM_ROLE_OBJECTS.put(organizationId, outList);
@@ -641,6 +642,14 @@ public class RoleService {
 		public static UserRoleType getGroupReaderUserRole(long organizationId) throws FactoryException, ArgumentException
 		{
 			return getUserRole(ROLE_GROUP_READERS, null,organizationId);
+		}
+		public static UserRoleType getScriptExectorsUserRole(UserType roleOwner) throws DataAccessException, FactoryException, ArgumentException
+		{
+			return getCreateUserRole(roleOwner, ROLE_SCRIPT_EXECUTORS, null);
+		}
+		public static UserRoleType getScriptExecutorsUserRole(long organizationId) throws FactoryException, ArgumentException
+		{
+			return getUserRole(ROLE_SCRIPT_EXECUTORS, null,organizationId);
 		}
 		public static UserRoleType getDataReaderUserRole(UserType roleOwner) throws DataAccessException, FactoryException, ArgumentException
 		{
