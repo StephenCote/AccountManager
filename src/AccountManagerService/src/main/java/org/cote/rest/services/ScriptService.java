@@ -23,6 +23,8 @@
  *******************************************************************************/
 package org.cote.rest.services;
 
+import java.util.Map;
+
 import javax.annotation.security.DeclareRoles;
 import javax.annotation.security.RolesAllowed;
 import javax.servlet.ServletContext;
@@ -42,11 +44,18 @@ import javax.ws.rs.core.UriInfo;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cote.accountmanager.data.services.ICommunityProvider;
+import org.cote.accountmanager.exceptions.ArgumentException;
+import org.cote.accountmanager.exceptions.DataException;
 import org.cote.accountmanager.exceptions.FactoryException;
+import org.cote.accountmanager.objects.DataType;
 import org.cote.accountmanager.objects.UserType;
+import org.cote.accountmanager.objects.types.AuditEnumType;
+import org.cote.accountmanager.service.rest.BaseService;
 import org.cote.accountmanager.service.rest.SchemaBean;
 import org.cote.accountmanager.service.rest.ServiceSchemaBuilder;
 import org.cote.accountmanager.service.util.ServiceUtil;
+import org.cote.accountmanager.util.DataUtil;
+import org.graalvm.polyglot.PolyglotException;
 
 @DeclareRoles({"admin","user"})
 @Path("/script")
@@ -83,7 +92,82 @@ public class ScriptService {
 		 return schemaBean;
 	 }
 	
+	private Map<String, Object> getParams(UserType user, DataType data){
+		/// logger, user, organizationPath
+		///
+		Map<String, Object> params = org.cote.accountmanager.data.services.ScriptService.getCommonParameterMap(user);
+		if(data != null) params.put("source", data.getUrn());
+		return params;
+	}
+	private Response execute(UserType user, DataType script) {
+		Object result = null;
+		String id = null;
+		String scriptText = null;
+		if(script == null) {
+			logger.error("Null script");
+		}
+		else {
+			try {
+				scriptText = DataUtil.getValueString(script);
+				if(scriptText != null && scriptText.length() > 0) {
+					Map<String, Object> params = getParams(user, script);
+					result = org.cote.accountmanager.data.services.ScriptService.run(Object.class, scriptText, params);
+				}
+				else {
+					logger.error("Null or empty script text");
+				}
+			} catch (PolyglotException | DataException | ArgumentException e) {
+				logger.error(e);
+			}
+		}
+		return Response.status(200).entity(new ScriptResponseType(user.getUrn(), script.getUrn(), result)).build();	
+	}
 	
+	@RolesAllowed({"admin", "user", "script"})
+	@GET
+	@Produces(MediaType.TEXT_PLAIN)
+	@Path("/template")
+	public Response getTemplate(@Context HttpServletRequest request){
+		/// UserType user = ServiceUtil.getUserFromSession(request);
+		String template = 
+"""
+/*jslint browser */
+/*global console, logger, user*/
+/// let AuditEnumType = Java.type("org.cote.accountmanager.objects.types.AuditEnumType");		
+/// let GroupEnumType = Java.type("org.cote.accountmanager.objects.types.GroupEnumType");
+/// let OperationResponseEnumType = Java.type("org.cote.accountmanager.objects.OperationResponseEnumType");
+/// var BaseService =  Java.type("org.cote.accountmanager.service.rest.BaseService");
+/// let GroupEnumType = Java.type("org.cote.accountmanager.objects.types.GroupEnumType");
+/// let homeDirectory = BaseService.findGroup(user, GroupEnumType.DATA, "~");
+/// let dirs = BaseService.listByGroup(AuditEnumType.GROUP, "DATA", homeDirectory.objectId, 0, 10, user);
+/// logger.info("Found: " + dirs.length);
+""";
+		return Response.status(200).entity(template).build();	
+		
+	}
+	
+	@RolesAllowed({"script"})
+	@GET
+	@Path("/execid/{objectId:[0-9A-Za-z\\-]+}")
+	@Produces(MediaType.APPLICATION_JSON)
+	@Consumes(MediaType.APPLICATION_JSON)
+	public Response executeByObjectId(@PathParam("objectId") String objectId, @Context HttpServletRequest request){
+		UserType user = ServiceUtil.getUserFromSession(request);
+		DataType data = BaseService.readByObjectId(AuditEnumType.DATA, objectId, user);
+		return execute(user, data);
+		
+	}
+	
+	@RolesAllowed({"script"})
+	@GET
+	@Path("/execurn/{urn: [\\(\\)@%\\sa-zA-Z_0-9\\-\\.:]+}")
+	@Produces(MediaType.APPLICATION_JSON)
+	@Consumes(MediaType.APPLICATION_JSON)
+	public Response executeByUrn(@PathParam("urn") String urn, @Context HttpServletRequest request){
+		UserType user = ServiceUtil.getUserFromSession(request);
+		DataType data = BaseService.readByUrn(AuditEnumType.DATA, urn, user);
+		return execute(user, data);
+	}
 	
 	
 	@RolesAllowed({"admin","user"})
@@ -125,4 +209,25 @@ public class ScriptService {
 		return Response.status(200).entity(outBool).build();
 	}
 
+}
+
+class ScriptResponseType{
+	private String userUrn = null;
+	private String Urn = null;
+	private Object result = null;
+	public ScriptResponseType(String userUrn, String scriptUrn, Object scriptResult) {
+		Urn = scriptUrn;
+		result = scriptResult;
+		this.userUrn = userUrn;
+	}
+	public String getUrn() {
+		return Urn;
+	}
+	public Object getResult() {
+		return result;
+	}
+	public String getUserUrn() {
+		return userUrn;
+	}
+	
 }
