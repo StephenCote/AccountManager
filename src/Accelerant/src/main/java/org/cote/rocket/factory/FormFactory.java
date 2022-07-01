@@ -79,7 +79,8 @@ public class FormFactory extends NameIdGroupFactory {
 			return;
 		}
 		if(form.getPopulated().booleanValue()) return;
-
+		form.setPopulated(true);
+		
 		form.getChildForms().addAll(((FormParticipationFactory)Factories.getFactory(FactoryEnumType.FORMPARTICIPATION)).getFormsFromParticipation(form));
 		try{
 			if(form.getIsTemplate().booleanValue()){
@@ -104,7 +105,7 @@ public class FormFactory extends NameIdGroupFactory {
 		catch(FactoryException fe){
 			logger.error(FactoryException.LOGICAL_EXCEPTION,fe);
 		}
-		form.setPopulated(true);
+		
 		updateToCache(form);
 	}
 	public FormType newForm(UserType user, long groupId) throws ArgumentException
