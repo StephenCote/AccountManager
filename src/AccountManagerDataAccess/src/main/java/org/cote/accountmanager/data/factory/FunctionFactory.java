@@ -115,10 +115,10 @@ public class FunctionFactory extends NameIdGroupFactory {
 			row.setCellValue(Columns.get(ColumnEnumType.DESCRIPTION), obj.getDescription());
 			row.setCellValue(Columns.get(ColumnEnumType.SCORE), obj.getScore());
 			row.setCellValue(Columns.get(ColumnEnumType.LOGICALORDER), obj.getLogicalOrder());
-			row.setCellValue(Columns.get(ColumnEnumType.SOURCEURN), obj.getFunctionData().getUrn());
-			if(obj.getFunctionData() == null){
+			if(obj.getFunctionData() != null) row.setCellValue(Columns.get(ColumnEnumType.SOURCEURN), obj.getFunctionData().getUrn());
+			//if(obj.getFunctionData() == null){
 				row.setCellValue(Columns.get(ColumnEnumType.SOURCEURL), obj.getSourceUrl());
-			}
+			//}
 			if (insertRow(row)){
 				FunctionType cobj = (bulkMode ? obj : (FunctionType)getByNameInGroup(obj.getName(), obj.getGroupId(),obj.getOrganizationId()));
 				if(cobj == null) throw new DataAccessException("Failed to retrieve new object");
