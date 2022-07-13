@@ -71,16 +71,14 @@ public class ArtifactFactory extends NameIdGroupFactory {
 	{
 		ArtifactType artifact = (ArtifactType)obj;
 		if(artifact.getPopulated().booleanValue()) return;
-		List<NameIdType> arts = new ArrayList<>();
+
 		if(artifact.getNextTransitionId() > 0L){
-			arts = ((ArtifactFactory)Factories.getFactory(FactoryEnumType.ARTIFACT)).getById(artifact.getNextTransitionId(), artifact.getOrganizationId());
-			if(arts.size() > 0) artifact.setNextTransition((ArtifactType)arts.get(0));
-			else throw new FactoryException("Artifact next transition id is out of sync.");
+			ArtifactType art = ((ArtifactFactory)Factories.getFactory(FactoryEnumType.ARTIFACT)).getById(artifact.getNextTransitionId(), artifact.getOrganizationId());
+			artifact.setNextTransition(art);
 		}
 		if(artifact.getPreviousTransitionId() > 0L){
-			arts = ((ArtifactFactory)Factories.getFactory(FactoryEnumType.ARTIFACT)).getById(artifact.getPreviousTransitionId(), artifact.getOrganizationId());
-			if(arts.size() > 0) artifact.setPreviousTransition((ArtifactType)arts.get(0));
-			else throw new FactoryException("Artifact previous transition id is out of sync.");
+			ArtifactType art = ((ArtifactFactory)Factories.getFactory(FactoryEnumType.ARTIFACT)).getById(artifact.getPreviousTransitionId(), artifact.getOrganizationId());
+			artifact.setPreviousTransition(art);
 		}
 		/*
 		if(artifact.getArtifactDataId() > 0){
