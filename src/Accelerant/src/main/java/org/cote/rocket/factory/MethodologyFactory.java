@@ -74,11 +74,11 @@ public class MethodologyFactory extends NameIdGroupFactory {
 	{
 		MethodologyType methodology = (MethodologyType)obj;
 		if(methodology.getPopulated().booleanValue()) return;
-
+		methodology.setPopulated(true);
 		methodology.getBudgets().addAll(((MethodologyParticipationFactory)Factories.getFactory(FactoryEnumType.METHODOLOGYPARTICIPATION)).getBudgetsFromParticipation(methodology));
 		methodology.getProcesses().addAll(((MethodologyParticipationFactory)Factories.getFactory(FactoryEnumType.METHODOLOGYPARTICIPATION)).getProcessesFromParticipation(methodology));
 		Collections.sort(methodology.getProcesses(),new LogicalTypeComparator());
-		methodology.setPopulated(true);
+		
 		updateToCache(methodology);
 	}
 	

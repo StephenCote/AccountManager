@@ -109,6 +109,7 @@ public class TaskFactory extends NameIdGroupFactory {
 	{
 		TaskType task = (TaskType)obj;
 		if(task.getPopulated()) return;
+		task.setPopulated(true);
 		task.getArtifacts().addAll(((TaskParticipationFactory)Factories.getFactory(FactoryEnumType.TASKPARTICIPATION)).getArtifactsFromParticipation(task));
 		task.getRequirements().addAll(((TaskParticipationFactory)Factories.getFactory(FactoryEnumType.TASKPARTICIPATION)).getRequirementsFromParticipation(task));
 		task.getWork().addAll(((TaskParticipationFactory)Factories.getFactory(FactoryEnumType.TASKPARTICIPATION)).getWorkFromParticipation(task));
@@ -119,7 +120,7 @@ public class TaskFactory extends NameIdGroupFactory {
 		task.getDependencies().addAll(((TaskParticipationFactory)Factories.getFactory(FactoryEnumType.TASKPARTICIPATION)).getDependenciesFromParticipation(task));
 		task.getChildTasks().addAll(getChildTaskList(task));
 		Collections.sort(task.getChildTasks(),new LogicalTypeComparator());
-		task.setPopulated(true);
+		
 		updateToCache(task);
 	}
 	public TaskType newTask(UserType user, TaskType parentTask) throws ArgumentException

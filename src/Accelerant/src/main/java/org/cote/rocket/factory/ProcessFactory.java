@@ -75,11 +75,11 @@ public class ProcessFactory extends NameIdGroupFactory {
 	{
 		ProcessType process = (ProcessType)obj;
 		if(process.getPopulated().booleanValue()) return;
-
+		process.setPopulated(true);
 		process.getBudgets().addAll(((ProcessParticipationFactory)Factories.getFactory(FactoryEnumType.PROCESSPARTICIPATION)).getBudgetsFromParticipation(process));
 		process.getSteps().addAll(((ProcessParticipationFactory)Factories.getFactory(FactoryEnumType.PROCESSPARTICIPATION)).getProcessStepsFromParticipation(process));
 		Collections.sort(process.getSteps(),new LogicalTypeComparator());
-		process.setPopulated(true);
+		
 		updateToCache(process);
 	}
 	

@@ -73,10 +73,10 @@ public class ProcessStepFactory extends NameIdGroupFactory {
 	{
 		ProcessStepType step = (ProcessStepType)obj;
 		if(step.getPopulated().booleanValue()) return;
+		step.setPopulated(true);
 		step.getBudgets().addAll(((ProcessStepParticipationFactory)Factories.getFactory(FactoryEnumType.PROCESSSTEPPARTICIPATION)).getBudgetsFromParticipation(step));
 		step.getGoals().addAll(((ProcessStepParticipationFactory)Factories.getFactory(FactoryEnumType.PROCESSSTEPPARTICIPATION)).getGoalsFromParticipation(step));
 		step.getRequirements().addAll(((ProcessStepParticipationFactory)Factories.getFactory(FactoryEnumType.PROCESSSTEPPARTICIPATION)).getRequirementsFromParticipation(step));
-		step.setPopulated(true);
 		updateToCache(step);
 	}
 	
