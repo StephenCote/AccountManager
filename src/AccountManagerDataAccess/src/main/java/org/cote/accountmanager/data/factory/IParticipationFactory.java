@@ -34,6 +34,7 @@ import org.cote.accountmanager.objects.ProcessingInstructionType;
 import org.cote.accountmanager.objects.types.AffectEnumType;
 import org.cote.accountmanager.objects.types.FactoryEnumType;
 import org.cote.accountmanager.objects.types.ParticipantEnumType;
+import org.cote.accountmanager.objects.types.ParticipationEnumType;
 import org.cote.accountmanager.objects.types.PermissionEnumType;
 
 
@@ -74,8 +75,13 @@ public interface IParticipationFactory extends INameIdFactory {
 		AffectEnumType affectType
 	) throws ArgumentException;
 	
+	public <T> List<T> listParticipants(ParticipationEnumType type, ParticipantEnumType ptype, NameIdType[] objects, long startRecord, int recordCount, long organizationId) throws FactoryException, ArgumentException;
+	public <T> List<T> listParticipants(NameIdType[] objects, ProcessingInstructionType instruction, ParticipationEnumType type, ParticipantEnumType ptype) throws FactoryException, ArgumentException;
+	public int countParticipants(NameIdType[] objects, ParticipantEnumType ptype) throws FactoryException;
+
+	
 	public <T> List<T> listParticipations(ParticipantEnumType type, NameIdType[] objects, long startRecord, int recordCount, long organizationId) throws FactoryException, ArgumentException;
-	public <T> List<T> listParticipations(NameIdType[] objects, ProcessingInstructionType instruction,ParticipantEnumType type) throws FactoryException, ArgumentException;
+	public <T> List<T> listParticipations(NameIdType[] objects, ProcessingInstructionType instruction, ParticipantEnumType type) throws FactoryException, ArgumentException;
 	public int countParticipations(NameIdType[] objects, ParticipantEnumType type) throws FactoryException;
 	
 }
