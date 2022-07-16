@@ -67,18 +67,20 @@
 					<excludes>
 						<!-- 
 							 <exclude>**/TestSoD.java</exclude>		
-						
-						 -->
+						 <exclude>**/TestFunctionFactPolicy.java</exclude>
 						 <exclude>**/TestFunctionFactory.java</exclude>
+						 <exclude>**/TestPolicyService.java</exclude>						
+						 -->
+						 
 						 <exclude>**/TestScriptService.java</exclude>
 						 
-						 <exclude>**/TestFunctionFactPolicy.java</exclude>
+
 						
 						 <exclude>**/TestListParticipation.java</exclude>
 						 <exclude>**/TestObjectEntitlementQuery.java</exclude>
 						<exclude>**/TestVaultService.java</exclude> 
 						 <exclude>TestCurveEncrypt</exclude> 
-						  <exclude>**/TestPolicyService.java</exclude>
+						  
 						  <exclude>**/TestOrganizationFactory.java</exclude>
 						 <exclude>**/TestEffectiveAuthorization.java</exclude>
 						 
@@ -300,7 +302,7 @@
 		<dependency>
 			<groupId>org.postgresql</groupId>
 			<artifactId>postgresql</artifactId>
-			<version>42.2.2</version>
+			<version>42.2.3</version>
 		</dependency>
 		<dependency>
 			<groupId>org.beanshell</groupId>
