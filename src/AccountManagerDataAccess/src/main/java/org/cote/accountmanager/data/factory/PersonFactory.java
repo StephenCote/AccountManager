@@ -100,6 +100,7 @@ public class PersonFactory extends NameIdGroupFactory {
 	{
 		PersonType person = (PersonType)obj;
 		if(person.getPopulated().booleanValue()) return;
+		person.setPopulated(true);
 		PersonParticipationFactory ppFact = Factories.getFactory(FactoryEnumType.PERSONPARTICIPATION);
 		person.getPartners().addAll(ppFact.getPartnersFromParticipation(person));
 
@@ -109,7 +110,7 @@ public class PersonFactory extends NameIdGroupFactory {
 		person.getUsers().addAll(ppFact.getUsersFromParticipation(person));
 		person.setContactInformation(((ContactInformationFactory)Factories.getFactory(FactoryEnumType.CONTACTINFORMATION)).getContactInformationForPerson(person));
 		if(person.getContactInformation() != null) ((ContactInformationFactory)Factories.getFactory(FactoryEnumType.CONTACTINFORMATION)).populate(person.getContactInformation());
-		person.setPopulated(true);
+		
 		
 		updateToCache(person);
 	}
