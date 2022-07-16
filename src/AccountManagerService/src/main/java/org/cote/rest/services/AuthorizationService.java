@@ -241,14 +241,32 @@ public class AuthorizationService {
 	@RolesAllowed({"admin","user"})
 	public Response listUserRolesForType(@PathParam("type") String objectType,@PathParam("objectId") String objectId,@Context HttpServletRequest request){
 		UserType user = ServiceUtil.getUserFromSession(request);
-		UserType targUser = null;
-		if(objectId == null || objectId.length() == 0 || objectId.equalsIgnoreCase("null")) objectId = user.getObjectId();
+		//NameIdType targUser = null;
+		FactoryEnumType factType = FactoryEnumType.USER;
+		if(objectType != null && objectType.equalsIgnoreCase("unknown") == false) {
+			factType = FactoryEnumType.valueOf(objectType);
+		}
+		else {
+			factType = FactoryEnumType.USER;
+			objectType = "USER";
+		}
+		if(objectId == null || objectId.length() == 0 || objectId.equalsIgnoreCase("null")) {
+			objectId = user.getObjectId();
+		}
+		NameIdType obj = BaseService.readByObjectId(AuditEnumType.fromValue(objectType), objectId, user);
+		if(obj == null) {
+			logger.error(objectType + " " + objectId + " was not accessible or does not exist");
+			return Response.status(200).entity(new ArrayList<EntitlementType>()).build();
+		}
+
+		/*
 		try {
 			targUser = ((NameIdFactory)Factories.getFactory(FactoryEnumType.USER)).getByObjectId(objectId, user.getOrganizationId());
 		} catch (FactoryException | ArgumentException e) {
 			logger.error(e);
 		}
-		List<Object> objs = BaseService.listForMember(AuditEnumType.ROLE, user, targUser, FactoryEnumType.USER);
+		*/
+		List<Object> objs = BaseService.listForMember(AuditEnumType.ROLE, user, obj, factType);
 		return Response.status(200).entity(objs).build();
 	}
 	
