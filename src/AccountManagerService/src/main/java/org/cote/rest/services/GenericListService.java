@@ -52,10 +52,12 @@ import org.cote.accountmanager.exceptions.FactoryException;
 import org.cote.accountmanager.objects.BaseGroupType;
 import org.cote.accountmanager.objects.DataTagSearchRequest;
 import org.cote.accountmanager.objects.NameIdType;
+import org.cote.accountmanager.objects.ParticipantSearchRequest;
 import org.cote.accountmanager.objects.ParticipationSearchRequest;
 import org.cote.accountmanager.objects.UserType;
 import org.cote.accountmanager.objects.types.AuditEnumType;
 import org.cote.accountmanager.objects.types.FactoryEnumType;
+import org.cote.accountmanager.objects.types.ParticipantEnumType;
 import org.cote.accountmanager.service.rest.BaseService;
 import org.cote.accountmanager.service.rest.SchemaBean;
 import org.cote.accountmanager.service.rest.ServiceSchemaBuilder;
@@ -166,6 +168,106 @@ public class GenericListService {
 			IParticipationFactory pFact = Factories.getParticipationFactory(FactoryEnumType.valueOf(type + "PARTICIPATION"));
 			
 			objs = pFact.listParticipations(searchRequest.getParticipantFactoryType(), searchRequest.getParticipations().toArray(new NameIdType[0]), searchRequest.getStartRecord(), searchRequest.getRecordCount(), user.getOrganizationId());
+		}
+		catch(FactoryException | ArgumentException f){
+			logger.error(f);
+		}
+
+		return Response.status(200).entity(objs).build();
+	}
+	
+	@RolesAllowed({"user"})
+	@POST
+	@Path("/participations/count")
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response countParticipations(@PathParam("type") String type, ParticipantSearchRequest searchRequest, @Context HttpServletRequest request){
+		AuditEnumType auditType = AuditEnumType.valueOf(type);
+
+		int count = 0;
+		if(searchRequest == null || searchRequest.getParticipantList().size() == 0) {
+			logger.warn("Null or empty request");
+			return Response.status(200).entity(count).build();
+		}
+		if(
+				searchRequest.getParticipantType() == null || searchRequest.getParticipantType() == ParticipantEnumType.UNKNOWN
+				||
+				searchRequest.getParticipantFactoryType() == null || searchRequest.getParticipantFactoryType() == ParticipantEnumType.UNKNOWN
+		) {
+			logger.warn("Expected a participant type and participant factory type");
+			return Response.status(200).entity(count).build();
+		}
+		UserType user = ServiceUtil.getUserFromSession(request);
+		try{
+			int canRead = 0;
+			searchRequest.getParticipants().clear();
+			AuditEnumType partFact = AuditEnumType.valueOf(searchRequest.getParticipantFactoryType().toString());
+			for(String objectId : searchRequest.getParticipantList()) {
+				NameIdType obj = BaseService.readByObjectId(partFact, objectId, user);
+				if(obj != null) {
+					searchRequest.getParticipants().add(obj);
+					canRead++;
+				}
+			}
+			if(canRead != searchRequest.getParticipants().size()) {
+				logger.error("One or more provided participations is not visible to the current user");
+				return Response.status(200).entity(count).build();	
+			}
+			
+			/// get the participation factory
+			///
+			IParticipationFactory pFact = Factories.getParticipationFactory(FactoryEnumType.valueOf(type + "PARTICIPATION"));
+
+			count = pFact.countParticipants(searchRequest.getParticipants().toArray(new NameIdType[0]), searchRequest.getParticipantType());
+			
+		}
+		catch(FactoryException f){
+			logger.error(f);
+		}
+		return Response.status(200).entity(count).build();
+	}
+	
+	@RolesAllowed({"user"})
+	@POST
+	@Path("/participations")
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response listParticipations(@PathParam("type") String type, ParticipantSearchRequest searchRequest, @Context HttpServletRequest request){
+		AuditEnumType auditType = AuditEnumType.valueOf(type);
+		List<Object> objs = new ArrayList<>();
+		if(searchRequest == null || searchRequest.getParticipantList().size() == 0) {
+			logger.warn("Null or empty request");
+			return Response.status(200).entity(objs).build();
+		}
+		if(
+				searchRequest.getParticipantType() == null || searchRequest.getParticipantType() == ParticipantEnumType.UNKNOWN
+				||
+				searchRequest.getParticipantFactoryType() == null || searchRequest.getParticipantFactoryType() == ParticipantEnumType.UNKNOWN
+		) {
+			logger.warn("Expected a participant type and participant factory type");
+			return Response.status(200).entity(objs).build();
+		}
+		
+		UserType user = ServiceUtil.getUserFromSession(request);
+		try{
+			int canRead = 0;
+			searchRequest.getParticipants().clear();
+			AuditEnumType partFact = AuditEnumType.valueOf(searchRequest.getParticipantFactoryType().toString());
+			for(String objectId : searchRequest.getParticipantList()) {
+				NameIdType obj = BaseService.readByObjectId(partFact, objectId, user);
+				if(obj != null) {
+					searchRequest.getParticipants().add(obj);
+					canRead++;
+				}
+			}
+			if(canRead != searchRequest.getParticipants().size()) {
+				logger.error("One or more provided participants is not visible to the current user");
+				return Response.status(200).entity(objs).build();	
+			}
+			
+			/// get the participation factory
+			///
+			IParticipationFactory pFact = Factories.getParticipationFactory(FactoryEnumType.valueOf(type + "PARTICIPATION"));
+			
+			objs = pFact.listParticipants(searchRequest.getParticipationFactoryType(), searchRequest.getParticipantType(), searchRequest.getParticipants().toArray(new NameIdType[0]), searchRequest.getStartRecord(), searchRequest.getRecordCount(), user.getOrganizationId());
 		}
 		catch(FactoryException | ArgumentException f){
 			logger.error(f);
