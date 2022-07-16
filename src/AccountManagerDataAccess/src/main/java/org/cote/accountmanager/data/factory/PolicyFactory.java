@@ -103,10 +103,11 @@ public class PolicyFactory extends NameIdGroupFactory {
 	{
 		PolicyType policy = (PolicyType)obj;
 		if(policy.getPopulated()) return;
+		policy.setPopulated(true);
 		PolicyParticipationFactory ppFact = Factories.getFactory(FactoryEnumType.POLICYPARTICIPATION);
 		policy.getRules().addAll(ppFact.getRulesFromParticipation(policy));
 		Collections.sort(policy.getRules(),new LogicalTypeComparator());
-		policy.setPopulated(true);
+
 		updateToCache(policy);
 	}
 	
