@@ -345,7 +345,7 @@ and R1.groupid > 0)
 or
 organizationid not in (select id from organizations)
 or
-(parentid > 0 and parentid not in (select id from location))
+(parentid > 0 and parentid not in (select id from event))
 ;
 
 create or replace view orphanEventParticipations as
