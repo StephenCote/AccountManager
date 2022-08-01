@@ -1578,9 +1578,9 @@ public class BaseService {
 	// can cause a large db hit, particularly when unwinding nested group and role structures without a frame of reference
 	//
 	public static List<EntitlementType> aggregateEntitlementsForMember(UserType user, NameIdType obj){
-		return aggregateEntitlementsForMember(user,obj,(obj.getNameType().equals(NameEnumType.USER)));
+		return aggregateEntitlementsForMember(user,obj, obj.getNameType().equals(NameEnumType.USER), obj.getNameType().equals(NameEnumType.PERSON));
 	}
-	public static List<EntitlementType> aggregateEntitlementsForMember(UserType user, NameIdType obj, boolean unwindPersonUser){
+	public static List<EntitlementType> aggregateEntitlementsForMember(UserType user, NameIdType obj, boolean unwindUserPerson, boolean unwindPersonUser){
 		List<EntitlementType> ents = new ArrayList<>();
 		FactoryEnumType memberType = FactoryEnumType.fromValue(obj.getNameType().toString());
 		
@@ -1588,24 +1588,23 @@ public class BaseService {
 			case PERSON:
 				PersonType p = (PersonType)obj;
 				BaseService.populate(AuditEnumType.PERSON, p);
-				if(unwindPersonUser == false) {
+				if(unwindPersonUser) {
 					for(UserType u : p.getUsers()) {
-						ents.addAll(aggregateEntitlementsForMember(user, u, false));
+						ents.addAll(aggregateEntitlementsForMember(user, u, false, false));
 					}
 				}
 				for(AccountType u : p.getAccounts()) {
-					ents.addAll(aggregateEntitlementsForMember(user, u, false));
+					ents.addAll(aggregateEntitlementsForMember(user, u, false, false));
 				}
 			case ACCOUNT:
 			case USER:
-				if(unwindPersonUser && obj.getNameType().equals(NameEnumType.USER)) {
+				if(unwindUserPerson && obj.getNameType().equals(NameEnumType.USER)) {
 					UserType u = (UserType)obj;
 					List<PersonType> persons = UserService.readPersonsForUser(user, u, false);
 					for(PersonType pu : persons) {
-						ents.addAll(aggregateEntitlementsForMember(user, pu, false));
+						ents.addAll(aggregateEntitlementsForMember(user, pu, false, false));
 					}
 				}
-
 				List<BaseGroupType> groups = listForMember(AuditEnumType.GROUP, user, obj, memberType);
 				for(BaseGroupType group : groups){
 					ents.add(EffectiveAuthorizationService.copyAsEntitlement(obj, null, group, obj.getOrganizationId()));
@@ -1615,7 +1614,9 @@ public class BaseService {
 					ents.add(EffectiveAuthorizationService.copyAsEntitlement(obj, null, role, obj.getOrganizationId()));
 				}
 				logger.info("Aggregate " + groups.size() + " groups and " + roles.size() + " roles for " + obj.getUrn() + " in " + obj.getOrganizationId());
+				break;
 			default:
+				logger.warn("Unhandled object type for aggregate entitlements: " + obj.getNameType());
 				break;
 		}
 		return ents;
