@@ -42,7 +42,6 @@ public class ClientUtil {
 			//logger.info("Receive Cookie: " + ck + "=" + in_cookies.get(ck).getValue());
 			cookies.add(in_cookies.get(ck));
 		}
-		
 	}
 	
 	public static void setCachePath(String s) {
