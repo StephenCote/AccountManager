@@ -66,7 +66,7 @@ import org.cote.accountmanager.service.util.ServiceUtil;
 @Path("/control")
 public class ControlService {
 	private static final Logger logger = LogManager.getLogger(ControlService.class);
-	
+	/*
 	@RolesAllowed({"user"})
 	@POST
 	@Path("/")
@@ -116,7 +116,7 @@ public class ControlService {
 		}
 		return Response.status(200).entity(outBool).build();
 	}
-	
+	*/
 	@RolesAllowed({"user"})
 	@GET
 	@Path("/list/{type:[A-Za-z]+}/{objectId:[0-9A-Za-z\\-]+}/{startIndex:[\\d]+}/{count:[\\d]+}")
