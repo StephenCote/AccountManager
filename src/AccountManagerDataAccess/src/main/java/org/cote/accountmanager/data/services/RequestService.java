@@ -1,4 +1,4 @@
-package org.cote.accountmanager.data.security;
+package org.cote.accountmanager.data.services;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -32,11 +32,13 @@ import org.cote.accountmanager.data.services.UserService;
 import org.cote.accountmanager.exceptions.ArgumentException;
 import org.cote.accountmanager.exceptions.FactoryException;
 import org.cote.accountmanager.objects.AccessRequestType;
+import org.cote.accountmanager.objects.AccountType;
 import org.cote.accountmanager.objects.ApprovalEnumType;
 import org.cote.accountmanager.objects.ApprovalResponseEnumType;
 import org.cote.accountmanager.objects.ApprovalType;
 import org.cote.accountmanager.objects.ApproverEnumType;
 import org.cote.accountmanager.objects.ApproverType;
+import org.cote.accountmanager.objects.AuditType;
 import org.cote.accountmanager.objects.BaseGroupType;
 import org.cote.accountmanager.objects.BasePermissionType;
 import org.cote.accountmanager.objects.BaseRoleType;
@@ -55,6 +57,8 @@ import org.cote.accountmanager.objects.PolicyResponseEnumType;
 import org.cote.accountmanager.objects.PolicyResponseType;
 import org.cote.accountmanager.objects.PolicyType;
 import org.cote.accountmanager.objects.UserType;
+import org.cote.accountmanager.objects.types.ActionEnumType;
+import org.cote.accountmanager.objects.types.AuditEnumType;
 import org.cote.accountmanager.objects.types.FactoryEnumType;
 import org.cote.accountmanager.objects.types.GroupEnumType;
 import org.cote.accountmanager.objects.types.NameEnumType;
@@ -62,6 +66,7 @@ import org.cote.accountmanager.objects.types.RoleEnumType;
 import org.cote.accountmanager.objects.types.SpoolBucketEnumType;
 import org.cote.accountmanager.objects.types.SpoolNameEnumType;
 import org.cote.accountmanager.objects.types.SpoolStatusEnumType;
+import org.cote.accountmanager.service.rest.BaseService;
 
 public class RequestService {
 	
@@ -73,6 +78,239 @@ public class RequestService {
 	///
 	public static final String ATTRIBUTE_NAME_OWNER = "owner";
 	public static final Logger logger = LogManager.getLogger(RequestService.class);
+	
+
+	public static boolean isRequestor(NameIdType member) throws FactoryException, ArgumentException {
+		BaseRoleType reqUserRole = RoleService.getRequestorsUserRole(member.getOrganizationId());
+		BaseRoleType reqAccountRole = RoleService.getRequestorsAccountRole(member.getOrganizationId());
+		BaseRoleType reqPersonRole = RoleService.getRequestorsPersonRole(member.getOrganizationId());
+		boolean outBool = false;
+		switch(member.getNameType()) {
+			case USER:
+				outBool = RoleService.getIsUserInEffectiveRole(reqUserRole, (UserType)member);
+				break;
+			case ACCOUNT:
+				outBool = RoleService.getIsAccountInEffectiveRole(reqAccountRole, (AccountType)member);
+				break;
+			case PERSON:
+				outBool = RoleService.getIsPersonInEffectiveRole(reqPersonRole, (PersonType)member);
+				break;
+			default:
+				logger.error("Invalid member type: " + member.getNameType().toString());
+				break;
+		}
+		return outBool;
+	}
+	
+	public static boolean canViewMemberRequests(UserType user, NameIdType member) throws FactoryException, ArgumentException {
+
+		
+		boolean outBool = false;
+		boolean isReq = isRequestor(user);
+		//logger.info("Is Req: " + isReq);
+		//logger.info("Can View: " + BaseService.canViewType(AuditEnumType.valueOf(member.getNameType().toString()), user, member));
+		if(
+			(
+				/// If this is a user looking for their own requests
+				///
+				isReq
+				&& member.getNameType().equals(NameEnumType.USER)
+				&& member.getObjectId().equals(user.getObjectId())
+			)
+			||
+				/// If this is a user looking to view requests for another member
+				///
+			(
+				isReq
+				&& BaseService.canViewType(AuditEnumType.valueOf(member.getNameType().toString()), user, member)
+			)
+			||
+				/// This is a request administrator
+			(
+				isRequestAdministrator(user)
+			)
+		) {
+			outBool = true;
+		}
+
+		return outBool;
+	}
+	
+	private static boolean isRequestReader(UserType user) {
+		boolean outBool = false;
+		try {
+			BaseRoleType reqReaderRole = RoleService.getRequestReadersUserRole(user.getOrganizationId());
+			outBool = RoleService.getIsUserInEffectiveRole(reqReaderRole, user);
+		} catch (ArgumentException | FactoryException e) {
+			logger.error(e);
+		}
+		return outBool;
+	}
+	private static boolean isRequestAdministrator(UserType user) {
+		boolean outBool = false;
+		try {
+			BaseRoleType reqAdminRole = RoleService.getRequestAdministratorsUserRole(user.getOrganizationId());
+			outBool = RoleService.getIsUserInEffectiveRole(reqAdminRole, user);
+		} catch (ArgumentException | FactoryException e) {
+			logger.error(e);
+		}
+		return outBool;
+	}
+	public static boolean canModifyRequest(UserType user, AccessRequestType req) throws FactoryException, ArgumentException {
+		boolean outBool = false;
+		BaseRoleType reqAdminRole = RoleService.getRequestAdministratorsUserRole(user.getOrganizationId());
+		BaseRoleType adminRole = RoleService.getAccountAdministratorUserRole(user.getOrganizationId());
+		RequestFactory rFact = Factories.getFactory(FactoryEnumType.REQUEST);
+		
+		AccessRequestType currReq = null;
+		if(req.getObjectId() != null) {
+			currReq = rFact.getAccessRequestByObjectId(req.getObjectId(), user.getOrganizationId());
+			if(currReq != null) {
+				if(req.getOwnerId() > 0L && !req.getOwnerId().equals(currReq.getOwnerId())) {
+					logger.warn("Chown operation not permitted in update operation");
+				}
+				else if(
+					currReq.getOwnerId().equals(user.getId())
+					||
+					RoleService.getIsUserInEffectiveRole(reqAdminRole, user)
+					||
+					RoleService.getIsUserInEffectiveRole(adminRole, user)
+				) {
+					outBool = true;
+				}
+				else {
+					logger.warn("User is not authorized to modify existing request");
+				}
+			}
+		}
+		else {
+			if(
+				isRequestor(user)
+				||
+				RoleService.getIsUserInEffectiveRole(reqAdminRole, user)
+				||
+				RoleService.getIsUserInEffectiveRole(adminRole, user)
+			) {
+				outBool = true;
+			}
+			else {
+				logger.warn("User is not authorized to add a new request");
+			}
+		}
+		if(outBool && req.getParentId() > 0L) {
+			if(req.getId() > 0L && req.getParentId().equals(req.getId())) {
+				logger.error("Cannot point to self as parent");
+				outBool = false;
+			}
+			AccessRequestType parent = rFact.getById(req.getParentId(), user.getOrganizationId());
+
+			if(parent == null) {
+				logger.error("Invalid parent identifier");
+				outBool = false;
+			}
+			
+			outBool = canModifyRequest(user, parent);
+			
+		}
+		return outBool;
+	}
+	
+	public static boolean updateRequest(UserType user, AccessRequestType req) {
+		AuditType audit = AuditService.beginAudit(ActionEnumType.MODIFY, "Request", AuditEnumType.USER, user.getUrn());
+		AuditService.targetAudit(audit, AuditEnumType.REQUEST, (req.getObjectId() != null ? req.getObjectId() : "New"));
+		boolean outBool = false;
+		
+		// UserType owner, ActionEnumType action, NameIdType requestor, NameIdType delegate, NameIdType targetObject, NameIdType entitlement, long parentId) throws ArgumentException
+		
+		try {
+			//BaseRoleType adminRole = RoleService.getAccountAdministratorUserRole(user.getOrganizationId());
+			
+			NameIdType requestor = null;
+			NameIdType delegate = null;
+			NameIdType refObject = null;
+			NameIdType entitlement = null;
+			boolean failedLookup = false;
+			if(req.getRequestorId() > 0L && (
+					req.getRequestorType().equals(ApproverEnumType.ACCOUNT)
+					|| req.getRequestorType().equals(ApproverEnumType.PERSON)
+					|| req.getRequestorType().equals(ApproverEnumType.USER)
+			)) {
+				requestor = BaseService.readById(AuditEnumType.valueOf(req.getRequestorType().toString()), req.getRequestorId(), user);
+				if(requestor == null) failedLookup = true;
+			}
+			else {
+				requestor = user;
+			}
+			
+			if(!failedLookup && req.getDelegateId() > 0L && (
+					req.getDelegateType().equals(ApproverEnumType.ACCOUNT)
+					|| req.getDelegateType().equals(ApproverEnumType.PERSON)
+					|| req.getDelegateType().equals(ApproverEnumType.USER)
+			)) {
+				delegate = BaseService.readById(AuditEnumType.valueOf(req.getDelegateType().toString()), req.getDelegateId(), user);
+				if(delegate == null) failedLookup = true;
+			}	
+			
+			if(!failedLookup && req.getReferenceId() > 0L && !req.getReferenceType().equals(FactoryEnumType.UNKNOWN)) {
+				refObject = BaseService.readById(AuditEnumType.valueOf(req.getReferenceType().toString()), req.getReferenceId(), user);
+				if(refObject == null) failedLookup = true;
+			}
+			
+			if(!failedLookup && req.getEntitlementId() > 0L && (
+					req.getEntitlementType().equals(ApproverEnumType.GROUP)
+					|| req.getEntitlementType().equals(ApproverEnumType.PERMISSION)
+					|| req.getEntitlementType().equals(ApproverEnumType.ROLE)
+			)) {
+				entitlement = BaseService.readById(AuditEnumType.valueOf(req.getEntitlementType().toString()), req.getEntitlementId(), user);
+				if(entitlement == null) failedLookup = true;
+			}
+			if(!failedLookup) {
+				/// Is the requestor (user|account|person) or the user making the request in the requestor role
+				/// - NOTE: This was left flexible so both objects don't need to be in the role, but does leave open that someone in the requestor role could issue requests for objects they can read which but in circumstances that may not be desirable
+				/// AND, is the user authorized to modify the request object
+				if((isRequestor(user) || isRequestor(requestor)) && canModifyRequest(user, req)) {
+					RequestFactory rFact = Factories.getFactory(FactoryEnumType.REQUEST);
+					if(req.getObjectId() == null) {
+						AccessRequestType newReq = rFact.newAccessRequest(user, req.getActionType(), requestor, delegate, refObject, entitlement, req.getParentId());
+						outBool = rFact.add(newReq);
+						if(outBool) AuditService.permitResult(audit, "Added request");
+						else AuditService.denyResult(audit,  "Failed to add request");
+					}
+					else {
+						/// TOOD: Need to sanitize this
+						outBool = rFact.update(req);
+						if(outBool) AuditService.permitResult(audit, "Added request");
+						else AuditService.denyResult(audit,  "Failed to add request");
+					}
+				}
+				else {
+					AuditService.denyResult(audit, "Requestor " + requestor.getUrn() + " is not authorized with the Requestor role");
+				}
+			}
+			else {
+				AuditService.denyResult(audit, "One or more references could not be retrieved");
+			}
+			
+		} catch (FactoryException | ArgumentException e) {
+			logger.error(e);
+			AuditService.denyResult(audit, e.getMessage());
+		}
+		
+		return outBool;
+	}
+	
+
+	public static List<AccessRequestType> getAccessRequests(NameIdType object, UserType contextUser) throws ArgumentException, FactoryException{
+		List<AccessRequestType> reqs = new ArrayList<>();
+		if(BaseService.canChangeType(AuditEnumType.valueOf(object.getNameType().toString()),contextUser, object)) {
+			RequestFactory rFact = ((RequestFactory)Factories.getFactory(FactoryEnumType.REQUEST));
+			reqs = rFact.getAccessRequestsForType(contextUser, null, null, object, ApprovalResponseEnumType.REQUEST, 0L, contextUser.getOrganizationId());
+		}
+		else {
+			logger.warn("User " + contextUser.getUrn() + " not authorized to access requests for " + object.getUrn());
+		}
+		return reqs;
+	}
 	
 	public static List<ControlType> getRequestControls(NameIdType object, boolean includeParent) throws FactoryException, ArgumentException{
 		INameIdFactory factory = Factories.getFactory(FactoryEnumType.valueOf(object.getNameType().toString()));
