@@ -48,24 +48,22 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cote.accountmanager.data.DataAccessException;
 import org.cote.accountmanager.data.Factories;
-import org.cote.accountmanager.data.factory.AccountFactory;
-import org.cote.accountmanager.data.factory.DataFactory;
 import org.cote.accountmanager.data.factory.GroupFactory;
-import org.cote.accountmanager.data.factory.NameIdFactory;
 import org.cote.accountmanager.data.factory.PermissionFactory;
 import org.cote.accountmanager.data.factory.RoleFactory;
-import org.cote.accountmanager.data.services.PermissionService;
-import org.cote.accountmanager.data.services.RoleService;
 import org.cote.accountmanager.exceptions.ArgumentException;
 import org.cote.accountmanager.exceptions.FactoryException;
 import org.cote.accountmanager.objects.BaseGroupType;
 import org.cote.accountmanager.objects.BasePermissionType;
 import org.cote.accountmanager.objects.BaseRoleType;
+import org.cote.accountmanager.objects.DirectoryGroupType;
 import org.cote.accountmanager.objects.EntitlementType;
 import org.cote.accountmanager.objects.NameIdType;
+import org.cote.accountmanager.objects.PolicyType;
 import org.cote.accountmanager.objects.UserType;
 import org.cote.accountmanager.objects.types.AuditEnumType;
 import org.cote.accountmanager.objects.types.FactoryEnumType;
+import org.cote.accountmanager.objects.types.GroupEnumType;
 import org.cote.accountmanager.objects.types.NameEnumType;
 import org.cote.accountmanager.objects.types.PermissionEnumType;
 import org.cote.accountmanager.objects.types.RoleEnumType;
@@ -104,6 +102,25 @@ public class AuthorizationService {
 	@Consumes(MediaType.APPLICATION_JSON)
 	public Response getSystemRoles(@Context HttpServletRequest request){
 		List<BasePermissionType> outList = BaseService.listSystemEntitlements(AuditEnumType.ROLE, request);
+		return Response.status(200).entity(outList).build();
+	}
+	
+	@RolesAllowed({"admin","user"})
+	@GET
+	@Path("/systemPolicies")
+	@Produces(MediaType.APPLICATION_JSON)
+	@Consumes(MediaType.APPLICATION_JSON)
+	public Response getSystemPolicies(@Context HttpServletRequest request){
+		UserType user = ServiceUtil.getUserFromSession(request);
+		List<PolicyType> outList = new ArrayList<>();
+		DirectoryGroupType dir = BaseService.find(AuditEnumType.GROUP, GroupEnumType.DATA.toString(), "/Home/PolicyUser/Policies", user);
+		if(dir != null) {
+			outList = BaseService.listByGroup(AuditEnumType.POLICY, "DATA", dir.getObjectId(), 0L, 0, user);
+		}
+		else {
+			logger.error("Failed to access policy directory");
+		}
+		
 		return Response.status(200).entity(outList).build();
 	}
 	

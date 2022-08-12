@@ -9,6 +9,7 @@ import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
+import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
@@ -21,17 +22,24 @@ import javax.ws.rs.core.UriInfo;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cote.accountmanager.data.Factories;
+import org.cote.accountmanager.data.factory.FactoryBase;
 import org.cote.accountmanager.data.factory.INameIdFactory;
 import org.cote.accountmanager.data.factory.RequestFactory;
-import org.cote.accountmanager.data.security.RequestService;
+import org.cote.accountmanager.data.services.AuthorizedSearchService;
+import org.cote.accountmanager.data.services.RequestService;
 import org.cote.accountmanager.exceptions.ArgumentException;
 import org.cote.accountmanager.exceptions.FactoryException;
 import org.cote.accountmanager.objects.AccessRequestType;
+import org.cote.accountmanager.objects.ApprovalResponseEnumType;
 import org.cote.accountmanager.objects.NameIdType;
+import org.cote.accountmanager.objects.ObjectSearchRequestType;
 import org.cote.accountmanager.objects.PolicyType;
+import org.cote.accountmanager.objects.RequestSearchRequestType;
 import org.cote.accountmanager.objects.UserType;
+import org.cote.accountmanager.objects.types.ActionEnumType;
 import org.cote.accountmanager.objects.types.AuditEnumType;
 import org.cote.accountmanager.objects.types.FactoryEnumType;
+import org.cote.accountmanager.objects.types.NameEnumType;
 import org.cote.accountmanager.service.rest.BaseService;
 import org.cote.accountmanager.service.rest.SchemaBean;
 import org.cote.accountmanager.service.rest.ServiceSchemaBuilder;
@@ -127,11 +135,134 @@ public class ApprovalService {
 
 		List<AccessRequestType> reqs = new ArrayList<>();
 		try {
-			reqs = org.cote.accountmanager.data.services.PolicyService.getAccessRequests(obj, user);
+			reqs = RequestService.getAccessRequests(obj, user);
 		} catch (FactoryException | ArgumentException e) {
 			logger.error(e.getMessage());
 		}
 		return Response.status(200).entity(reqs).build();	
+	}
+	
+	
+	@RolesAllowed({"user"})
+	@POST
+	@Path("/requests/count")
+	@Produces(MediaType.APPLICATION_JSON) @Consumes(MediaType.APPLICATION_JSON)
+	public int countBy(RequestSearchRequestType searchRequest,@Context HttpServletRequest request){
+		UserType user = ServiceUtil.getUserFromSession(request);
+		NameIdType owner = null;
+		NameIdType requestor = null;
+		NameIdType delegate = null;
+		NameIdType target = null;
+		NameIdType entitlement = null;
+		boolean readError = false;
+		if(searchRequest.getOwnerId() != null) {
+			owner = BaseService.readByObjectId(AuditEnumType.USER, searchRequest.getOwnerId(), user);
+			if(owner == null) {
+				logger.warn("Failed to read USER " + searchRequest.getOwnerId());
+				readError = true;
+			}
+		}
+		if(searchRequest.getRequestorId() != null && !searchRequest.getRequestorType().equals(NameEnumType.UNKNOWN)) {
+			requestor = BaseService.readByObjectId(AuditEnumType.valueOf(searchRequest.getRequestorType().toString()), searchRequest.getRequestorId(), user);
+			if(requestor == null) {
+				logger.warn("Failed to read " + searchRequest.getRequestorType().toString() + " " + searchRequest.getRequestorId());
+				readError = true;
+			}
+		}
+		if(searchRequest.getDelegateId() != null && !searchRequest.getDelegateType().equals(NameEnumType.UNKNOWN)) {
+			delegate = BaseService.readByObjectId(AuditEnumType.valueOf(searchRequest.getDelegateType().toString()), searchRequest.getDelegateId(), user);
+			if(delegate == null) {
+				logger.warn("Failed to read " + searchRequest.getDelegateType().toString() + " " + searchRequest.getDelegateId());
+				readError = true;
+			}
+		}
+		if(searchRequest.getTargetId() != null && !searchRequest.getTargetType().equals(NameEnumType.UNKNOWN)) {
+			target = BaseService.readByObjectId(AuditEnumType.valueOf(searchRequest.getTargetType().toString()), searchRequest.getTargetId(), user);
+			if(target == null) {
+				logger.warn("Failed to read " + searchRequest.getTargetType().toString() + " " + searchRequest.getTargetId());
+				readError = true;
+			}
+		}
+		if(searchRequest.getEntitlementId() != null && !searchRequest.getEntitlementType().equals(NameEnumType.UNKNOWN)) {
+			entitlement = BaseService.readByObjectId(AuditEnumType.valueOf(searchRequest.getEntitlementType().toString()), searchRequest.getEntitlementId(), user);
+			if(entitlement == null) {
+				logger.warn("Failed to read " + searchRequest.getEntitlementType().toString() + " " + searchRequest.getEntitlementId());
+				readError = true;
+			}
+		}
+		int count = 0;
+		if(readError == false) {
+			try {
+				RequestFactory rFact = Factories.getFactory(FactoryEnumType.REQUEST);
+				count = rFact.countAccessRequestsForType(requestor, delegate, target, entitlement, searchRequest.getApprovalResponse(), searchRequest.getRequestParentId(), user.getOrganizationId());
+			} catch (FactoryException | ArgumentException e) {
+				logger.error(e);
+			}
+		}
+		
+		logger.info("Returning " + count + " count");
+		return count;
+	}
+	
+	@RolesAllowed({"user"})
+	@POST
+	@Path("/requests/list")
+	@Produces(MediaType.APPLICATION_JSON) @Consumes(MediaType.APPLICATION_JSON)
+	public Response listBy(RequestSearchRequestType searchRequest,@Context HttpServletRequest request){
+		UserType user = ServiceUtil.getUserFromSession(request);
+		NameIdType owner = null;
+		NameIdType requestor = null;
+		NameIdType delegate = null;
+		NameIdType target = null;
+		NameIdType entitlement = null;
+		boolean readError = false;
+		if(searchRequest.getOwnerId() != null) {
+			owner = BaseService.readByObjectId(AuditEnumType.USER, searchRequest.getOwnerId(), user);
+			if(owner == null) {
+				logger.warn("Failed to read USER " + searchRequest.getOwnerId());
+				readError = true;
+			}
+		}
+		if(searchRequest.getRequestorId() != null && !searchRequest.getRequestorType().equals(NameEnumType.UNKNOWN)) {
+			requestor = BaseService.readByObjectId(AuditEnumType.valueOf(searchRequest.getRequestorType().toString()), searchRequest.getRequestorId(), user);
+			if(requestor == null) {
+				logger.warn("Failed to read " + searchRequest.getRequestorType().toString() + " " + searchRequest.getRequestorId());
+				readError = true;
+			}
+		}
+		if(searchRequest.getDelegateId() != null && !searchRequest.getDelegateType().equals(NameEnumType.UNKNOWN)) {
+			delegate = BaseService.readByObjectId(AuditEnumType.valueOf(searchRequest.getDelegateType().toString()), searchRequest.getDelegateId(), user);
+			if(delegate == null) {
+				logger.warn("Failed to read " + searchRequest.getDelegateType().toString() + " " + searchRequest.getDelegateId());
+				readError = true;
+			}
+		}
+		if(searchRequest.getTargetId() != null && !searchRequest.getTargetType().equals(NameEnumType.UNKNOWN)) {
+			target = BaseService.readByObjectId(AuditEnumType.valueOf(searchRequest.getTargetType().toString()), searchRequest.getTargetId(), user);
+			if(target == null) {
+				logger.warn("Failed to read " + searchRequest.getTargetType().toString() + " " + searchRequest.getTargetId());
+				readError = true;
+			}
+		}
+		if(searchRequest.getEntitlementId() != null && !searchRequest.getEntitlementType().equals(NameEnumType.UNKNOWN)) {
+			entitlement = BaseService.readByObjectId(AuditEnumType.valueOf(searchRequest.getEntitlementType().toString()), searchRequest.getEntitlementId(), user);
+			if(entitlement == null) {
+				logger.warn("Failed to read " + searchRequest.getEntitlementType().toString() + " " + searchRequest.getEntitlementId());
+				readError = true;
+			}
+		}
+		List<Object> list = new ArrayList<>();
+		if(readError == false) {
+			try {
+				RequestFactory rFact = Factories.getFactory(FactoryEnumType.REQUEST);
+				list = FactoryBase.convertList(rFact.getAccessRequestsForType(requestor, delegate, target, entitlement, searchRequest.getApprovalResponse(), searchRequest.getRequestParentId(), searchRequest.getStartRecord(), searchRequest.getRecordCount(), user.getOrganizationId()));
+			} catch (FactoryException | ArgumentException e) {
+				logger.error(e);
+			}
+		}
+		
+		logger.info("Returning " + list.size() + " items");
+		return Response.status(200).entity(list).build();
 	}
 	
 	@RolesAllowed({"admin","user"})
