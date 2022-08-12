@@ -149,7 +149,8 @@ public class UrnUtil {
 					key = getEncodedGroupPath(gobj2.getGroupId(),gobj2.getOrganizationId()) + urnSeparator + gobj2.getParentId() + urnSeparator + gobj2.getName();
 					break;
 				default:
-					logger.error("Unhandled object type: " + object.getNameType());
+					/// some objects, like ControlType, don't use URNs.
+					logger.debug("Unhandled object type: " + object.getNameType());
 					break;
 			}
 			if(key != null){
