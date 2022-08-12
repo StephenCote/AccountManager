@@ -4,6 +4,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.cote.accountmanager.data.factory.ApproverFactory;
@@ -13,7 +14,7 @@ import org.cote.accountmanager.data.factory.ControlFactory;
 import org.cote.accountmanager.data.factory.MessageFactory;
 import org.cote.accountmanager.data.factory.PersonFactory;
 import org.cote.accountmanager.data.factory.RequestFactory;
-import org.cote.accountmanager.data.security.RequestService;
+import org.cote.accountmanager.data.services.RequestService;
 import org.cote.accountmanager.data.services.AuthorizationService;
 import org.cote.accountmanager.data.services.PolicyService;
 import org.cote.accountmanager.data.services.RoleService;
@@ -106,6 +107,46 @@ public class TestAccessApproval extends BaseDataAccessTest {
      *    (Note: There is currently no state on policy processing, so this will either be a refactor or separate policy evaluations or same policy evaluation with the prior approval status being evaluated each time)
 	 */
 
+	@Test
+	public void TestCountRequests() {
+		boolean error = false;
+		try {
+			cleanupRequestsForUser(testUser);
+			AccessRequestType req = newAccessRequest(testUser, ActionEnumType.REQUEST, null, null, null, null, 0L);
+			assertNotNull("Request is null",req);
+			int count = countAccessRequests(null, ActionEnumType.REQUEST, null, null, null, null, 0L);
+			assertTrue("Request count should be greater than zero",count > 0);
+			logger.info("Received " + count + " requests");
+		} catch (Exception e) {
+			logger.error(e);
+			error = true;
+		}
+		assertFalse("An error occurred", error);
+	}
+	
+	@Test
+	public void TestPaginateRequests() {
+		boolean error = false;
+		List<AccessRequestType> reqs = new ArrayList<>();
+		try {
+			cleanupRequestsForUser(testUser);
+			for(int i = 0; i < 20; i++) {
+				AccessRequestType req = newAccessRequest(testUser, ActionEnumType.REQUEST, null, null, null, null, 0L);
+				assertNotNull("Request is null",req);
+			}
+			int count = countAccessRequests(null, ActionEnumType.REQUEST, null, null, null, null, 0L);
+			logger.info("Received " + count + " requests");
+			assertTrue("Request count should be greater than 10",count > 10);
+			reqs = getAccessRequests(testUser, ActionEnumType.REQUEST, null, null, null, null, 0L, 10, 0L);
+		} catch (Exception e) {
+			logger.error(e);
+			error = true;
+		}
+		logger.info("Received page with size " + reqs.size());
+		assertFalse("An error occurred", error);
+		assertTrue("Request count should be ten since it was paginated to a limit of ten", reqs.size() == 10);
+		logger.info("Received " + reqs.size() + " requests");
+	}
 	
 	@Test
 	public void TestCreateEmptyRequest() {
@@ -387,10 +428,17 @@ public class TestAccessApproval extends BaseDataAccessTest {
 	}
 	
 	private List<AccessRequestType> getAccessRequests(UserType owner, ActionEnumType action, NameIdType requestor, NameIdType delegate, NameIdType targetObject, NameIdType entitlement, long parentId) throws FactoryException, ArgumentException {
-		RequestFactory rFact = ((RequestFactory)Factories.getFactory(FactoryEnumType.REQUEST));
-		return rFact.getAccessRequestsForType(testUser, requestor, delegate, targetObject, ApprovalResponseEnumType.REQUEST,parentId, testUser.getOrganizationId());
+		return getAccessRequests(owner, action, requestor, delegate, targetObject, entitlement, 0L, 0, parentId);
 	}
-	
+	private List<AccessRequestType> getAccessRequests(UserType owner, ActionEnumType action, NameIdType requestor, NameIdType delegate, NameIdType targetObject, NameIdType entitlement, long startRecord, int recordCount, long parentId) throws FactoryException, ArgumentException {
+		RequestFactory rFact = ((RequestFactory)Factories.getFactory(FactoryEnumType.REQUEST));
+		return rFact.getAccessRequestsForType(testUser, requestor, delegate, targetObject, ApprovalResponseEnumType.REQUEST,parentId, startRecord, recordCount, testUser.getOrganizationId());
+	}
+
+	private int countAccessRequests(UserType owner, ActionEnumType action, NameIdType requestor, NameIdType delegate, NameIdType targetObject, NameIdType entitlement, long parentId) throws FactoryException, ArgumentException {
+		RequestFactory rFact = ((RequestFactory)Factories.getFactory(FactoryEnumType.REQUEST));
+		return rFact.countAccessRequestsForType(testUser, requestor, delegate, targetObject, ApprovalResponseEnumType.REQUEST,parentId, testUser.getOrganizationId());
+	}
 	
 	private List<ApproverType> getCreateApprovers(UserType user, NameIdType approver, NameIdType object, NameIdType entitlement, int level, ApprovalEnumType approvalType) throws FactoryException, ArgumentException{
 		ApproverFactory aFact = ((ApproverFactory)Factories.getFactory(FactoryEnumType.APPROVER));
