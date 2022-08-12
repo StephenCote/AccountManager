@@ -500,6 +500,7 @@ public class MimeUtil {
 		types.put("xlw","application/x-msexcel");
 		types.put("xm","audio/xm");
 		types.put("xml","text/xml");
+		types.put("xsd","text/xml");
 		types.put("xmz","xgl/movie");
 		types.put("xpix","application/x-vnd.ls-xpix");
 		types.put("xpm","image/x-xpixmap");
