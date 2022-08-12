@@ -8,6 +8,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.ws.rs.core.Context;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cote.accountmanager.data.BulkFactories;
@@ -17,13 +20,14 @@ import org.cote.accountmanager.data.factory.ControlFactory;
 import org.cote.accountmanager.data.factory.DataFactory;
 import org.cote.accountmanager.data.factory.FactFactory;
 import org.cote.accountmanager.data.factory.FunctionFactory;
+import org.cote.accountmanager.data.factory.INameIdFactory;
 import org.cote.accountmanager.data.factory.INameIdGroupFactory;
 import org.cote.accountmanager.data.factory.OperationFactory;
 import org.cote.accountmanager.data.factory.PatternFactory;
 import org.cote.accountmanager.data.factory.PolicyFactory;
 import org.cote.accountmanager.data.factory.RequestFactory;
 import org.cote.accountmanager.data.factory.RuleFactory;
-import org.cote.accountmanager.data.security.RequestService;
+import org.cote.accountmanager.data.services.RequestService;
 import org.cote.accountmanager.data.util.UrnUtil;
 import org.cote.accountmanager.exceptions.ArgumentException;
 import org.cote.accountmanager.exceptions.DataException;
@@ -58,6 +62,7 @@ import org.cote.accountmanager.objects.types.FactoryEnumType;
 import org.cote.accountmanager.objects.types.UserEnumType;
 import org.cote.accountmanager.objects.types.UserStatusEnumType;
 import org.cote.accountmanager.service.rest.BaseService;
+import org.cote.accountmanager.service.util.ServiceUtil;
 import org.cote.accountmanager.util.DataUtil;
 import org.cote.accountmanager.util.FileUtil;
 import org.cote.accountmanager.util.JSONUtil;
@@ -74,6 +79,14 @@ public class PolicyService {
 			AuditType audit = AuditService.beginAudit(ActionEnumType.ADD, "ApiConnectionConfigurationService", AuditEnumType.USER, policyUserName);
 			PersonService.createUserAsPerson(audit, policyUserName, UUID.randomUUID().toString(), "PolicyUser@example.com", UserEnumType.SYSTEM,UserStatusEnumType.RESTRICTED , organizationId);
 			chkUser = Factories.getNameIdFactory(FactoryEnumType.USER).getByName(policyUserName, organizationId);
+			if(chkUser != null) {
+				try {
+					enablePublicReadOnPolicy(chkUser);
+				} catch (DataAccessException | FactoryException | ArgumentException e) {
+					logger.error(e);
+					chkUser = null;;
+				}
+			}
 		}
 		if(chkUser != null) policyUserMap.put(organizationId, chkUser);
 		return chkUser;
@@ -409,17 +422,75 @@ public class PolicyService {
 			srcFact = null;
 		return srcFact;
 	}
-
-	public static List<AccessRequestType> getAccessRequests(NameIdType object, UserType contextUser) throws ArgumentException, FactoryException{
-		List<AccessRequestType> reqs = new ArrayList<>();
-		if(BaseService.canChangeType(AuditEnumType.valueOf(object.getNameType().toString()),contextUser, object)) {
-			RequestFactory rFact = ((RequestFactory)Factories.getFactory(FactoryEnumType.REQUEST));
-			reqs = rFact.getAccessRequestsForType(contextUser, null, null, object, ApprovalResponseEnumType.REQUEST,0L, contextUser.getOrganizationId());
+	
+	public static boolean updateControl(UserType user, ControlType control){
+		AuditType audit = AuditService.beginAudit(ActionEnumType.MODIFY, "Control", AuditEnumType.USER, user.getUrn());
+		AuditService.targetAudit(audit, AuditEnumType.CONTROL, (control.getObjectId() != null ? control.getObjectId() : "New"));
+		
+		boolean outBool = false;
+		if(control.getReferenceId() <= 0L || control.getReferenceType().equals(FactoryEnumType.UNKNOWN)) {
+			AuditService.denyResult(audit, "A reference id and reference type are required");
+			logger.info("NOTE: A referenceid should be optional for authorized users in order to create global controls");
+			return outBool;
+		}
+		NameIdType object = BaseService.readById(AuditEnumType.valueOf(control.getReferenceType().toString()), control.getReferenceId(), user);
+		NameIdType refControl = null;
+		boolean canMod = false;
+		boolean canReadCtl = false;
+		if(object != null) {
+			try {
+				canMod = BaseService.canChangeType(AuditEnumType.valueOf(control.getReferenceType().toString()), user, object);
+				//boolean readControl = false;
+				if(control.getControlId() > 0L && !control.getControlType().equals(ControlEnumType.UNKNOWN)) {
+					refControl = BaseService.readById(AuditEnumType.valueOf(control.getControlType().toString()), control.getControlId(), user);
+					//readControl = true;
+					if(refControl != null) {
+						canReadCtl = BaseService.canViewType(AuditEnumType.valueOf(control.getControlType().toString()), user, refControl);
+					}
+				}
+				else {
+					logger.warn("No control specified for control type.");
+				}
+			
+				/// Must be able to 
+				if(canMod && canReadCtl) {
+					ControlFactory cFact = Factories.getFactory(FactoryEnumType.CONTROL);
+					if(control.getObjectId() == null || control.getObjectId().length() == 0 || control.getObjectId().equalsIgnoreCase("undefined")) {
+						control.setOwnerId(user.getId());
+						control.setOrganizationId(user.getOrganizationId());
+						outBool = cFact.add(control);
+						if(outBool) AuditService.permitResult(audit, "Added control");
+						else AuditService.denyResult(audit, "Failed to add control");
+						// outBool = BaseService.add(AuditEnumType.CONTROL, control, user);
+					}
+					else {
+						// outBool = BaseService.update(AuditEnumType.CONTROL, control, user);
+						/// TOOD: Need to sanitize this
+						ControlType currCtl = cFact.getControlByObjectId(control.getObjectId(), user.getOrganizationId());
+						if(currCtl.getOwnerId() > 0L && !currCtl.getOwnerId().equals(control.getOwnerId())) {
+							AuditService.denyResult(audit, "Chown operation not permitted in update operation");
+						}
+						else {
+							outBool = ((INameIdFactory)Factories.getFactory(FactoryEnumType.CONTROL)).update(control);
+							if(outBool) AuditService.permitResult(audit, "Updated control");
+							else AuditService.denyResult(audit, "Failed to update control");
+						}
+					}
+				}
+				else {
+					AuditService.denyResult(audit, "View access required for referenced control " + control.getControlType().toString() + " " + control.getControlId());
+					//logger.error("View access required for referenced control " + control.getControlType().toString() + " " + control.getControlId());
+				}
+			}
+			catch(FactoryException | ArgumentException e) {
+				logger.error(e.getMessage());
+				logger.error(e);
+			}
 		}
 		else {
-			logger.warn("User " + contextUser.getUrn() + " not authorized to access requests for " + object.getUrn());
+			AuditService.denyResult(audit, "Object reference null or not accessible");
 		}
-		return reqs;
+		return outBool;
 	}
 	
 	public static List<ControlType> getAccessControls(NameIdType object) throws FactoryException, ArgumentException{
@@ -486,9 +557,9 @@ public class PolicyService {
 		PolicyType policy = null;
 		try {
 			polUser = getPolicyUser(organizationId);
-			enablePublicReadOnPolicy(polUser);
+			// enablePublicReadOnPolicy(polUser);
 			policy = getOwnerApprovalPolicy(polUser);
-		} catch (FactoryException | ArgumentException | DataAccessException e) {
+		} catch (FactoryException | ArgumentException e) {
 			logger.error(e.getMessage());
 		}
 		return policy;
@@ -515,9 +586,9 @@ public class PolicyService {
 		PolicyType policy = null;
 		try {
 			polUser = getPolicyUser(organizationId);
-			enablePublicReadOnPolicy(polUser);
+			// enablePublicReadOnPolicy(polUser);
 			policy = getPrincipalApprovalPolicy(polUser);
-		} catch (FactoryException | ArgumentException | DataAccessException e) {
+		} catch (FactoryException | ArgumentException e) {
 			logger.error(e.getMessage());
 		}
 		return policy;
