@@ -77,11 +77,16 @@ public class RoleService {
 	public static final String ROLE_PERMISSION_ADMINISTRATORS = "PermissionAdministrators";
 	public static final String ROLE_GROUP_READERS = "GroupReaders";
 	public static final String ROLE_SCRIPT_EXECUTORS = "ScriptExecutors";
+	public static final String ROLE_APPROVERS = "Approvers";
+	public static final String ROLE_REQUESTORS = "Requestors";
+	public static final String ROLE_REQUEST_READERS = "RequestReaders";
+	public static final String ROLE_REQUEST_ADMINISTRATORS = "RequestAdministrators";
 	
 	protected static final String[] SYSTEM_ROLE_NAMES = new String[]{
 		ROLE_SYSTEM_ADMINISTRATOR, ROLE_DATA_ADMINISTRATOR, ROLE_DATA_READERS,ROLE_ARTICLE_AUTHORS,
 		ROLE_ACCOUNT_ADMINISTRATOR, ROLE_ACCOUNT_DEVELOPERS, ROLE_ACCOUNT_USERS, ROLE_ACCOUNT_USERS_READERS, ROLE_API_USERS,ROLE_PERMISSION_ADMINISTRATORS,
-		ROLE_PERMISSION_READERS, ROLE_ROLE_READERS, ROLE_ROLE_ADMINISTRATORS, ROLE_GROUP_READERS, ROLE_OBJECT_READERS, ROLE_OBJECT_ADMINISTRATOR, ROLE_SCRIPT_EXECUTORS
+		ROLE_PERMISSION_READERS, ROLE_ROLE_READERS, ROLE_ROLE_ADMINISTRATORS, ROLE_GROUP_READERS, ROLE_OBJECT_READERS, ROLE_OBJECT_ADMINISTRATOR, ROLE_SCRIPT_EXECUTORS,
+		ROLE_APPROVERS, ROLE_REQUESTORS, ROLE_REQUEST_READERS, ROLE_REQUEST_ADMINISTRATORS
 	};
 	
 	protected static final Map<Long,List<BaseRoleType>> SYSTEM_ROLE_OBJECTS = new HashMap<>();
@@ -124,7 +129,20 @@ public class RoleService {
 					RoleService.getGroupReaderUserRole(organizationId),
 					RoleService.getObjectReaderUserRole(organizationId),
 					RoleService.getArticleAuthorUserRole(organizationId),
-					RoleService.getScriptExecutorsUserRole(organizationId)
+					RoleService.getScriptExecutorsUserRole(organizationId),
+					
+					RoleService.getApproversUserRole(organizationId),
+					RoleService.getRequestorsUserRole(organizationId),
+					RoleService.getRequestReadersUserRole(organizationId),
+					RoleService.getRequestAdministratorsUserRole(organizationId),
+					RoleService.getApproversPersonRole(organizationId),
+					RoleService.getRequestorsPersonRole(organizationId),
+					RoleService.getRequestReadersPersonRole(organizationId),
+					RoleService.getRequestAdministratorsPersonRole(organizationId),
+					RoleService.getApproversAccountRole(organizationId),
+					RoleService.getRequestorsAccountRole(organizationId),
+					RoleService.getRequestReadersAccountRole(organizationId),
+					RoleService.getRequestAdministratorsAccountRole(organizationId)
 				));
 				
 				SYSTEM_ROLE_OBJECTS.put(organizationId, outList);
@@ -651,6 +669,38 @@ public class RoleService {
 		{
 			return getUserRole(ROLE_SCRIPT_EXECUTORS, null,organizationId);
 		}
+		public static UserRoleType getApproversUserRole(UserType roleOwner) throws DataAccessException, FactoryException, ArgumentException
+		{
+			return getCreateUserRole(roleOwner, ROLE_APPROVERS, null);
+		}
+		public static UserRoleType getApproversUserRole(long organizationId) throws FactoryException, ArgumentException
+		{
+			return getUserRole(ROLE_APPROVERS, null,organizationId);
+		}
+		public static UserRoleType getRequestorsUserRole(UserType roleOwner) throws DataAccessException, FactoryException, ArgumentException
+		{
+			return getCreateUserRole(roleOwner, ROLE_REQUESTORS, null);
+		}
+		public static UserRoleType getRequestorsUserRole(long organizationId) throws FactoryException, ArgumentException
+		{
+			return getUserRole(ROLE_REQUESTORS, null,organizationId);
+		}
+		public static UserRoleType getRequestReadersUserRole(UserType roleOwner) throws DataAccessException, FactoryException, ArgumentException
+		{
+			return getCreateUserRole(roleOwner, ROLE_REQUEST_READERS, null);
+		}
+		public static UserRoleType getRequestReadersUserRole(long organizationId) throws FactoryException, ArgumentException
+		{
+			return getUserRole(ROLE_REQUEST_READERS, null,organizationId);
+		}
+		public static UserRoleType getRequestAdministratorsUserRole(UserType roleOwner) throws DataAccessException, FactoryException, ArgumentException
+		{
+			return getCreateUserRole(roleOwner, ROLE_REQUEST_ADMINISTRATORS, null);
+		}
+		public static UserRoleType getRequestAdministratorsUserRole(long organizationId) throws FactoryException, ArgumentException
+		{
+			return getUserRole(ROLE_REQUEST_ADMINISTRATORS, null,organizationId);
+		}
 		public static UserRoleType getDataReaderUserRole(UserType roleOwner) throws DataAccessException, FactoryException, ArgumentException
 		{
 			return getCreateUserRole(roleOwner, ROLE_DATA_READERS, null);
@@ -683,6 +733,40 @@ public class RoleService {
 		{
 			return getUserRole(ROLE_ARTICLE_AUTHORS, null,organizationId);
 		}
+		
+		public static AccountRoleType getApproversAccountRole(UserType roleOwner) throws DataAccessException, FactoryException, ArgumentException
+		{
+			return getCreateAccountRole(roleOwner, ROLE_APPROVERS, null);
+		}
+		public static AccountRoleType getApproversAccountRole(long organizationId) throws FactoryException, ArgumentException
+		{
+			return getAccountRole(ROLE_APPROVERS, null,organizationId);
+		}
+		public static AccountRoleType getRequestorsAccountRole(UserType roleOwner) throws DataAccessException, FactoryException, ArgumentException
+		{
+			return getCreateAccountRole(roleOwner, ROLE_REQUESTORS, null);
+		}
+		public static AccountRoleType getRequestorsAccountRole(long organizationId) throws FactoryException, ArgumentException
+		{
+			return getAccountRole(ROLE_REQUESTORS, null,organizationId);
+		}
+		public static AccountRoleType getRequestReadersAccountRole(UserType roleOwner) throws DataAccessException, FactoryException, ArgumentException
+		{
+			return getCreateAccountRole(roleOwner, ROLE_REQUEST_READERS, null);
+		}
+		public static AccountRoleType getRequestReadersAccountRole(long organizationId) throws FactoryException, ArgumentException
+		{
+			return getAccountRole(ROLE_REQUEST_READERS, null,organizationId);
+		}
+		public static AccountRoleType getRequestAdministratorsAccountRole(UserType roleOwner) throws DataAccessException, FactoryException, ArgumentException
+		{
+			return getCreateAccountRole(roleOwner, ROLE_REQUEST_ADMINISTRATORS, null);
+		}
+		public static AccountRoleType getRequestAdministratorsAccountRole(long organizationId) throws FactoryException, ArgumentException
+		{
+			return getAccountRole(ROLE_REQUEST_ADMINISTRATORS, null,organizationId);
+		}
+		
 		public static AccountRoleType getAccountUsersReaderAccountRole(UserType roleOwner) throws DataAccessException, FactoryException, ArgumentException
 		{
 			return getCreateAccountRole(roleOwner, ROLE_ACCOUNT_USERS_READERS, null);
@@ -845,6 +929,38 @@ public class RoleService {
 		
 		/// Person
 		///
+		public static PersonRoleType getApproversPersonRole(UserType roleOwner) throws DataAccessException, FactoryException, ArgumentException
+		{
+			return getCreatePersonRole(roleOwner, ROLE_APPROVERS, null);
+		}
+		public static PersonRoleType getApproversPersonRole(long organizationId) throws FactoryException, ArgumentException
+		{
+			return getPersonRole(ROLE_APPROVERS, null,organizationId);
+		}
+		public static PersonRoleType getRequestorsPersonRole(UserType roleOwner) throws DataAccessException, FactoryException, ArgumentException
+		{
+			return getCreatePersonRole(roleOwner, ROLE_REQUESTORS, null);
+		}
+		public static PersonRoleType getRequestorsPersonRole(long organizationId) throws FactoryException, ArgumentException
+		{
+			return getPersonRole(ROLE_REQUESTORS, null,organizationId);
+		}
+		public static PersonRoleType getRequestReadersPersonRole(UserType roleOwner) throws DataAccessException, FactoryException, ArgumentException
+		{
+			return getCreatePersonRole(roleOwner, ROLE_REQUEST_READERS, null);
+		}
+		public static PersonRoleType getRequestReadersPersonRole(long organizationId) throws FactoryException, ArgumentException
+		{
+			return getPersonRole(ROLE_REQUEST_READERS, null,organizationId);
+		}
+		public static PersonRoleType getRequestAdministratorsPersonRole(UserType roleOwner) throws DataAccessException, FactoryException, ArgumentException
+		{
+			return getCreatePersonRole(roleOwner, ROLE_REQUEST_ADMINISTRATORS, null);
+		}
+		public static PersonRoleType getRequestAdministratorsPersonRole(long organizationId) throws FactoryException, ArgumentException
+		{
+			return getPersonRole(ROLE_REQUEST_ADMINISTRATORS, null,organizationId);
+		}
 		public static PersonRoleType getAccountUsersPersonRole(UserType roleOwner) throws DataAccessException, FactoryException, ArgumentException
 		{
 			return getCreatePersonRole(roleOwner, ROLE_ACCOUNT_USERS, null);
