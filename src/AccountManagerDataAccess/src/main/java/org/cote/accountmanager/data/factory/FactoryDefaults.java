@@ -247,80 +247,12 @@ public class FactoryDefaults {
 		///
 		createPermissionsForAuthorizationFactories(adminUser, organization.getId());
 
-		// Request the person roles to create them
-		//
-		PersonRoleType personAdminRole = RoleService.getAccountAdministratorPersonRole(adminUser);
-		PersonRoleType personDataAdminRole = RoleService.getDataAdministratorPersonRole(adminUser);
-		PersonRoleType personObjectAdminRole = RoleService.getObjectAdministratorPersonRole(adminUser);
-		PersonRoleType personSystemAdminRole = RoleService.getSystemAdministratorPersonRole(adminUser);
-		PersonRoleType personUserAdminRole = RoleService.getAccountUsersPersonRole(adminUser);
-		if(personAdminRole == null || personDataAdminRole == null || personObjectAdminRole == null || personSystemAdminRole == null || personUserAdminRole == null){
-			logger.error("Failed to retrieve one or more person roles");
-		}
-		// Add admin account and root account to Administrators and Users account roles
-		//
-		AccountType rootAccount = aFact.getAccountByName(ROOT_USER_NAME,((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getDirectoryByName("Root", Factories.getSystemOrganization().getId()));
-		AccountRoleType accountAdminRole = RoleService.getAccountAdministratorAccountRole(adminUser);
-		AccountRoleType dataAdminRole = RoleService.getDataAdministratorAccountRole(adminUser);
-		AccountRoleType objectAdminRole = RoleService.getObjectAdministratorAccountRole(adminUser);
-		AccountRoleType systemAdminRole = RoleService.getSystemAdministratorAccountRole(adminUser);
-		AccountRoleType usersRole = RoleService.getAccountUsersAccountRole(adminUser);
-		if(usersRole == null){
-			logger.error("User role is null");
-		}
-		RoleService.addAccountToRole(rootAccount, objectAdminRole);
-		RoleService.addAccountToRole(rootAccount,accountAdminRole);
-		RoleService.addAccountToRole(rootAccount,dataAdminRole);
-		RoleService.addAccountToRole(rootAccount,systemAdminRole);
-		RoleService.addAccountToRole(adminAccount, objectAdminRole);
-		RoleService.addAccountToRole(adminAccount, accountAdminRole);
-		RoleService.addAccountToRole(adminAccount, dataAdminRole);
-		RoleService.addAccountToRole(adminAccount,systemAdminRole);
-		
-		// Add admin user and root user to Administrators and Users user roles
-		//
-		UserType rootUser = uFact.getByName(ROOT_USER_NAME,Factories.getSystemOrganization().getId());
-		UserRoleType userAdminRole = RoleService.getAccountAdministratorUserRole(adminUser);
-		UserRoleType userDataAdminRole = RoleService.getDataAdministratorUserRole(adminUser);
-		UserRoleType userObjectAdminRole = RoleService.getObjectAdministratorUserRole(adminUser);
-		UserRoleType userSystemAdminRole = RoleService.getSystemAdministratorUserRole(adminUser);
-		UserRoleType usersUsersRole = RoleService.getAccountUsersRole(adminUser);
-		if(usersUsersRole == null){
-			logger.error("Failed to retrieve users users role");
-		}
-
-		RoleService.getAccountUsersReaderAccountRole(adminUser);
-		RoleService.getPermissionReaderAccountRole(adminUser);
-		RoleService.getPermissionAdministratorAccountRole(adminUser);
-		RoleService.getRoleReaderAccountRole(adminUser);
-		RoleService.getDataReaderAccountRole(adminUser);
-		RoleService.getGroupReaderAccountRole(adminUser);
-		RoleService.getObjectReaderAccountRole(adminUser);
-		RoleService.getApiUserUserRole(adminUser);
-		UserRoleType usersUsersReadersRole = RoleService.getAccountUsersReaderUserRole(adminUser);
-		RoleService.getArticleAuthorUserRole(adminUser);
-		RoleService.getRoleReaderUserRole(adminUser);
-		RoleService.getPermissionReaderUserRole(adminUser);
-		RoleService.getPermissionAdministratorUserRole(adminUser);
-		RoleService.getDataReaderUserRole(adminUser);
-		RoleService.getGroupReaderUserRole(adminUser);
-		RoleService.getObjectReaderUserRole(adminUser);
-		UserRoleType scriptExecRole = RoleService.getScriptExectorsUserRole(adminUser);
-		RoleService.addUserToRole(rootUser,userAdminRole);
-		RoleService.addUserToRole(rootUser,userDataAdminRole);
-		RoleService.addUserToRole(rootUser,userObjectAdminRole);
-		RoleService.addUserToRole(rootUser,userSystemAdminRole);
-		RoleService.addUserToRole(rootUser, scriptExecRole);
-		RoleService.addUserToRole(adminUser, userAdminRole);
-		RoleService.addUserToRole(adminUser, userDataAdminRole);
-		RoleService.addUserToRole(adminUser, userObjectAdminRole);
-		RoleService.addUserToRole(adminUser,userSystemAdminRole);
-		RoleService.addUserToRole(adminUser, scriptExecRole);
-
+		/// 2022/08/12 - Setup roles separately in order to allow for secondary invocation to true-up default role definitions
+		setupRoles(organization);
 		
 		RoleFactory rFact = Factories.getFactory(FactoryEnumType.ROLE);
 		rFact.addDefaultRoles(organization.getId());
-		
+
 		DirectoryGroupType rDir = ((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getRootDirectory(organization.getId());
 		DirectoryGroupType hDir = ((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getHomeDirectory(organization.getId());
 
@@ -333,6 +265,9 @@ public class FactoryDefaults {
 		
 		DirectoryGroupType pDir = ((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getCreateDirectory(adminUser, "Persons", ((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getRootDirectory(organization.getId()), organization.getId());
 		DirectoryGroupType cDir = ((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getCreateDirectory(adminUser, "Contacts", ((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getRootDirectory(organization.getId()), organization.getId());
+		
+		UserRoleType userAdminRole = RoleService.getAccountAdministratorUserRole(adminUser.getOrganizationId());
+		UserRoleType usersUsersReadersRole = RoleService.getAccountUsersReaderUserRole(adminUser.getOrganizationId());
 
 		AuthorizationService.authorizeType(adminUser, usersUsersReadersRole, pDir, true, false, false, false);
 		AuthorizationService.authorizeType(adminUser, usersUsersReadersRole, cDir, true, false, false, false);
@@ -355,6 +290,121 @@ public class FactoryDefaults {
 		PolicyService.getPrincipalApprovalPolicy(organization.getId());
 		
 		return true;
+	}
+	
+	public static void setupRoles(OrganizationType organization) throws FactoryException, ArgumentException, DataAccessException {
+		AccountFactory aFact = Factories.getFactory(FactoryEnumType.ACCOUNT);
+		UserFactory uFact = Factories.getFactory(FactoryEnumType.USER);
+
+		DirectoryGroupType agroup = ((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getDirectoryByName("Root", organization.getId());
+		AccountType adminAccount = aFact.getAccountByName(ADMIN_USER_NAME, agroup);
+
+		UserType adminUser = uFact.getByName(ADMIN_USER_NAME, organization.getId());
+
+		PersonRoleType personAdminRole = RoleService.getAccountAdministratorPersonRole(adminUser);
+		PersonRoleType personDataAdminRole = RoleService.getDataAdministratorPersonRole(adminUser);
+		PersonRoleType personObjectAdminRole = RoleService.getObjectAdministratorPersonRole(adminUser);
+		PersonRoleType personSystemAdminRole = RoleService.getSystemAdministratorPersonRole(adminUser);
+		PersonRoleType personUserAdminRole = RoleService.getAccountUsersPersonRole(adminUser);
+		PersonRoleType personApproversRole = RoleService.getApproversPersonRole(adminUser);
+		PersonRoleType personRequestorsRole = RoleService.getRequestorsPersonRole(adminUser);
+		PersonRoleType personRequestReadersRole = RoleService.getRequestReadersPersonRole(adminUser);
+		PersonRoleType personRequestAdministratorsRole = RoleService.getRequestAdministratorsPersonRole(adminUser);
+		if(
+				personAdminRole == null
+				|| personDataAdminRole == null
+				|| personObjectAdminRole == null
+				|| personSystemAdminRole == null
+				|| personUserAdminRole == null
+				|| personApproversRole == null
+				|| personRequestorsRole == null
+				|| personRequestReadersRole == null
+				|| personRequestAdministratorsRole == null
+		){
+			logger.error("Failed to retrieve one or more person roles");
+		}
+		// Add admin account and root account to Administrators and Users account roles
+		//
+		AccountType rootAccount = aFact.getAccountByName(ROOT_USER_NAME,((GroupFactory)Factories.getFactory(FactoryEnumType.GROUP)).getDirectoryByName("Root", Factories.getSystemOrganization().getId()));
+		AccountRoleType accountAdminRole = RoleService.getAccountAdministratorAccountRole(adminUser);
+		AccountRoleType dataAdminRole = RoleService.getDataAdministratorAccountRole(adminUser);
+		AccountRoleType objectAdminRole = RoleService.getObjectAdministratorAccountRole(adminUser);
+		AccountRoleType systemAdminRole = RoleService.getSystemAdministratorAccountRole(adminUser);
+		AccountRoleType usersRole = RoleService.getAccountUsersAccountRole(adminUser);
+		AccountRoleType accountApproversRole = RoleService.getApproversAccountRole(adminUser);
+		AccountRoleType accountRequestorsRole = RoleService.getRequestorsAccountRole(adminUser);
+		AccountRoleType accountRequestReadersRole = RoleService.getRequestReadersAccountRole(adminUser);
+		AccountRoleType accountRequestAdministratorsRole = RoleService.getRequestAdministratorsAccountRole(adminUser);
+		if(
+			accountApproversRole == null
+			|| accountRequestorsRole == null
+			|| accountRequestReadersRole == null
+			|| accountRequestAdministratorsRole == null
+			|| usersRole == null
+		){
+			logger.error("Failed to retrieve one or more account roles");
+		}
+		RoleService.addAccountToRole(rootAccount, objectAdminRole);
+		RoleService.addAccountToRole(rootAccount,accountAdminRole);
+		RoleService.addAccountToRole(rootAccount,dataAdminRole);
+		RoleService.addAccountToRole(rootAccount,systemAdminRole);
+		RoleService.addAccountToRole(adminAccount, objectAdminRole);
+		RoleService.addAccountToRole(adminAccount, accountAdminRole);
+		RoleService.addAccountToRole(adminAccount, dataAdminRole);
+		RoleService.addAccountToRole(adminAccount,systemAdminRole);
+		
+		// Add admin user and root user to Administrators and Users user roles
+		//
+		UserType rootUser = uFact.getByName(ROOT_USER_NAME,Factories.getSystemOrganization().getId());
+		UserRoleType userAdminRole = RoleService.getAccountAdministratorUserRole(adminUser);
+		UserRoleType userDataAdminRole = RoleService.getDataAdministratorUserRole(adminUser);
+		UserRoleType userObjectAdminRole = RoleService.getObjectAdministratorUserRole(adminUser);
+		UserRoleType userSystemAdminRole = RoleService.getSystemAdministratorUserRole(adminUser);
+		UserRoleType usersUsersRole = RoleService.getAccountUsersRole(adminUser);
+		UserRoleType userApproversRole = RoleService.getApproversUserRole(adminUser);
+		UserRoleType userRequestorsRole = RoleService.getRequestorsUserRole(adminUser);
+		UserRoleType userRequestReadersRole = RoleService.getRequestReadersUserRole(adminUser);
+		UserRoleType userRequestAdministratorsRole = RoleService.getRequestAdministratorsUserRole(adminUser);
+		UserRoleType usersUsersReadersRole = RoleService.getAccountUsersReaderUserRole(adminUser);
+		if(
+				userApproversRole == null
+				|| userRequestorsRole == null
+				|| userRequestReadersRole == null
+				|| userRequestAdministratorsRole == null
+				|| usersUsersRole == null
+				|| usersUsersReadersRole == null
+		){
+			logger.error("Failed to retrieve one or more user roles");
+		}
+
+		RoleService.getAccountUsersReaderAccountRole(adminUser);
+		RoleService.getPermissionReaderAccountRole(adminUser);
+		RoleService.getPermissionAdministratorAccountRole(adminUser);
+		RoleService.getRoleReaderAccountRole(adminUser);
+		RoleService.getDataReaderAccountRole(adminUser);
+		RoleService.getGroupReaderAccountRole(adminUser);
+		RoleService.getObjectReaderAccountRole(adminUser);
+		RoleService.getApiUserUserRole(adminUser);
+
+		RoleService.getArticleAuthorUserRole(adminUser);
+		RoleService.getRoleReaderUserRole(adminUser);
+		RoleService.getPermissionReaderUserRole(adminUser);
+		RoleService.getPermissionAdministratorUserRole(adminUser);
+		RoleService.getDataReaderUserRole(adminUser);
+		RoleService.getGroupReaderUserRole(adminUser);
+		RoleService.getObjectReaderUserRole(adminUser);
+		UserRoleType scriptExecRole = RoleService.getScriptExectorsUserRole(adminUser);
+		RoleService.addUserToRole(rootUser,userAdminRole);
+		RoleService.addUserToRole(rootUser,userDataAdminRole);
+		RoleService.addUserToRole(rootUser,userObjectAdminRole);
+		RoleService.addUserToRole(rootUser,userSystemAdminRole);
+		RoleService.addUserToRole(rootUser, scriptExecRole);
+		RoleService.addUserToRole(adminUser, userAdminRole);
+		RoleService.addUserToRole(adminUser, userDataAdminRole);
+		RoleService.addUserToRole(adminUser, userObjectAdminRole);
+		RoleService.addUserToRole(adminUser,userSystemAdminRole);
+		RoleService.addUserToRole(adminUser, scriptExecRole);
+
 	}
 	
 	public static void createPermissionsForAuthorizationFactories(UserType owner, long organizationId) throws FactoryException{
