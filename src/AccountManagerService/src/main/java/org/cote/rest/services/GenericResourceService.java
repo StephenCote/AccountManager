@@ -51,22 +51,31 @@ import org.cote.accountmanager.data.BulkFactories;
 import org.cote.accountmanager.data.DataAccessException;
 import org.cote.accountmanager.data.Factories;
 import org.cote.accountmanager.data.factory.INameIdFactory;
+import org.cote.accountmanager.data.factory.RequestFactory;
 import org.cote.accountmanager.data.services.TagService;
 import org.cote.accountmanager.exceptions.ArgumentException;
 import org.cote.accountmanager.exceptions.FactoryException;
+import org.cote.accountmanager.objects.AccessRequestType;
+import org.cote.accountmanager.objects.AccountType;
+import org.cote.accountmanager.objects.ApproverEnumType;
+import org.cote.accountmanager.objects.BaseRoleType;
 import org.cote.accountmanager.objects.BaseTagType;
 import org.cote.accountmanager.objects.ControlEnumType;
 import org.cote.accountmanager.objects.ControlType;
 import org.cote.accountmanager.objects.DirectoryGroupType;
 import org.cote.accountmanager.objects.NameIdType;
+import org.cote.accountmanager.objects.PersonType;
 import org.cote.accountmanager.objects.UserType;
+import org.cote.accountmanager.objects.types.ActionEnumType;
 import org.cote.accountmanager.objects.types.AuditEnumType;
 import org.cote.accountmanager.objects.types.FactoryEnumType;
+import org.cote.accountmanager.objects.types.NameEnumType;
 import org.cote.accountmanager.service.rest.BaseService;
 import org.cote.accountmanager.service.rest.SchemaBean;
 import org.cote.accountmanager.service.rest.ServiceSchemaBuilder;
 import org.cote.accountmanager.service.util.ServiceUtil;
 import org.cote.accountmanager.util.JSONUtil;
+import org.cote.rocket.services.RoleService;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -248,8 +257,11 @@ public class GenericResourceService {
 		if(cls != null){
 			NameIdType obj = (NameIdType)JSONUtil.importObject(json, cls);
 			if(obj != null){
-				if(auditType.equals(AuditEnumType.CONTROL)) {
-					updated = updateControl((ControlType)obj, request);
+				if(auditType.equals(AuditEnumType.REQUEST)) {
+					updated = org.cote.accountmanager.data.services.RequestService.updateRequest(ServiceUtil.getUserFromSession(request), (AccessRequestType)obj);
+				}
+				else if(auditType.equals(AuditEnumType.CONTROL)) {
+					updated = org.cote.accountmanager.data.services.PolicyService.updateControl(ServiceUtil.getUserFromSession(request), (ControlType)obj);
 				}
 				else if(obj.getObjectId() == null || obj.getObjectId().length() == 0 || obj.getObjectId().equalsIgnoreCase("undefined")){
 					updated = BaseService.add(auditType, obj, request);
@@ -263,62 +275,6 @@ public class GenericResourceService {
 			}
 		}
 		return Response.status(200).entity(updated).build();
-	}
-	
-	
-	private boolean updateControl(ControlType control, @Context HttpServletRequest request){
-		UserType user = ServiceUtil.getUserFromSession(request);
-		boolean outBool = false;
-		if(control.getReferenceId() <= 0L || control.getReferenceType().equals(FactoryEnumType.UNKNOWN)) {
-			logger.warn("A reference id and reference type are required");
-			logger.info("NOTE: A referenceid should be optional for authorized users in order to create global controls");
-			return outBool;
-		}
-		NameIdType object = BaseService.readById(AuditEnumType.valueOf(control.getReferenceType().toString()), control.getReferenceId(), user);
-		NameIdType refControl = null;
-		boolean canMod = false;
-		boolean canModCtl = false;
-		if(object != null) {
-			try {
-				canMod = BaseService.canChangeType(AuditEnumType.valueOf(control.getReferenceType().toString()), user, object);
-				//boolean readControl = false;
-				if(control.getControlId() > 0L && !control.getControlType().equals(ControlEnumType.UNKNOWN)) {
-					refControl = BaseService.readById(AuditEnumType.valueOf(control.getControlType().toString()), control.getControlId(), user);
-					//readControl = true;
-					if(refControl != null) {
-						canModCtl = BaseService.canChangeType(AuditEnumType.valueOf(control.getControlType().toString()), user, refControl);
-					}
-				}
-				else {
-					logger.warn("No control specified for control type.");
-				}
-			
-				/// Must be able to 
-				if(canMod && canModCtl) {
-					if(control.getObjectId() == null || control.getObjectId().length() == 0 || control.getObjectId().equalsIgnoreCase("undefined")) {
-						control.setOwnerId(user.getId());
-						control.setOrganizationId(user.getOrganizationId());
-						outBool = ((INameIdFactory)Factories.getFactory(FactoryEnumType.CONTROL)).add(control);
-						// outBool = BaseService.add(AuditEnumType.CONTROL, control, user);
-					}
-					else {
-						// outBool = BaseService.update(AuditEnumType.CONTROL, control, user);
-						outBool = ((INameIdFactory)Factories.getFactory(FactoryEnumType.CONTROL)).update(control);
-					}
-				}
-				else {
-					logger.error("Change access required for referenced control " + control.getControlType().toString() + " " + control.getControlId());
-				}
-			}
-			catch(FactoryException | ArgumentException e) {
-				logger.error(e.getMessage());
-				logger.error(e);
-			}
-		}
-		else {
-			logger.error("Object reference null or not accessible");
-		}
-		return outBool;
 	}
 	
 	@RolesAllowed({"user"})
