@@ -221,6 +221,7 @@ public class Factories {
 	    Factories.registerNameTypeSanitizer(NameEnumType.ADDRESS, TypeSanitizer.class); 
 	    Factories.registerNameTypeSanitizer(NameEnumType.CONTACT, TypeSanitizer.class); 
 	    Factories.registerNameTypeSanitizer(NameEnumType.CONTACTINFORMATION, TypeSanitizer.class); 
+	    Factories.registerNameTypeSanitizer(NameEnumType.CONTROL, TypeSanitizer.class); 
 	    Factories.registerNameTypeSanitizer(NameEnumType.CREDENTIAL, TypeSanitizer.class); 
 	    Factories.registerNameTypeSanitizer(NameEnumType.DATA, TypeSanitizer.class); 
 	    Factories.registerNameTypeSanitizer(NameEnumType.FACT, TypeSanitizer.class); 
