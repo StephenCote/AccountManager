@@ -6,6 +6,7 @@
 	<include schemaLocation="SqlStatement.xsd"></include>
 	<include schemaLocation="NameId.xsd"></include>
 	<include schemaLocation="TagType.xsd"></include>
+	<include schemaLocation="ApproverType.xsd"></include>
 	<import schemaLocation="Types.xsd" namespace="http://www.cote.org/accountmanager/objects/types"></import>
 	<complexType name="DataTagSearchRequest">
 		<complexContent>
@@ -97,6 +98,31 @@
 					type="Q1:ParticipantEnumType">
 				</attribute>
 				<attribute name="participantFactoryType" type="Q1:ParticipantEnumType"></attribute>
+			</extension>
+		</complexContent>
+	</complexType>
+
+	<complexType name="RequestSearchRequestType">
+		<complexContent>
+			<extension base="tns:BaseSearchRequestType">
+				<attribute name="ownerId" type="string"></attribute>
+				<attribute name="action" type="Q1:ActionEnumType"></attribute>
+				<attribute name="requestorId" type="string"></attribute>
+				<attribute name="requestorType"
+					type="Q1:NameEnumType">
+				</attribute>
+				<attribute name="delegateId" type="string"></attribute>
+				<attribute name="delegateType" type="Q1:NameEnumType"></attribute>
+				<attribute name="targetId" type="string"></attribute>
+				<attribute name="targetType" type="Q1:NameEnumType"></attribute>
+				<attribute name="entitlementId" type="string"></attribute>
+				<attribute name="entitlementType"
+					type="Q1:NameEnumType">
+				</attribute>
+				<attribute name="approvalResponse"
+					type="tns:ApprovalResponseEnumType">
+				</attribute>
+				<attribute name="requestParentId" type="long"></attribute>
 			</extension>
 		</complexContent>
 	</complexType>
