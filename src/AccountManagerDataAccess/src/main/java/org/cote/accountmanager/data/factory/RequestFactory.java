@@ -240,11 +240,12 @@ public class RequestFactory  extends NameIdFactory {
 		return null;
 	}
 	
-	public List<AccessRequestType> getAccessRequestsForType(NameIdType requestor, NameIdType delegate, NameIdType targetObject, NameIdType entitlement, ApprovalResponseEnumType requestStatus, long parentId, long organizationId) throws FactoryException, ArgumentException{
+	private List<QueryField> getQueryFields(NameIdType requestor, NameIdType delegate, NameIdType targetObject, NameIdType entitlement, ApprovalResponseEnumType requestStatus, long parentId) {
 		List<QueryField> fields = new ArrayList<>();
 		// allow id of 0 for global control checks
 		if(requestor == null && delegate == null && entitlement == null && parentId <= 0L) {
-			throw new ArgumentException("Expected a requestor, delegate, or entitlement");
+			//throw new ArgumentException("Expected a requestor, delegate, or entitlement");
+			logger.warn("No requestor, delegate, or entitlement were specified");;
 		}
 		if(requestStatus != ApprovalResponseEnumType.UNKNOWN) {
 			fields.add(QueryFields.getFieldApprovalStatus(requestStatus));
@@ -269,14 +270,36 @@ public class RequestFactory  extends NameIdFactory {
 		if(parentId > 0L) {
 			fields.add(QueryFields.getFieldParent(parentId));
 		}
+		return fields;
+	}
+	
+	public List<AccessRequestType> getAccessRequestsForType(NameIdType requestor, NameIdType delegate, NameIdType targetObject, NameIdType entitlement, ApprovalResponseEnumType requestStatus, long parentId, long organizationId) throws FactoryException, ArgumentException{
+		return getAccessRequestsForType(requestor, delegate, targetObject, entitlement, requestStatus, parentId, 0L, 0, organizationId);
+	}
+	public List<AccessRequestType> getAccessRequestsForType(
+			NameIdType requestor,
+			NameIdType delegate,
+			NameIdType targetObject,
+			NameIdType entitlement,
+			ApprovalResponseEnumType requestStatus,
+			long parentId,
+			long startRecord,
+			int recordCount,
+			long organizationId
+	) throws FactoryException, ArgumentException{
+		List<QueryField> fields = getQueryFields(requestor, delegate, targetObject, entitlement, requestStatus, parentId);
 		ProcessingInstructionType pi = new ProcessingInstructionType();
 		pi.setPaginate(true);
-		pi.setStartIndex(0L);
-		pi.setRecordCount(0);
-		
+		pi.setStartIndex(startRecord);
+		pi.setRecordCount(recordCount);
+		pi.setOrderClause("createddate DESC");
 		return list(fields.toArray(new QueryField[0]), pi, organizationId);
 	}
 	
+	public int countAccessRequestsForType(NameIdType requestor, NameIdType delegate, NameIdType targetObject, NameIdType entitlement, ApprovalResponseEnumType requestStatus, long parentId, long organizationId) throws FactoryException, ArgumentException{
+		List<QueryField> fields = getQueryFields(requestor, delegate, targetObject, entitlement, requestStatus, parentId);
+		return getCountByField(this.getDataTables().get(0), fields.toArray(new QueryField[0]), organizationId);
+	}
 	
 	@Override
 	public <T> boolean update(T object) throws FactoryException

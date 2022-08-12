@@ -661,7 +661,6 @@ public abstract class NameIdFactory extends FactoryBase implements INameIdFactor
 		DataTable table = this.dataTables.get(0);
 		String selectString = getSelectTemplate(table, instruction);
 		String sqlQuery = assembleQueryString(selectString, fields, connectionType, instruction, organizationId);
-
 		try {
 			PreparedStatement statement = connection.prepareStatement(sqlQuery);
 			DBFactory.setStatementParameters(fields, statement);
