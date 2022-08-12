@@ -48,6 +48,23 @@ import org.cote.accountmanager.util.KeyStoreUtil;
 
 public class OrganizationCommand {
 	public static final Logger logger = LogManager.getLogger(OrganizationCommand.class);
+	public static boolean setupOrganizationRoles(String organizationPath) {
+		boolean outBool = false;
+		try{
+			OrganizationType org = ((OrganizationFactory)Factories.getFactory(FactoryEnumType.ORGANIZATION)).findOrganization(organizationPath);
+			if(org == null){
+				logger.error("Null organization");
+				return false;
+			}
+			logger.info("Configuring roles for " + organizationPath);
+			FactoryDefaults.setupRoles(org);
+			outBool = true;
+		}
+		catch(FactoryException | ArgumentException | DataAccessException e) {
+			logger.error(e);
+		}
+		return outBool;
+	}
 	public static boolean setOrganizationCertificate(String organizationPath, String sslPath, String alias, char[] password, String adminPassword){
 		boolean outBool = false;
 		try{

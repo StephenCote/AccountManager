@@ -122,6 +122,7 @@ public class ConsoleMain {
 		options.addOption("ownerId",true,"Migrate data from a pre-configured target");
 		options.addOption("execute",false,"Execute an action");
 		options.addOption("setup",false,"Setup Account Manager");
+		options.addOption("roles",false,"Setup Account Manager Roles");
 		options.addOption("email",true,"Email address");
 		options.addOption("confirm",false,"Confirm the activity");
 		options.addOption("schema",true,"Account Manager Database Schema");
@@ -200,6 +201,10 @@ public class ConsoleMain {
 			if(cmd.hasOption("patch") && cmd.hasOption("organization")){
 				logger.info("Placeholder for patching installations");
 
+			}
+			else if(cmd.hasOption("setup") && cmd.hasOption("roles") && cmd.hasOption("organization")){
+				prepareFactories(props);
+				OrganizationCommand.setupOrganizationRoles(cmd.getOptionValue("organization"));
 			}
 			else if(cmd.hasOption("setup") && cmd.hasOption("rootPassword")){
 				prepareFactories(props);
