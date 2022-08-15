@@ -466,7 +466,7 @@ public class PolicyService {
 					else {
 						// outBool = BaseService.update(AuditEnumType.CONTROL, control, user);
 						/// TOOD: Need to sanitize this
-						ControlType currCtl = cFact.getControlByObjectId(control.getObjectId(), user.getOrganizationId());
+						ControlType currCtl = cFact.getByObjectId(control.getObjectId(), user.getOrganizationId());
 						if(currCtl.getOwnerId() > 0L && !currCtl.getOwnerId().equals(control.getOwnerId())) {
 							AuditService.denyResult(audit, "Chown operation not permitted in update operation");
 						}

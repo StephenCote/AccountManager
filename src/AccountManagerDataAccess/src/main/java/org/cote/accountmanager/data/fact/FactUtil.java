@@ -185,7 +185,7 @@ public class FactUtil {
 						outObj = (T)((CredentialFactory)fact).getByObjectId(sourceFact.getSourceUrn(), referenceFact.getOrganizationId());
 						break;
 					case CONTROL:
-						outObj = (T)((ControlFactory)fact).getControlByObjectId(sourceFact.getSourceUrn(), referenceFact.getOrganizationId());
+						outObj = (T)((ControlFactory)fact).getByObjectId(sourceFact.getSourceUrn(), referenceFact.getOrganizationId());
 						break;		
 					/// NameIdGroupFactory types
 					case OPERATION:

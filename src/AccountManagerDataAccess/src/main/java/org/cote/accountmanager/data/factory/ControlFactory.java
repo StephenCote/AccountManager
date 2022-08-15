@@ -194,11 +194,13 @@ public class ControlFactory extends NameIdFactory {
 		fields.add(QueryFields.getFieldControlType(useMap.getControlType()));
 		fields.add(QueryFields.getFieldControlAction(useMap.getControlAction()));
 	}
+	/*
 	public ControlType getControlByObjectId(String id, long organizationId) throws FactoryException, ArgumentException{
 		List<NameIdType> sec = getByObjectId(id, organizationId);
 		if(!sec.isEmpty()) return (ControlType)sec.get(0);
 		return null;
 	}
+	*/
 	@Override
 	public <T> boolean update(T object) throws FactoryException
 	{
