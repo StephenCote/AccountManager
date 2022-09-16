@@ -303,7 +303,7 @@
 		<dependency>
 			<groupId>org.postgresql</groupId>
 			<artifactId>postgresql</artifactId>
-			<version>42.2.26</version>
+			<version>42.5.0</version>
 		</dependency>
 		<dependency>
 			<groupId>org.beanshell</groupId>
