@@ -1,0 +1,16 @@
+[INFO ] 2022-08-12 11:16:32.831 [main] TestSecurityFactory - Testing generation
+[INFO ] 2022-08-12 11:16:34.139 [main] TestSecurityFactory - Testing EC Serialization
+[INFO ] 2022-08-12 11:16:34.152 [main] TestSecurityFactory - Generating keypair
+[INFO ] 2022-08-12 11:16:34.160 [main] TestSecurityFactory - Generating secret
+[INFO ] 2022-08-12 11:16:34.165 [main] TestSecurityFactory - Testing encrypt
+[INFO ] 2022-08-12 11:16:34.170 [main] TestSecurityFactory - Testing encipher
+[INFO ] 2022-08-12 11:16:34.176 [main] TestSecurityFactory - ECIES This is a test='BG+QHQvChlFc6HgiIZA/sJnNTKUdVIYnoKdMYwlXghI/XeNLGbeHqIPCAVCf6yW1pJoLmLyaSCzaCvX+nk7EUU2qTvu6+9p26P6hyLASLpFwpylNvGboZlQf7bfaLYqWHB8r' / Enc Secret=false
+[INFO ] 2022-08-12 11:16:34.182 [main] TestSecurityFactory - Serialized: <?xml version="1.0" encoding="UTF-8"?>
+<SecurityManager><public><ec-key>LS0tLS1CRUdJTiBQVUJMSUMgS0VZLS0tLS0NCk1Ga3dFd1lIS29aSXpqMENBUVlJS29aSXpqMERBUWNEUWdBRWI4ZFE3dUJPUFR5bnRXZEVVSEFzK3Z3R0xtUHoNCll0VGpGWXdxWUJqZmtvUGx2ajM2blNGQXhqR3kycVk5M291TERBM1RndmFvdzBpc1l4NEw0dmZsZEE9PQ0KLS0tLS1FTkQgUFVCTElDIEtFWS0tLS0tDQo=</ec-key></public><private><ec-key>LS0tLS1CRUdJTiBQUklWQVRFIEtFWS0tLS0tDQpNSUdUQWdFQU1CTUdCeXFHU000OUFnRUdDQ3FHU000OUF3RUhCSGt3ZHdJQkFRUWdra3pjTUdFY1BIZ0NNSXZQDQpDNkZpMXBsQ2ZmRndCYUV0WHErM3A1alpMQUNnQ2dZSUtvWkl6ajBEQVFlaFJBTkNBQVJ2eDFEdTRFNDlQS2UxDQpaMFJRY0N6Ni9BWXVZL05pMU9NVmpDcGdHTitTZytXK1BmcWRJVURHTWJMYXBqM2VpNHNNRGRPQzlxakRTS3hqDQpIZ3ZpOStWMA0KLS0tLS1FTkQgUFJJVkFURSBLRVktLS0tLQ0K</ec-key></private><cipher><key>MT8FO+1WPaLRUabQkywYfbnOib7G/nt9xLlxHNdjliw=</key><iv>mUIoGiGWpq7yVGzITCVr6g==</iv></cipher></SecurityManager>
+
+[INFO ] 2022-08-12 11:16:34.202 [main] TestSecurityFactory - Test enc: 16
+[INFO ] 2022-08-12 11:16:34.202 [main] TestSecurityFactory - Bean 2: AES
+[INFO ] 2022-08-12 11:16:34.205 [main] TestSecurityFactory - ECDSA This is a test = 'BG+QHQvChlFc6HgiIZA/sJnNTKUdVIYnoKdMYwlXghI/XeNLGbeHqIPCAVCf6yW1pJoLmLyaSCzaCvX+nk7EUU2qTvu6+9p26P6hyLASLpFwpylNvGboZlQf7bfaLYqWHB8r'
+[INFO ] 2022-08-12 11:16:34.214 [main] TestSecurityFactory - Testing modified bean initialization
+[INFO ] 2022-08-12 11:16:34.223 [main] TestSecurityFactory - Testing ES256 generation
+[INFO ] 2022-08-12 11:16:34.237 [main] TestSecurityFactory - Testing ECIES as a Cipher

@@ -70,11 +70,6 @@ public class ResourceFactory extends NameIdGroupFactory {
 	{
 		ResourceType rec = (ResourceType)obj;
 		if(rec.getPopulated().booleanValue()) return;
-		if(rec.getResourceDataId() > 0){
-			if(rec.getResourceType() == ResourceEnumType.USER){
-				rec.setResourceData((UserType)Factories.getNameIdFactory(FactoryEnumType.USER).getById(rec.getResourceDataId(), rec.getOrganizationId()));
-			}
-		}
 		
 		rec.setPopulated(true);
 		updateToCache(rec);

@@ -1,0 +1,178 @@
+[INFO ] 2022-09-16 16:30:59.818 [main] AuditService - *** Audit *** VALID (Validated) USER (RocketQAUser (#1448)) AUTHENTICATE (Validate hashed password) CREDENTIAL (HASHED_PASSWORD(# 1450))  in 619 ms
+[INFO ] 2022-09-16 16:30:59.889 [main] AuditService - *** Audit *** VALID (Validated) USER (RocketQAUser2 (#37611)) AUTHENTICATE (Validate hashed password) CREDENTIAL (HASHED_PASSWORD(# 37613))  in 5 ms
+[INFO ] 2022-09-16 16:31:00.055 [main] BaseDataAccessTest - Cleaning up pre-test conditions
+[INFO ] 2022-09-16 16:31:00.126 [main] AuditService - *** Audit *** PERMIT (Access authorized to group Rules) USER (am:user:development:policyuser) READ (~/Rules) GROUP (am:group:development:data:home.policyuser.rules)  in 12 ms
+[INFO ] 2022-09-16 16:31:00.128 [main] AuditService - *** Audit *** PERMIT (Access authorized to group Patterns) USER (am:user:development:policyuser) READ (~/Patterns) GROUP (am:group:development:data:home.policyuser.patterns)  in 2 ms
+[INFO ] 2022-09-16 16:31:00.131 [main] AuditService - *** Audit *** PERMIT (Access authorized to group Facts) USER (am:user:development:policyuser) READ (~/Facts) GROUP (am:group:development:data:home.policyuser.facts)  in 1 ms
+[INFO ] 2022-09-16 16:31:00.132 [main] AuditService - *** Audit *** PERMIT (Access authorized to group Policies) USER (am:user:development:policyuser) READ (~/Policies) GROUP (am:group:development:data:home.policyuser.policies)  in 1 ms
+[INFO ] 2022-09-16 16:31:00.134 [main] AuditService - *** Audit *** PERMIT (Access authorized to group Operations) USER (am:user:development:policyuser) READ (~/Operations) GROUP (am:group:development:data:home.policyuser.operations)  in 1 ms
+[INFO ] 2022-09-16 16:31:00.145 [main] AuditService - *** Audit *** PERMIT (Read Access Approval Operation (#237)) USER (am:user:development:policyuser) READ (readByName) OPERATION (am:operation:development:data:home.policyuser.operations:access.approval.operation)  in 10 ms
+[INFO ] 2022-09-16 16:31:00.147 [main] AuditService - *** Audit *** PERMIT (Read Lookup Owner Operation (#238)) USER (am:user:development:policyuser) READ (readByName) OPERATION (am:operation:development:data:home.policyuser.operations:lookup.owner.operation)  in 1 ms
+[INFO ] 2022-09-16 16:31:00.154 [main] AuditService - *** Audit *** PERMIT (Read Entitlement Parameter (#239)) USER (am:user:development:policyuser) READ (readByName) FACT (am:fact:development:data:home.policyuser.facts:entitlement.parameter)  in 7 ms
+[INFO ] 2022-09-16 16:31:00.156 [main] AuditService - *** Audit *** PERMIT (Read Entitlement Owner (#240)) USER (am:user:development:policyuser) READ (readByName) FACT (am:fact:development:data:home.policyuser.facts:entitlement.owner)  in 1 ms
+[INFO ] 2022-09-16 16:31:00.177 [main] AuditService - *** Audit *** PERMIT (Read Owner Access Approval Policy (#241)) USER (am:user:development:policyuser) READ (readByName) POLICY (am:policy:development:data:home.policyuser.policies:owner.access.approval.policy)  in 19 ms
+[INFO ] 2022-09-16 16:31:00.192 [main] AuditService - *** Audit *** PERMIT (Read Owner Access Approval Rule (#242)) USER (am:user:development:policyuser) READ (readByName) RULE (am:rule:development:data:home.policyuser.rules:owner.access.approval.rule)  in 15 ms
+[INFO ] 2022-09-16 16:31:00.197 [main] AuditService - *** Audit *** PERMIT (Read Owner Approval Pattern (#243)) USER (am:user:development:policyuser) READ (readByName) PATTERN (am:pattern:development:data:home.policyuser.patterns:owner.approval.pattern)  in 5 ms
+[INFO ] 2022-09-16 16:31:00.208 [main] AuditService - *** Audit *** PERMIT (Access authorized to group Rules) USER (am:user:development:policyuser) READ (~/Rules) GROUP (am:group:development:data:home.policyuser.rules)  in 0 ms
+[INFO ] 2022-09-16 16:31:00.209 [main] AuditService - *** Audit *** PERMIT (Access authorized to group Patterns) USER (am:user:development:policyuser) READ (~/Patterns) GROUP (am:group:development:data:home.policyuser.patterns)  in 0 ms
+[INFO ] 2022-09-16 16:31:00.209 [main] AuditService - *** Audit *** PERMIT (Access authorized to group Facts) USER (am:user:development:policyuser) READ (~/Facts) GROUP (am:group:development:data:home.policyuser.facts)  in 0 ms
+[INFO ] 2022-09-16 16:31:00.210 [main] AuditService - *** Audit *** PERMIT (Access authorized to group Policies) USER (am:user:development:policyuser) READ (~/Policies) GROUP (am:group:development:data:home.policyuser.policies)  in 0 ms
+[INFO ] 2022-09-16 16:31:00.210 [main] AuditService - *** Audit *** PERMIT (Access authorized to group Operations) USER (am:user:development:policyuser) READ (~/Operations) GROUP (am:group:development:data:home.policyuser.operations)  in 0 ms
+[INFO ] 2022-09-16 16:31:00.211 [main] AuditService - *** Audit *** PERMIT (Read Access Approval Operation (#237)) USER (am:user:development:policyuser) READ (readByName) OPERATION (am:operation:development:data:home.policyuser.operations:access.approval.operation)  in 0 ms
+[INFO ] 2022-09-16 16:31:00.212 [main] AuditService - *** Audit *** PERMIT (Read Lookup Access Operation (#246)) USER (am:user:development:policyuser) READ (readByName) OPERATION (am:operation:development:data:home.policyuser.operations:lookup.access.operation)  in 1 ms
+[INFO ] 2022-09-16 16:31:00.213 [main] AuditService - *** Audit *** PERMIT (Read Entitlement Parameter (#239)) USER (am:user:development:policyuser) READ (readByName) FACT (am:fact:development:data:home.policyuser.facts:entitlement.parameter)  in 0 ms
+[INFO ] 2022-09-16 16:31:00.215 [main] AuditService - *** Audit *** PERMIT (Read Entitlement Approver (#247)) USER (am:user:development:policyuser) READ (readByName) FACT (am:fact:development:data:home.policyuser.facts:entitlement.approver)  in 1 ms
+[INFO ] 2022-09-16 16:31:00.218 [main] AuditService - *** Audit *** PERMIT (Read Principal Access Approval Policy (#248)) USER (am:user:development:policyuser) READ (readByName) POLICY (am:policy:development:data:home.policyuser.policies:principal.access.approval.policy)  in 2 ms
+[INFO ] 2022-09-16 16:31:00.222 [main] AuditService - *** Audit *** PERMIT (Read Principal Access Approval Rule (#249)) USER (am:user:development:policyuser) READ (readByName) RULE (am:rule:development:data:home.policyuser.rules:principal.access.approval.rule)  in 3 ms
+[INFO ] 2022-09-16 16:31:00.225 [main] AuditService - *** Audit *** PERMIT (Read Principal Approval Pattern (#250)) USER (am:user:development:policyuser) READ (readByName) PATTERN (am:pattern:development:data:home.policyuser.patterns:principal.approval.pattern)  in 3 ms
+[INFO ] 2022-09-16 16:31:00.251 [main] AuthorizationService - Authorized am:user:development:rocketqauser for am:policy:development:data:home.policyuser.policies:owner.access.approval.policy with group edit privileges
+[INFO ] 2022-09-16 16:31:00.272 [main] BaseDataAccessTest - Cleaning up outstanding requests: 1
+[INFO ] 2022-09-16 16:31:00.291 [main] BaseDataAccessTest - Evaluating outstanding access requests: 1
+[INFO ] 2022-09-16 16:31:00.294 [main] RequestService - Requesting policy in organization 13
+[INFO ] 2022-09-16 16:31:00.296 [main] BaseDataAccessTest - Applicable policy controls for request: 2
+[INFO ] 2022-09-16 16:31:00.304 [main] PolicyDefinitionUtil - Defining Parameter am:fact:development:data:home.policyuser.facts:entitlement.parameter
+[INFO ] 2022-09-16 16:31:00.332 [main] PolicyEvaluator - Policy am:policy:development:data:home.policyuser.policies:principal.access.approval.policy: PERMIT
+[INFO ] 2022-09-16 16:31:00.338 [main] PolicyDefinitionUtil - Defining Parameter am:fact:development:data:home.policyuser.facts:entitlement.parameter
+[INFO ] 2022-09-16 16:31:00.348 [main] RequestService - Attempting to locate owner from parent attribute reference
+[INFO ] 2022-09-16 16:31:00.348 [main] RequestService - Looking for owner based on approver entry
+[INFO ] 2022-09-16 16:31:00.349 [main] PolicyEvaluator - Policy am:policy:development:data:home.policyuser.policies:owner.access.approval.policy: PERMIT
+[INFO ] 2022-09-16 16:31:00.365 [main] BaseDataAccessTest - Obtained 3
+[INFO ] 2022-09-16 16:31:00.365 [main] PolicyDefinitionUtil - Defining Parameter am:fact:development:data:home.policyuser.facts:entitlement.parameter
+[INFO ] 2022-09-16 16:31:00.373 [main] PolicyEvaluator - Policy am:policy:development:data:home.policyuser.policies:principal.access.approval.policy: PERMIT
+[INFO ] 2022-09-16 16:31:00.374 [main] PolicyDefinitionUtil - Defining Parameter am:fact:development:data:home.policyuser.facts:entitlement.parameter
+[INFO ] 2022-09-16 16:31:00.382 [main] RequestService - Attempting to locate owner from parent attribute reference
+[INFO ] 2022-09-16 16:31:00.382 [main] RequestService - Looking for owner based on approver entry
+[INFO ] 2022-09-16 16:31:00.383 [main] PolicyEvaluator - Policy am:policy:development:data:home.policyuser.policies:owner.access.approval.policy: PERMIT
+[INFO ] 2022-09-16 16:31:00.388 [main] BaseDataAccessTest - Obtained 2x 3
+[INFO ] 2022-09-16 16:31:00.389 [main] RequestService - Process approver am:user:development:rocketqauser with 1 users
+[INFO ] 2022-09-16 16:31:00.403 [main] RequestService - Process approver am:user:development:rocketqauser with 1 users
+[INFO ] 2022-09-16 16:31:00.406 [main] RequestService - Breaking request queue processing at level 1 < 2
+[INFO ] 2022-09-16 16:31:00.406 [main] BaseDataAccessTest - Recorded 2 internal messages
+[INFO ] 2022-09-16 16:31:00.408 [main] RequestService - Process approver am:user:development:rocketqauser with 1 users
+[INFO ] 2022-09-16 16:31:00.410 [main] RequestService - User am:user:development:rocketqauser already received a message regarding this request
+[INFO ] 2022-09-16 16:31:00.410 [main] RequestService - Process approver am:user:development:rocketqauser with 1 users
+[INFO ] 2022-09-16 16:31:00.412 [main] RequestService - User am:user:development:rocketqauser already received a message regarding this request
+[INFO ] 2022-09-16 16:31:00.412 [main] RequestService - Breaking request queue processing at level 1 < 2
+[INFO ] 2022-09-16 16:31:00.412 [main] BaseDataAccessTest - Re-Recorded 0 internal messages
+[INFO ] 2022-09-16 16:31:00.414 [main] BaseDataAccessTest - Request messages: 2
+[INFO ] 2022-09-16 16:31:00.416 [main] RequestService - Responding to request with APPROVE
+[INFO ] 2022-09-16 16:31:00.421 [main] RequestService - Responding to request with APPROVE
+[INFO ] 2022-09-16 16:31:00.424 [main] RequestService - Approval USER 1448 already responded with APPROVE
+[INFO ] 2022-09-16 16:31:00.424 [main] RequestService - Approval USER 1448 already responded with APPROVE
+[INFO ] 2022-09-16 16:31:00.505 [main] RequestService - Process approver am:role:development:person:home.rocketqauser.applications.application.1.role.1 with 1 users
+[INFO ] 2022-09-16 16:31:00.510 [main] BaseDataAccessTest - Received 1 messages
+[INFO ] 2022-09-16 16:31:00.532 [main] AuditService - *** Audit *** PERMIT (Permitted to read 1 persons) USER (am:user:development:rocketqauser2) READ (Find person for RocketQAUser2) UNKNOWN (null)  in 18 ms
+[INFO ] 2022-09-16 16:31:00.532 [main] RequestService - Elevating user object to person object within approval
+[INFO ] 2022-09-16 16:31:00.533 [main] RequestService - Responding to request with APPROVE
+[INFO ] 2022-09-16 16:31:00.540 [main] RequestService - Request cd692baa-86bc-400f-acbb-2bc8c2e2c593 is granted
+[INFO ] 2022-09-16 16:31:00.582 [main] AuditService - *** Audit *** VALID (Validated) USER (RocketQAUser (#1448)) AUTHENTICATE (Validate hashed password) CREDENTIAL (HASHED_PASSWORD(# 1450))  in 3 ms
+[INFO ] 2022-09-16 16:31:00.594 [main] AuditService - *** Audit *** VALID (Validated) USER (RocketQAUser2 (#37611)) AUTHENTICATE (Validate hashed password) CREDENTIAL (HASHED_PASSWORD(# 37613))  in 3 ms
+[INFO ] 2022-09-16 16:31:00.600 [main] BaseDataAccessTest - Test creating a bulk request basket
+[INFO ] 2022-09-16 16:31:00.606 [main] BaseDataAccessTest - Found 3 requests for am:user:development:rocketqauser to obtain am:group:development:account:home.rocketqauser.applications.application.1.group.1 access
+[INFO ] 2022-09-16 16:31:00.616 [main] AuditService - *** Audit *** VALID (Validated) USER (RocketQAUser (#1448)) AUTHENTICATE (Validate hashed password) CREDENTIAL (HASHED_PASSWORD(# 1450))  in 1 ms
+[INFO ] 2022-09-16 16:31:00.624 [main] AuditService - *** Audit *** VALID (Validated) USER (RocketQAUser2 (#37611)) AUTHENTICATE (Validate hashed password) CREDENTIAL (HASHED_PASSWORD(# 37613))  in 3 ms
+[INFO ] 2022-09-16 16:31:00.630 [main] BaseDataAccessTest - Cleaning up outstanding requests: 3
+[INFO ] 2022-09-16 16:31:00.640 [main] BaseDataAccessTest - Received 1 requests
+[INFO ] 2022-09-16 16:31:00.650 [main] AuditService - *** Audit *** VALID (Validated) USER (RocketQAUser (#1448)) AUTHENTICATE (Validate hashed password) CREDENTIAL (HASHED_PASSWORD(# 1450))  in 1 ms
+[INFO ] 2022-09-16 16:31:00.657 [main] AuditService - *** Audit *** VALID (Validated) USER (RocketQAUser2 (#37611)) AUTHENTICATE (Validate hashed password) CREDENTIAL (HASHED_PASSWORD(# 37613))  in 2 ms
+[INFO ] 2022-09-16 16:31:00.661 [main] BaseDataAccessTest - Cleaning up outstanding requests: 1
+[INFO ] 2022-09-16 16:31:00.704 [main] BaseDataAccessTest - Received 20 requests
+[INFO ] 2022-09-16 16:31:00.705 [main] BaseDataAccessTest - Received page with size 10
+[INFO ] 2022-09-16 16:31:00.706 [main] BaseDataAccessTest - Received 10 requests
+[INFO ] 2022-09-16 16:31:00.716 [main] AuditService - *** Audit *** VALID (Validated) USER (RocketQAUser (#1448)) AUTHENTICATE (Validate hashed password) CREDENTIAL (HASHED_PASSWORD(# 1450))  in 2 ms
+[INFO ] 2022-09-16 16:31:00.723 [main] AuditService - *** Audit *** VALID (Validated) USER (RocketQAUser2 (#37611)) AUTHENTICATE (Validate hashed password) CREDENTIAL (HASHED_PASSWORD(# 37613))  in 1 ms
+[INFO ] 2022-09-16 16:31:00.729 [main] BaseDataAccessTest - Cleaning up outstanding requests: 20
+[INFO ] 2022-09-16 16:31:00.736 [main] BaseDataAccessTest - Test creating an group access request
+[INFO ] 2022-09-16 16:31:00.738 [main] BaseDataAccessTest - Found 1 requests for am:user:development:rocketqauser to obtain am:group:development:account:home.rocketqauser.applications.application.1.group.1 access
+[INFO ] 2022-09-16 16:31:00.746 [main] AuditService - *** Audit *** VALID (Validated) USER (RocketQAUser (#1448)) AUTHENTICATE (Validate hashed password) CREDENTIAL (HASHED_PASSWORD(# 1450))  in 1 ms
+[INFO ] 2022-09-16 16:31:00.752 [main] AuditService - *** Audit *** VALID (Validated) USER (RocketQAUser2 (#37611)) AUTHENTICATE (Validate hashed password) CREDENTIAL (HASHED_PASSWORD(# 37613))  in 1 ms
+[INFO ] 2022-09-16 16:31:00.756 [main] BaseDataAccessTest - Cleaning up outstanding requests: 1
+[INFO ] 2022-09-16 16:33:07.180 [main] AuditService - *** Audit *** VALID (Validated) USER (RocketQAUser (#1448)) AUTHENTICATE (Validate hashed password) CREDENTIAL (HASHED_PASSWORD(# 1450))  in 413 ms
+[INFO ] 2022-09-16 16:33:07.232 [main] AuditService - *** Audit *** VALID (Validated) USER (RocketQAUser2 (#37611)) AUTHENTICATE (Validate hashed password) CREDENTIAL (HASHED_PASSWORD(# 37613))  in 5 ms
+[INFO ] 2022-09-16 16:33:07.357 [main] BaseDataAccessTest - Cleaning up pre-test conditions
+[INFO ] 2022-09-16 16:33:07.411 [main] AuditService - *** Audit *** PERMIT (Access authorized to group Rules) USER (am:user:development:policyuser) READ (~/Rules) GROUP (am:group:development:data:home.policyuser.rules)  in 7 ms
+[INFO ] 2022-09-16 16:33:07.413 [main] AuditService - *** Audit *** PERMIT (Access authorized to group Patterns) USER (am:user:development:policyuser) READ (~/Patterns) GROUP (am:group:development:data:home.policyuser.patterns)  in 1 ms
+[INFO ] 2022-09-16 16:33:07.414 [main] AuditService - *** Audit *** PERMIT (Access authorized to group Facts) USER (am:user:development:policyuser) READ (~/Facts) GROUP (am:group:development:data:home.policyuser.facts)  in 1 ms
+[INFO ] 2022-09-16 16:33:07.415 [main] AuditService - *** Audit *** PERMIT (Access authorized to group Policies) USER (am:user:development:policyuser) READ (~/Policies) GROUP (am:group:development:data:home.policyuser.policies)  in 1 ms
+[INFO ] 2022-09-16 16:33:07.416 [main] AuditService - *** Audit *** PERMIT (Access authorized to group Operations) USER (am:user:development:policyuser) READ (~/Operations) GROUP (am:group:development:data:home.policyuser.operations)  in 1 ms
+[INFO ] 2022-09-16 16:33:07.420 [main] AuditService - *** Audit *** PERMIT (Read Access Approval Operation (#237)) USER (am:user:development:policyuser) READ (readByName) OPERATION (am:operation:development:data:home.policyuser.operations:access.approval.operation)  in 4 ms
+[INFO ] 2022-09-16 16:33:07.422 [main] AuditService - *** Audit *** PERMIT (Read Lookup Owner Operation (#238)) USER (am:user:development:policyuser) READ (readByName) OPERATION (am:operation:development:data:home.policyuser.operations:lookup.owner.operation)  in 1 ms
+[INFO ] 2022-09-16 16:33:07.426 [main] AuditService - *** Audit *** PERMIT (Read Entitlement Parameter (#239)) USER (am:user:development:policyuser) READ (readByName) FACT (am:fact:development:data:home.policyuser.facts:entitlement.parameter)  in 4 ms
+[INFO ] 2022-09-16 16:33:07.428 [main] AuditService - *** Audit *** PERMIT (Read Entitlement Owner (#240)) USER (am:user:development:policyuser) READ (readByName) FACT (am:fact:development:data:home.policyuser.facts:entitlement.owner)  in 2 ms
+[INFO ] 2022-09-16 16:33:07.437 [main] AuditService - *** Audit *** PERMIT (Read Owner Access Approval Policy (#241)) USER (am:user:development:policyuser) READ (readByName) POLICY (am:policy:development:data:home.policyuser.policies:owner.access.approval.policy)  in 9 ms
+[INFO ] 2022-09-16 16:33:07.447 [main] AuditService - *** Audit *** PERMIT (Read Owner Access Approval Rule (#242)) USER (am:user:development:policyuser) READ (readByName) RULE (am:rule:development:data:home.policyuser.rules:owner.access.approval.rule)  in 9 ms
+[INFO ] 2022-09-16 16:33:07.451 [main] AuditService - *** Audit *** PERMIT (Read Owner Approval Pattern (#243)) USER (am:user:development:policyuser) READ (readByName) PATTERN (am:pattern:development:data:home.policyuser.patterns:owner.approval.pattern)  in 4 ms
+[INFO ] 2022-09-16 16:33:07.466 [main] AuditService - *** Audit *** PERMIT (Access authorized to group Rules) USER (am:user:development:policyuser) READ (~/Rules) GROUP (am:group:development:data:home.policyuser.rules)  in 0 ms
+[INFO ] 2022-09-16 16:33:07.467 [main] AuditService - *** Audit *** PERMIT (Access authorized to group Patterns) USER (am:user:development:policyuser) READ (~/Patterns) GROUP (am:group:development:data:home.policyuser.patterns)  in 0 ms
+[INFO ] 2022-09-16 16:33:07.467 [main] AuditService - *** Audit *** PERMIT (Access authorized to group Facts) USER (am:user:development:policyuser) READ (~/Facts) GROUP (am:group:development:data:home.policyuser.facts)  in 0 ms
+[INFO ] 2022-09-16 16:33:07.467 [main] AuditService - *** Audit *** PERMIT (Access authorized to group Policies) USER (am:user:development:policyuser) READ (~/Policies) GROUP (am:group:development:data:home.policyuser.policies)  in 0 ms
+[INFO ] 2022-09-16 16:33:07.468 [main] AuditService - *** Audit *** PERMIT (Access authorized to group Operations) USER (am:user:development:policyuser) READ (~/Operations) GROUP (am:group:development:data:home.policyuser.operations)  in 0 ms
+[INFO ] 2022-09-16 16:33:07.468 [main] AuditService - *** Audit *** PERMIT (Read Access Approval Operation (#237)) USER (am:user:development:policyuser) READ (readByName) OPERATION (am:operation:development:data:home.policyuser.operations:access.approval.operation)  in 0 ms
+[INFO ] 2022-09-16 16:33:07.470 [main] AuditService - *** Audit *** PERMIT (Read Lookup Access Operation (#246)) USER (am:user:development:policyuser) READ (readByName) OPERATION (am:operation:development:data:home.policyuser.operations:lookup.access.operation)  in 2 ms
+[INFO ] 2022-09-16 16:33:07.471 [main] AuditService - *** Audit *** PERMIT (Read Entitlement Parameter (#239)) USER (am:user:development:policyuser) READ (readByName) FACT (am:fact:development:data:home.policyuser.facts:entitlement.parameter)  in 0 ms
+[INFO ] 2022-09-16 16:33:07.473 [main] AuditService - *** Audit *** PERMIT (Read Entitlement Approver (#247)) USER (am:user:development:policyuser) READ (readByName) FACT (am:fact:development:data:home.policyuser.facts:entitlement.approver)  in 2 ms
+[INFO ] 2022-09-16 16:33:07.477 [main] AuditService - *** Audit *** PERMIT (Read Principal Access Approval Policy (#248)) USER (am:user:development:policyuser) READ (readByName) POLICY (am:policy:development:data:home.policyuser.policies:principal.access.approval.policy)  in 3 ms
+[INFO ] 2022-09-16 16:33:07.482 [main] AuditService - *** Audit *** PERMIT (Read Principal Access Approval Rule (#249)) USER (am:user:development:policyuser) READ (readByName) RULE (am:rule:development:data:home.policyuser.rules:principal.access.approval.rule)  in 5 ms
+[INFO ] 2022-09-16 16:33:07.486 [main] AuditService - *** Audit *** PERMIT (Read Principal Approval Pattern (#250)) USER (am:user:development:policyuser) READ (readByName) PATTERN (am:pattern:development:data:home.policyuser.patterns:principal.approval.pattern)  in 3 ms
+[INFO ] 2022-09-16 16:33:07.507 [main] AuthorizationService - Authorized am:user:development:rocketqauser for am:policy:development:data:home.policyuser.policies:owner.access.approval.policy with group edit privileges
+[INFO ] 2022-09-16 16:33:07.523 [main] BaseDataAccessTest - Cleaning up outstanding requests: 1
+[INFO ] 2022-09-16 16:33:07.543 [main] BaseDataAccessTest - Evaluating outstanding access requests: 1
+[INFO ] 2022-09-16 16:33:07.545 [main] RequestService - Requesting policy in organization 13
+[INFO ] 2022-09-16 16:33:07.546 [main] BaseDataAccessTest - Applicable policy controls for request: 2
+[INFO ] 2022-09-16 16:33:07.555 [main] PolicyDefinitionUtil - Defining Parameter am:fact:development:data:home.policyuser.facts:entitlement.parameter
+[INFO ] 2022-09-16 16:33:07.583 [main] RequestService - Attempting to locate owner from parent attribute reference
+[INFO ] 2022-09-16 16:33:07.584 [main] RequestService - Looking for owner based on approver entry
+[INFO ] 2022-09-16 16:33:07.586 [main] PolicyEvaluator - Policy am:policy:development:data:home.policyuser.policies:owner.access.approval.policy: PERMIT
+[INFO ] 2022-09-16 16:33:07.593 [main] PolicyDefinitionUtil - Defining Parameter am:fact:development:data:home.policyuser.facts:entitlement.parameter
+[INFO ] 2022-09-16 16:33:07.602 [main] PolicyEvaluator - Policy am:policy:development:data:home.policyuser.policies:principal.access.approval.policy: PERMIT
+[INFO ] 2022-09-16 16:33:07.614 [main] BaseDataAccessTest - Obtained 3
+[INFO ] 2022-09-16 16:33:07.614 [main] PolicyDefinitionUtil - Defining Parameter am:fact:development:data:home.policyuser.facts:entitlement.parameter
+[INFO ] 2022-09-16 16:33:07.622 [main] RequestService - Attempting to locate owner from parent attribute reference
+[INFO ] 2022-09-16 16:33:07.622 [main] RequestService - Looking for owner based on approver entry
+[INFO ] 2022-09-16 16:33:07.623 [main] PolicyEvaluator - Policy am:policy:development:data:home.policyuser.policies:owner.access.approval.policy: PERMIT
+[INFO ] 2022-09-16 16:33:07.624 [main] PolicyDefinitionUtil - Defining Parameter am:fact:development:data:home.policyuser.facts:entitlement.parameter
+[INFO ] 2022-09-16 16:33:07.631 [main] PolicyEvaluator - Policy am:policy:development:data:home.policyuser.policies:principal.access.approval.policy: PERMIT
+[INFO ] 2022-09-16 16:33:07.635 [main] BaseDataAccessTest - Obtained 2x 3
+[INFO ] 2022-09-16 16:33:07.636 [main] RequestService - Process approver am:user:development:rocketqauser with 1 users
+[INFO ] 2022-09-16 16:33:07.646 [main] RequestService - Process approver am:user:development:rocketqauser with 1 users
+[INFO ] 2022-09-16 16:33:07.649 [main] RequestService - Breaking request queue processing at level 1 < 2
+[INFO ] 2022-09-16 16:33:07.649 [main] BaseDataAccessTest - Recorded 2 internal messages
+[INFO ] 2022-09-16 16:33:07.650 [main] RequestService - Process approver am:user:development:rocketqauser with 1 users
+[INFO ] 2022-09-16 16:33:07.651 [main] RequestService - User am:user:development:rocketqauser already received a message regarding this request
+[INFO ] 2022-09-16 16:33:07.651 [main] RequestService - Process approver am:user:development:rocketqauser with 1 users
+[INFO ] 2022-09-16 16:33:07.653 [main] RequestService - User am:user:development:rocketqauser already received a message regarding this request
+[INFO ] 2022-09-16 16:33:07.653 [main] RequestService - Breaking request queue processing at level 1 < 2
+[INFO ] 2022-09-16 16:33:07.653 [main] BaseDataAccessTest - Re-Recorded 0 internal messages
+[INFO ] 2022-09-16 16:33:07.655 [main] BaseDataAccessTest - Request messages: 2
+[INFO ] 2022-09-16 16:33:07.656 [main] RequestService - Responding to request with APPROVE
+[INFO ] 2022-09-16 16:33:07.660 [main] RequestService - Responding to request with APPROVE
+[INFO ] 2022-09-16 16:33:07.663 [main] RequestService - Approval USER 1448 already responded with APPROVE
+[INFO ] 2022-09-16 16:33:07.663 [main] RequestService - Approval USER 1448 already responded with APPROVE
+[INFO ] 2022-09-16 16:33:07.681 [main] RequestService - Process approver am:role:development:person:home.rocketqauser.applications.application.1.role.1 with 1 users
+[INFO ] 2022-09-16 16:33:07.685 [main] BaseDataAccessTest - Received 1 messages
+[INFO ] 2022-09-16 16:33:07.699 [main] AuditService - *** Audit *** PERMIT (Permitted to read 1 persons) USER (am:user:development:rocketqauser2) READ (Find person for RocketQAUser2) UNKNOWN (null)  in 11 ms
+[INFO ] 2022-09-16 16:33:07.700 [main] RequestService - Elevating user object to person object within approval
+[INFO ] 2022-09-16 16:33:07.700 [main] RequestService - Responding to request with APPROVE
+[INFO ] 2022-09-16 16:33:07.704 [main] RequestService - Request ece8b320-ce3b-41fd-be60-51c1fddf3127 is granted
+[INFO ] 2022-09-16 16:33:07.729 [main] AuditService - *** Audit *** VALID (Validated) USER (RocketQAUser (#1448)) AUTHENTICATE (Validate hashed password) CREDENTIAL (HASHED_PASSWORD(# 1450))  in 3 ms
+[INFO ] 2022-09-16 16:33:07.738 [main] AuditService - *** Audit *** VALID (Validated) USER (RocketQAUser2 (#37611)) AUTHENTICATE (Validate hashed password) CREDENTIAL (HASHED_PASSWORD(# 37613))  in 2 ms
+[INFO ] 2022-09-16 16:33:07.746 [main] BaseDataAccessTest - Test creating a bulk request basket
+[INFO ] 2022-09-16 16:33:07.751 [main] BaseDataAccessTest - Found 3 requests for am:user:development:rocketqauser to obtain am:group:development:account:home.rocketqauser.applications.application.1.group.1 access
+[INFO ] 2022-09-16 16:33:07.765 [main] AuditService - *** Audit *** VALID (Validated) USER (RocketQAUser (#1448)) AUTHENTICATE (Validate hashed password) CREDENTIAL (HASHED_PASSWORD(# 1450))  in 2 ms
+[INFO ] 2022-09-16 16:33:07.775 [main] AuditService - *** Audit *** VALID (Validated) USER (RocketQAUser2 (#37611)) AUTHENTICATE (Validate hashed password) CREDENTIAL (HASHED_PASSWORD(# 37613))  in 2 ms
+[INFO ] 2022-09-16 16:33:07.781 [main] BaseDataAccessTest - Cleaning up outstanding requests: 3
+[INFO ] 2022-09-16 16:33:07.791 [main] BaseDataAccessTest - Received 1 requests
+[INFO ] 2022-09-16 16:33:07.801 [main] AuditService - *** Audit *** VALID (Validated) USER (RocketQAUser (#1448)) AUTHENTICATE (Validate hashed password) CREDENTIAL (HASHED_PASSWORD(# 1450))  in 1 ms
+[INFO ] 2022-09-16 16:33:07.809 [main] AuditService - *** Audit *** VALID (Validated) USER (RocketQAUser2 (#37611)) AUTHENTICATE (Validate hashed password) CREDENTIAL (HASHED_PASSWORD(# 37613))  in 2 ms
+[INFO ] 2022-09-16 16:33:07.815 [main] BaseDataAccessTest - Cleaning up outstanding requests: 1
+[INFO ] 2022-09-16 16:33:07.868 [main] BaseDataAccessTest - Received 20 requests
+[INFO ] 2022-09-16 16:33:07.869 [main] BaseDataAccessTest - Received page with size 10
+[INFO ] 2022-09-16 16:33:07.869 [main] BaseDataAccessTest - Received 10 requests
+[INFO ] 2022-09-16 16:33:07.879 [main] AuditService - *** Audit *** VALID (Validated) USER (RocketQAUser (#1448)) AUTHENTICATE (Validate hashed password) CREDENTIAL (HASHED_PASSWORD(# 1450))  in 2 ms
+[INFO ] 2022-09-16 16:33:07.887 [main] AuditService - *** Audit *** VALID (Validated) USER (RocketQAUser2 (#37611)) AUTHENTICATE (Validate hashed password) CREDENTIAL (HASHED_PASSWORD(# 37613))  in 1 ms
+[INFO ] 2022-09-16 16:33:07.892 [main] BaseDataAccessTest - Cleaning up outstanding requests: 20
+[INFO ] 2022-09-16 16:33:07.899 [main] BaseDataAccessTest - Test creating an group access request
+[INFO ] 2022-09-16 16:33:07.901 [main] BaseDataAccessTest - Found 1 requests for am:user:development:rocketqauser to obtain am:group:development:account:home.rocketqauser.applications.application.1.group.1 access
+[INFO ] 2022-09-16 16:33:07.910 [main] AuditService - *** Audit *** VALID (Validated) USER (RocketQAUser (#1448)) AUTHENTICATE (Validate hashed password) CREDENTIAL (HASHED_PASSWORD(# 1450))  in 1 ms
+[INFO ] 2022-09-16 16:33:07.916 [main] AuditService - *** Audit *** VALID (Validated) USER (RocketQAUser2 (#37611)) AUTHENTICATE (Validate hashed password) CREDENTIAL (HASHED_PASSWORD(# 37613))  in 1 ms
+[INFO ] 2022-09-16 16:33:07.922 [main] BaseDataAccessTest - Cleaning up outstanding requests: 1
