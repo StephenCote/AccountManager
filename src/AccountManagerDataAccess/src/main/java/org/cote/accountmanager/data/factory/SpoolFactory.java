@@ -30,6 +30,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -52,6 +53,7 @@ import org.cote.accountmanager.objects.ProcessingInstructionType;
 import org.cote.accountmanager.objects.SecuritySpoolType;
 import org.cote.accountmanager.objects.types.ColumnEnumType;
 import org.cote.accountmanager.objects.types.FactoryEnumType;
+import org.cote.accountmanager.objects.types.NameEnumType;
 import org.cote.accountmanager.objects.types.SpoolBucketEnumType;
 import org.cote.accountmanager.objects.types.SpoolNameEnumType;
 import org.cote.accountmanager.objects.types.SpoolStatusEnumType;
@@ -60,14 +62,14 @@ import org.cote.accountmanager.util.CalendarUtil;
 
 public abstract class SpoolFactory extends FactoryBase {
 	private Map<String, String> typeNameIdMap = null;
-	private Map<String,Integer> typeNameMap = null;
-	private Map<String,Integer> typeIdMap = null;
+	private Map<String, Integer> typeNameMap = null;
+	private Map<String, Integer> typeIdMap = null;
 	private List<BaseSpoolType> typeMap = null;
 	private long cacheExpires = 0;
 	private int cacheExpiry = 5;
-	private int defaultPageSize = 10;
-	
-	public SpoolFactory(){
+	protected int defaultPageSize = 10;
+
+	public SpoolFactory() {
 		super();
 		this.scopeToOrganization = true;
 		this.primaryTableName = "spool";
@@ -77,28 +79,35 @@ public abstract class SpoolFactory extends FactoryBase {
 		typeIdMap = Collections.synchronizedMap(new HashMap<>());
 		typeMap = new ArrayList<>();
 	}
-	
+
 	@Override
-	protected void configureTableRestrictions(DataTable table){
-		if(table.getName().equalsIgnoreCase(primaryTableName)){
+	protected void configureTableRestrictions(DataTable table) {
+		if (table.getName().equalsIgnoreCase(primaryTableName)) {
 			table.setRestrictUpdateColumn("spoolguid", true);
 		}
 	}
-	
+
 	@SuppressWarnings("unchecked")
-	public <T> T newSpoolEntry(SpoolBucketEnumType type) throws ArgumentException{
+	public <T> T newSpoolEntry(SpoolBucketEnumType type) throws ArgumentException {
 		BaseSpoolType spoolItem = null;
-		switch(type){
-			case MESSAGE_QUEUE: spoolItem = new MessageSpoolType();break;
-			case SECURITY_TOKEN: spoolItem = new SecuritySpoolType();break;
-			default: throw new ArgumentException("Unsupported spool type: " + type.toString());
+		switch (type) {
+		case MESSAGE_QUEUE:
+			spoolItem = new MessageSpoolType();
+			break;
+		case SECURITY_TOKEN:
+			spoolItem = new SecuritySpoolType();
+			break;
+		default:
+			throw new ArgumentException("Unsupported spool type: " + type.toString());
 		}
 		spoolItem.setSpoolBucketType(type);
-		spoolItem.setGuid(UUID.randomUUID().toString());
+		spoolItem.setNameType(NameEnumType.MESSAGE);
+		spoolItem.setObjectId(UUID.randomUUID().toString());
 		spoolItem.setOwnerId(0L);
 		spoolItem.setValueType(ValueEnumType.UNKNOWN);
-		spoolItem.setCreated(CalendarUtil.getXmlGregorianCalendar(Calendar.getInstance().getTime()));
-		spoolItem.setExpiration(spoolItem.getCreated());
+		spoolItem.setCreatedDate(CalendarUtil.getXmlGregorianCalendar(Calendar.getInstance().getTime()));
+		spoolItem.setModifiedDate(spoolItem.getCreatedDate());
+		spoolItem.setExpiryDate(spoolItem.getCreatedDate());
 		spoolItem.setExpires(true);
 		spoolItem.setSpoolStatus(SpoolStatusEnumType.UNKNOWN);
 		spoolItem.setRecipientId(0L);
@@ -107,36 +116,45 @@ public abstract class SpoolFactory extends FactoryBase {
 		spoolItem.setReferenceType(FactoryEnumType.UNKNOWN);
 		spoolItem.setTransportId(0L);
 		spoolItem.setTransportType(FactoryEnumType.UNKNOWN);
+		spoolItem.setSenderId(0L);
+		spoolItem.setSenderType(FactoryEnumType.UNKNOWN);
 		spoolItem.setCredentialId(0L);
 		spoolItem.setCurrentLevel(0);
 		spoolItem.setEndLevel(0);
 		spoolItem.setGroupId(0L);
-		
-		return (T)spoolItem;
+
+		return (T) spoolItem;
 	}
-	
-	public DataRow prepareAdd(BaseSpoolType obj, String tableName) throws FactoryException{
+
+	public DataRow prepareAdd(BaseSpoolType obj, String tableName) throws FactoryException {
 		DataTable table = getDataTable(tableName);
-		if(table == null) throw new FactoryException("Table doesn't exist:" + tableName);
+		if (table == null)
+			throw new FactoryException("Table doesn't exist:" + tableName);
 		DataRow row = table.newRow();
-		try{
-			row.setCellValue(Columns.get(ColumnEnumType.GUID), obj.getGuid());
-			row.setCellValue(Columns.get(ColumnEnumType.PARENTGUID), obj.getParentGuid());
+		try {
+			row.setCellValue(Columns.get(ColumnEnumType.OBJECTID), obj.getObjectId());
+			row.setCellValue(Columns.get(ColumnEnumType.PARENTOBJECTID), obj.getParentObjectId());
 			row.setCellValue(Columns.get(ColumnEnumType.SPOOLBUCKETNAME), obj.getSpoolBucketName().toString());
-			row.setCellValue(Columns.get(ColumnEnumType.SPOOLBUCKETTYPE),obj.getSpoolBucketType().toString());
-			row.setCellValue(Columns.get(ColumnEnumType.CREATEDDATE), obj.getCreated());
-			row.setCellValue(Columns.get(ColumnEnumType.EXPIRATIONDATE), obj.getExpiration());
+			row.setCellValue(Columns.get(ColumnEnumType.SPOOLBUCKETTYPE), obj.getSpoolBucketType().toString());
+			row.setCellValue(Columns.get(ColumnEnumType.CREATEDDATE), obj.getCreatedDate());
+			row.setCellValue(Columns.get(ColumnEnumType.EXPIRATIONDATE), obj.getExpiryDate());
+			row.setCellValue(Columns.get(ColumnEnumType.MODIFIEDDATE), obj.getModifiedDate());
 			row.setCellValue(Columns.get(ColumnEnumType.EXPIRES), obj.getExpires());
 			row.setCellValue(Columns.get(ColumnEnumType.NAME), obj.getName());
-			if(obj.getData() != null) row.setCellValue(Columns.get(ColumnEnumType.SPOOLDATA), obj.getData());
+			if (obj.getData() != null)
+				row.setCellValue(Columns.get(ColumnEnumType.SPOOLDATA), obj.getData());
 			row.setCellValue(Columns.get(ColumnEnumType.SPOOLSTATUS), obj.getSpoolStatus().toString());
 			row.setCellValue(Columns.get(ColumnEnumType.OWNERID), obj.getOwnerId());
 			row.setCellValue(Columns.get(ColumnEnumType.GROUPID), obj.getGroupId());
-			if(scopeToOrganization) row.setCellValue(Columns.get(ColumnEnumType.ORGANIZATIONID), obj.getOrganizationId());
+			if (scopeToOrganization)
+				row.setCellValue(Columns.get(ColumnEnumType.ORGANIZATIONID), obj.getOrganizationId());
 			row.setCellValue(Columns.get(ColumnEnumType.SPOOLVALUETYPE), obj.getValueType().toString());
 			row.setCellValue(Columns.get(ColumnEnumType.CREDENTIALID), obj.getCredentialId());
 			row.setCellValue(Columns.get(ColumnEnumType.REFERENCEID), obj.getReferenceId());
 			row.setCellValue(Columns.get(ColumnEnumType.REFERENCETYPE), obj.getReferenceType().toString());
+			row.setCellValue(Columns.get(ColumnEnumType.SENDERID), obj.getSenderId());
+			row.setCellValue(Columns.get(ColumnEnumType.SENDERTYPE), obj.getSenderType().toString());
+
 			row.setCellValue(Columns.get(ColumnEnumType.RECIPIENTID), obj.getRecipientId());
 			row.setCellValue(Columns.get(ColumnEnumType.RECIPIENTTYPE), obj.getRecipientType().toString());
 			row.setCellValue(Columns.get(ColumnEnumType.TRANSPORTID), obj.getTransportId());
@@ -144,29 +162,32 @@ public abstract class SpoolFactory extends FactoryBase {
 			row.setCellValue(Columns.get(ColumnEnumType.CURRENTLEVEL), obj.getCurrentLevel());
 			row.setCellValue(Columns.get(ColumnEnumType.ENDLEVEL), obj.getEndLevel());
 			row.setCellValue(Columns.get(ColumnEnumType.CLASSIFICATION), obj.getClassification());
-		}
-		catch(DataAccessException dae){
+		} catch (DataAccessException dae) {
 			throw new FactoryException(dae.getMessage());
 		}
 		return row;
 	}
-	
 
-	protected List<BaseSpoolType> getByField(QueryField field, long organizationId) throws FactoryException, ArgumentException
-	{
+	protected List<BaseSpoolType> getByField(QueryField field, long organizationId)
+			throws FactoryException, ArgumentException {
 		return getByField(field, null, organizationId);
 	}
-	protected List<BaseSpoolType> getByField(QueryField field, ProcessingInstructionType instruction, long organizationId) throws FactoryException, ArgumentException
-	{
-		return getByField(new QueryField[]{field}, instruction, organizationId);
+
+	protected List<BaseSpoolType> getByField(QueryField field, ProcessingInstructionType instruction,
+			long organizationId) throws FactoryException, ArgumentException {
+		return getByField(new QueryField[] { field }, instruction, organizationId);
 	}
-	protected List<BaseSpoolType> getByField(QueryField[] fields, long organizationId) throws FactoryException, ArgumentException
-	{
+
+	protected List<BaseSpoolType> getByField(QueryField[] fields, long organizationId)
+			throws FactoryException, ArgumentException {
 		return getByField(fields, null, organizationId);
 	}
-	protected List<BaseSpoolType> getByField(QueryField[] fields, ProcessingInstructionType instruction, long organizationId) throws FactoryException, ArgumentException{
+
+	protected List<BaseSpoolType> getByField(QueryField[] fields, ProcessingInstructionType instruction,
+			long organizationId) throws FactoryException, ArgumentException {
 		List<BaseSpoolType> outList = new ArrayList<>();
-		if(this.dataTables.size() > 1) throw new FactoryException("Multiple table select statements not yet supported");
+		if (this.dataTables.size() > 1)
+			throw new FactoryException("Multiple table select statements not yet supported");
 		Connection connection = ConnectionFactory.getInstance().getConnection();
 		CONNECTION_TYPE connectionType = DBFactory.getConnectionType(connection);
 		DataTable table = this.dataTables.get(0);
@@ -177,49 +198,53 @@ public abstract class SpoolFactory extends FactoryBase {
 			PreparedStatement statement = connection.prepareStatement(sqlQuery);
 			DBFactory.setStatementParameters(fields, statement);
 			ResultSet rset = statement.executeQuery();
-			while(rset.next()){
+			while (rset.next()) {
 				BaseSpoolType obj = this.read(rset, instruction);
 				outList.add(obj);
 			}
 			rset.close();
-			
+
 		} catch (SQLException e) {
-			
-			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
+
+			logger.error(FactoryException.LOGICAL_EXCEPTION, e);
 			throw new FactoryException(e.getMessage());
-		}
-		finally{
+		} finally {
 			try {
 				connection.close();
 			} catch (SQLException e) {
-				
-				logger.error(FactoryException.LOGICAL_EXCEPTION,e);
+
+				logger.error(FactoryException.LOGICAL_EXCEPTION, e);
 			}
 		}
 		return outList;
-	}	
-	
-	protected BaseSpoolType read(ResultSet rset, ProcessingInstructionType instruction) throws SQLException, FactoryException, ArgumentException
-	{
-		throw new FactoryException("This is an artifact from java<->c#<->java conversions - should be an abstract class + interface, not an override");
 	}
 
-	protected BaseSpoolType read(ResultSet rset, BaseSpoolType obj) throws SQLException
-	{
-		obj.setGuid(rset.getString(Columns.get(ColumnEnumType.GUID)));
-		obj.setParentGuid(rset.getString(Columns.get(ColumnEnumType.PARENTGUID)));
+	protected BaseSpoolType read(ResultSet rset, ProcessingInstructionType instruction)
+			throws SQLException, FactoryException, ArgumentException {
+		throw new FactoryException(
+				"This is an artifact from java<->c#<->java conversions - should be an abstract class + interface, not an override");
+	}
+
+	protected BaseSpoolType read(ResultSet rset, BaseSpoolType obj) throws SQLException {
+		obj.setObjectId(rset.getString(Columns.get(ColumnEnumType.OBJECTID)));
+		obj.setParentObjectId(rset.getString(Columns.get(ColumnEnumType.PARENTOBJECTID)));
 		obj.setOwnerId(rset.getLong(Columns.get(ColumnEnumType.OWNERID)));
 		obj.setOrganizationId(rset.getLong(Columns.get(ColumnEnumType.ORGANIZATIONID)));
 		obj.setGroupId(rset.getLong(Columns.get(ColumnEnumType.GROUPID)));
 
 		obj.setSpoolBucketName(SpoolNameEnumType.valueOf(rset.getString(Columns.get(ColumnEnumType.SPOOLBUCKETNAME))));
-		obj.setSpoolBucketType(SpoolBucketEnumType.valueOf(rset.getString(Columns.get(ColumnEnumType.SPOOLBUCKETTYPE))));
+		obj.setSpoolBucketType(
+				SpoolBucketEnumType.valueOf(rset.getString(Columns.get(ColumnEnumType.SPOOLBUCKETTYPE))));
 		obj.setValueType(ValueEnumType.valueOf(rset.getString(Columns.get(ColumnEnumType.SPOOLVALUETYPE))));
 		obj.setSpoolStatus(SpoolStatusEnumType.valueOf(rset.getString(Columns.get(ColumnEnumType.SPOOLSTATUS))));
 		obj.setName(rset.getString(Columns.get(ColumnEnumType.NAME)));
 		obj.setData(rset.getBytes(Columns.get(ColumnEnumType.SPOOLDATA)));
-		obj.setCreated(CalendarUtil.getXmlGregorianCalendar(rset.getTimestamp(Columns.get(ColumnEnumType.CREATEDDATE))));
-		obj.setExpiration(CalendarUtil.getXmlGregorianCalendar(rset.getTimestamp(Columns.get(ColumnEnumType.EXPIRATIONDATE))));
+		obj.setCreatedDate(
+				CalendarUtil.getXmlGregorianCalendar(rset.getTimestamp(Columns.get(ColumnEnumType.CREATEDDATE))));
+		obj.setExpiryDate(
+				CalendarUtil.getXmlGregorianCalendar(rset.getTimestamp(Columns.get(ColumnEnumType.EXPIRATIONDATE))));
+		obj.setModifiedDate(
+				CalendarUtil.getXmlGregorianCalendar(rset.getTimestamp(Columns.get(ColumnEnumType.MODIFIEDDATE))));
 		obj.setExpires(rset.getBoolean(Columns.get(ColumnEnumType.EXPIRES)));
 		obj.setReferenceId(rset.getLong(Columns.get(ColumnEnumType.REFERENCEID)));
 		obj.setReferenceType(FactoryEnumType.valueOf(rset.getString(Columns.get(ColumnEnumType.REFERENCETYPE))));
@@ -227,60 +252,66 @@ public abstract class SpoolFactory extends FactoryBase {
 		obj.setRecipientType(FactoryEnumType.valueOf(rset.getString(Columns.get(ColumnEnumType.RECIPIENTTYPE))));
 		obj.setTransportId(rset.getLong(Columns.get(ColumnEnumType.TRANSPORTID)));
 		obj.setTransportType(FactoryEnumType.valueOf(rset.getString(Columns.get(ColumnEnumType.TRANSPORTTYPE))));
+		obj.setSenderId(rset.getLong(Columns.get(ColumnEnumType.SENDERID)));
+		obj.setSenderType(FactoryEnumType.valueOf(rset.getString(Columns.get(ColumnEnumType.SENDERTYPE))));
+
 		obj.setCredentialId(rset.getLong(Columns.get(ColumnEnumType.CREDENTIALID)));
 		obj.setCurrentLevel(rset.getInt(Columns.get(ColumnEnumType.CURRENTLEVEL)));
 		obj.setEndLevel(rset.getInt(Columns.get(ColumnEnumType.ENDLEVEL)));
 		obj.setClassification(rset.getString(Columns.get(ColumnEnumType.CLASSIFICATION)));
-		
+
 		return obj;
 	}
-	
-	public boolean update(BaseSpoolType map) throws FactoryException
-	{
+
+	public boolean update(BaseSpoolType map) throws FactoryException {
 		return update(map, null);
 	}
-	public boolean update(BaseSpoolType map, ProcessingInstructionType instruction) throws FactoryException
-	{
+
+	public boolean update(BaseSpoolType map, ProcessingInstructionType instruction) throws FactoryException {
 		DataTable table = dataTables.get(0);
 		Connection connection = ConnectionFactory.getInstance().getConnection();
 		String token = DBFactory.getParamToken(DBFactory.getConnectionType(connection));
 		List<QueryField> queryFields = new ArrayList<>();
 		List<QueryField> updateFields = new ArrayList<>();
 
-		queryFields.add(QueryFields.getFieldGuid(map.getGuid()));
+		map.setModifiedDate(CalendarUtil.getXmlGregorianCalendar(new Date()));
+
+		queryFields.add(QueryFields.getFieldObjectId(map.getObjectId()));
 		queryFields.add(QueryFields.getFieldOrganization(map.getOrganizationId()));
 		setNameIdFields(updateFields, map);
 		setFactoryFields(updateFields, map, instruction);
-		String sql = getUpdateTemplate(table, updateFields.toArray(new QueryField[0]), token) + " WHERE " + getQueryClause(instruction,queryFields.toArray(new QueryField[0]), token);
-		
+		String sql = getUpdateTemplate(table, updateFields.toArray(new QueryField[0]), token) + " WHERE "
+				+ getQueryClause(instruction, queryFields.toArray(new QueryField[0]), token);
+
 		updateFields.addAll(queryFields);
-		
+
 		int updated = 0;
-		try{
+		try {
 			PreparedStatement statement = connection.prepareStatement(sql);
 			DBFactory.setStatementParameters(updateFields.toArray(new QueryField[0]), statement);
 			updated = statement.executeUpdate();
+		} catch (SQLException sqe) {
+			logger.error(FactoryException.LOGICAL_EXCEPTION, sqe);
 		}
-		catch(SQLException sqe){
-			logger.error(FactoryException.LOGICAL_EXCEPTION,sqe);
-		}
-		
+
 		try {
 			connection.close();
 		} catch (SQLException e) {
-			
-			logger.error(FactoryException.LOGICAL_EXCEPTION,e);
+
+			logger.error(FactoryException.LOGICAL_EXCEPTION, e);
 		}
-		
+
 		return (updated > 0);
 	}
-	public void setFactoryFields(List<QueryField> fields, BaseSpoolType map, ProcessingInstructionType instruction){
-		fields.add(QueryFields.getFieldParentGuid(map.getParentGuid()));
+
+	public void setFactoryFields(List<QueryField> fields, BaseSpoolType map, ProcessingInstructionType instruction) {
+		fields.add(QueryFields.getFieldParentObjectId(map.getParentObjectId()));
 		fields.add(QueryFields.getFieldSpoolBucketName(map.getSpoolBucketName()));
 		fields.add(QueryFields.getFieldSpoolBucketType(map.getSpoolBucketType()));
 		fields.add(QueryFields.getFieldSpoolData(map.getData()));
 		fields.add(QueryFields.getFieldSpoolValueType(map.getValueType()));
-		fields.add(QueryFields.getFieldExpirationDate(map.getExpiration()));
+		fields.add(QueryFields.getFieldExpirationDate(map.getExpiryDate()));
+		fields.add(QueryFields.getFieldModifiedDate(map.getModifiedDate()));
 		fields.add(QueryFields.getFieldExpires(map.getExpires()));
 		fields.add(QueryFields.getFieldGroup(map.getGroupId()));
 		fields.add(QueryFields.getFieldSpoolStatus(map.getSpoolStatus()));
@@ -289,100 +320,106 @@ public abstract class SpoolFactory extends FactoryBase {
 		fields.add(QueryFields.getFieldReferenceType(map.getReferenceType()));
 		fields.add(QueryFields.getFieldRecipientId(map.getRecipientId()));
 		fields.add(QueryFields.getFieldRecipientType(map.getRecipientType()));
+		fields.add(QueryFields.getFieldSenderId(map.getSenderId()));
+		fields.add(QueryFields.getFieldSenderType(map.getSenderType()));
 		fields.add(QueryFields.getFieldTransportId(map.getTransportId()));
 		fields.add(QueryFields.getFieldTransportType(map.getTransportType()));
 		fields.add(QueryFields.getFieldCurrentLevel(map.getCurrentLevel()));
 		fields.add(QueryFields.getFieldEndLevel(map.getEndLevel()));
 		fields.add(QueryFields.getFieldClassification(map.getClassification()));
 	}
-	private void setNameIdFields(List<QueryField> fields, BaseSpoolType map){
-			fields.add(QueryFields.getFieldName(map.getName()));
-			fields.add(QueryFields.getFieldOwner(map.getOwnerId()));
-			if(scopeToOrganization) fields.add(QueryFields.getFieldOrganization(map.getOrganizationId()));
+
+	private void setNameIdFields(List<QueryField> fields, BaseSpoolType map) {
+		fields.add(QueryFields.getFieldName(map.getName()));
+		fields.add(QueryFields.getFieldOwner(map.getOwnerId()));
+		if (scopeToOrganization)
+			fields.add(QueryFields.getFieldOrganization(map.getOrganizationId()));
 	}
 
-	
-	public ProcessingInstructionType getPagingInstruction(long startIndex)
-	{
+	public ProcessingInstructionType getPagingInstruction(long startIndex) {
 		return getPagingInstruction(startIndex, defaultPageSize);
 	}
-	public ProcessingInstructionType getPagingInstruction(long startIndex, int recordCount)
-	{
+
+	public ProcessingInstructionType getPagingInstruction(long startIndex, int recordCount) {
 		ProcessingInstructionType instruction = new ProcessingInstructionType();
 
-		instruction.setOrderClause(Columns.get(ColumnEnumType.CREATEDDATE) + " ASC," + Columns.get(ColumnEnumType.NAME) + " ASC");
+		instruction.setOrderClause(
+				Columns.get(ColumnEnumType.CREATEDDATE) + " ASC," + Columns.get(ColumnEnumType.NAME) + " ASC");
 		instruction.setPaginate(true);
 		instruction.setRecordCount(recordCount);
 		instruction.setStartIndex(startIndex);
 		return instruction;
 	}
-	public ProcessingInstructionType getPagingInstruction()
-	{
+
+	public ProcessingInstructionType getPagingInstruction() {
 		return getPagingInstruction(0, defaultPageSize);
 	}
-	
-	public void clearCache(){
+
+	public void clearCache() {
 		typeNameIdMap.clear();
 		typeNameMap.clear();
 		typeIdMap.clear();
 		typeMap.clear();
 		cacheExpires = System.currentTimeMillis() + (cacheExpiry * 60000);
 	}
-	
-	protected void checkCacheExpires(){
-		if(cacheExpires <= System.currentTimeMillis()){
+
+	protected void checkCacheExpires() {
+		if (cacheExpires <= System.currentTimeMillis()) {
 			clearCache();
 		}
 	}
 
-	protected void removeFromCache(BaseSpoolType obj){
+	protected void removeFromCache(BaseSpoolType obj) {
 		removeFromCache(obj, obj.getName());
 	}
-	protected void removeFromCache(BaseSpoolType obj, String keyName){
-		synchronized(typeMap){
-			if(keyName == null){
+
+	protected void removeFromCache(BaseSpoolType obj, String keyName) {
+		synchronized (typeMap) {
+			if (keyName == null) {
 				Iterator<String> keys = typeNameMap.keySet().iterator();
-				while(keys.hasNext()){
+				while (keys.hasNext()) {
 					String key = keys.next();
-					if(key.equals(obj.getGuid())){
+					if (key.equals(obj.getObjectId())) {
 						keyName = typeNameIdMap.get(key);
 						break;
 					}
 				}
 			}
-			if(typeNameMap.containsKey(keyName) && typeIdMap.containsKey(obj.getGuid())){
-				int indexId = typeIdMap.get(obj.getGuid());
+			if (typeNameMap.containsKey(keyName) && typeIdMap.containsKey(obj.getObjectId())) {
+				int indexId = typeIdMap.get(obj.getObjectId());
 				typeNameMap.remove(keyName);
 				typeMap.set(indexId, null);
-				typeIdMap.remove(obj.getGuid());
-				typeNameIdMap.remove(obj.getGuid());
+				typeIdMap.remove(obj.getObjectId());
+				typeNameIdMap.remove(obj.getObjectId());
 			}
 		}
 	}
+
 	@SuppressWarnings("unchecked")
-	public <T> T readCache(String name){
+	public <T> T readCache(String name) {
 		checkCacheExpires();
-		if(typeNameMap.containsKey(name)){
-			return (T)typeMap.get(typeNameMap.get(name));
+		if (typeNameMap.containsKey(name)) {
+			return (T) typeMap.get(typeNameMap.get(name));
 		}
 		return null;
 	}
 
-	public boolean addToCache(BaseSpoolType map){
+	public boolean addToCache(BaseSpoolType map) {
 		return addToCache(map, map.getName());
 	}
-	public boolean addToCache(BaseSpoolType map, String keyName){
-		synchronized(typeMap){
+
+	public boolean addToCache(BaseSpoolType map, String keyName) {
+		synchronized (typeMap) {
 			int length = typeMap.size();
-			if(typeNameMap.containsKey(keyName) || typeIdMap.containsKey(map.getGuid())){
+			if (typeNameMap.containsKey(keyName) || typeIdMap.containsKey(map.getObjectId())) {
 				return false;
 			}
 			typeMap.add(map);
 			typeNameMap.put(keyName, length);
-			typeIdMap.put(map.getGuid(), length);
-			typeNameIdMap.put(map.getGuid(), map.getName());
+			typeIdMap.put(map.getObjectId(), length);
+			typeNameIdMap.put(map.getObjectId(), map.getName());
 		}
 		return true;
 	}
-	
+
 }
