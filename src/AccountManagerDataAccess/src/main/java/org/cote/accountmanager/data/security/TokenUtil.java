@@ -87,7 +87,7 @@ public class TokenUtil {
 				tokenType.setName(referenceName);
 				tokenType.setGroupId(dir.getId());
 				tokenType.setData(SecurityUtil.serializeToXml(bean, false, false, true).getBytes());
-				AuditService.targetAudit(audit, AuditEnumType.SECURITY_TOKEN, tokenType.getGuid());
+				AuditService.targetAudit(audit, AuditEnumType.SECURITY_TOKEN, tokenType.getObjectId());
 				if(!Factories.getSecurityTokenFactory().addSecurityToken(tokenType)){
 					AuditService.denyResult(audit, "Failed to persist token");
 					logger.error("Failed to persist tokens");

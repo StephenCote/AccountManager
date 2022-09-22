@@ -164,7 +164,7 @@ public class RequestService {
 		
 		AccessRequestType currReq = null;
 		if(req.getObjectId() != null) {
-			currReq = rFact.getAccessRequestByObjectId(req.getObjectId(), user.getOrganizationId());
+			currReq = rFact.getByObjectId(req.getObjectId(), user.getOrganizationId());
 			if(currReq != null) {
 				if(req.getOwnerId() > 0L && !req.getOwnerId().equals(currReq.getOwnerId())) {
 					logger.warn("Chown operation not permitted in update operation");
@@ -416,7 +416,7 @@ public class RequestService {
 				}
 				MessageSpoolType msg = mFact.newMessage(SpoolNameEnumType.ACCESS, user);
 				msg.setSpoolBucketType(SpoolBucketEnumType.APPROVAL);
-				msg.setExpiration(approval.getExpiryDate());
+				msg.setExpiryDate(approval.getExpiryDate());
 				/// Note, the status is transmitted in that it only internal at this point
 				/// Subsequent request processing can chuck this message and create a new one to transmit outside of Account Manager for notification
 				/// 

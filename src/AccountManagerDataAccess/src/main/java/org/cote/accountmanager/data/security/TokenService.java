@@ -96,14 +96,14 @@ public class TokenService {
 							(
 								!sst.getExpires()
 								||
-								(sst.getExpires() == true && sst.getExpiration().toGregorianCalendar().getTimeInMillis() > now.getTime())
+								(sst.getExpires() == true && sst.getExpiryDate().toGregorianCalendar().getTimeInMillis() > now.getTime())
 							)
 					) {
 						logger.info("Token not expired");
 					}
 					else {
 						if(sst == null) logger.warn("Persisted token does not exist");
-						else logger.warn("Persisted token type has expired: " + sst.getExpiration().toGregorianCalendar() + " is less than now " + now);
+						else logger.warn("Persisted token type has expired: " + sst.getExpiryDate().toGregorianCalendar() + " is less than now " + now);
 						c = null;
 					}
 				}
@@ -212,7 +212,7 @@ public class TokenService {
 		if(expirySeconds > 0){
 			Calendar cal = Calendar.getInstance();
 			cal.add(Calendar.SECOND, expirySeconds);
-			tokenType.setExpiration(CalendarUtil.getXmlGregorianCalendar(cal.getTime()));
+			tokenType.setExpiryDate(CalendarUtil.getXmlGregorianCalendar(cal.getTime()));
 			tokenType.setExpires(true);
 		}
 		tokenType.setData(data);
@@ -221,7 +221,7 @@ public class TokenService {
 			tokenType = null;
 		}
 		else{
-			logger.info("Created new token with guid: " + tokenType.getGuid());
+			logger.info("Created new token with guid: " + tokenType.getObjectId());
 		}
 		return tokenType;
 	}

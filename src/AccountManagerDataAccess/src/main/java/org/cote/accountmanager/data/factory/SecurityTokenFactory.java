@@ -65,7 +65,7 @@ public class SecurityTokenFactory extends SpoolFactory {
 	public boolean deleteToken(SecuritySpoolType message) throws FactoryException
 	{
 		removeFromCache(message);
-		int deleted = deleteByField(new QueryField[] { QueryFields.getFieldGuid(message.getGuid()) }, message.getOrganizationId());
+		int deleted = deleteByField(new QueryField[] { QueryFields.getFieldObjectId(message.getObjectId()) }, message.getOrganizationId());
 		return (deleted > 0);
 	}
 	public boolean deleteTokens(String referenceId, long organizationId) throws FactoryException
@@ -98,7 +98,7 @@ public class SecurityTokenFactory extends SpoolFactory {
 
 	public SecuritySpoolType getSecurityTokenById(String guid, long organizationId) throws FactoryException, ArgumentException
 	{
-		List<BaseSpoolType> tokens = getByField(new QueryField[] { QueryFields.getFieldGuid(guid),QueryFields.getFieldSpoolBucketType(SpoolBucketEnumType.SECURITY_TOKEN) }, organizationId);
+		List<BaseSpoolType> tokens = getByField(new QueryField[] { QueryFields.getFieldObjectId(guid),QueryFields.getFieldSpoolBucketType(SpoolBucketEnumType.SECURITY_TOKEN) }, organizationId);
 		if (tokens.isEmpty()) return null;
 		return (SecuritySpoolType)tokens.get(0);
 	}
@@ -138,7 +138,7 @@ public class SecurityTokenFactory extends SpoolFactory {
 
 		Calendar cal = Calendar.getInstance();
 		cal.add(Calendar.HOUR, defaultTokenExpiry);
-		newToken.setExpiration(CalendarUtil.getXmlGregorianCalendar(cal.getTime()));
+		newToken.setExpiryDate(CalendarUtil.getXmlGregorianCalendar(cal.getTime()));
 		newToken.setExpires(true);
 
 		return newToken;
@@ -153,7 +153,7 @@ public class SecurityTokenFactory extends SpoolFactory {
 			|| message.getSpoolBucketName() == null
 			|| message.getSpoolBucketType() == null
 			|| message.getName() == null
-			|| message.getGuid() == null
+			|| message.getObjectId() == null
 		) return false;
 		return true;
 	}

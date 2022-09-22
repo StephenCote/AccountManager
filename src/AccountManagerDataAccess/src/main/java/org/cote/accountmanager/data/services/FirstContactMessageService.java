@@ -60,7 +60,7 @@ public class FirstContactMessageService {
 	private static MessageSpoolType newMessage(UserType user, AlertEnumType alert, QueueLevelEnumType currentLevel,QueueLevelEnumType endLevel,MessageSpoolType parentMessage,PersonType person,ContactType contact,DataType data) throws FactoryException, ArgumentException{
 		MessageSpoolType message = ((MessageFactory)Factories.getFactory(FactoryEnumType.MESSAGE)).newMessage(user);
 		if(parentMessage != null){
-			message.setParentGuid(parentMessage.getGuid());
+			message.setParentObjectId(parentMessage.getObjectId());
 		}
 		if(person != null && contact != null){
 			message.setRecipientId(person.getId());
@@ -124,8 +124,8 @@ public class FirstContactMessageService {
 				fields.add(statusField);
 			}
 		}
-		if(parentMessage != null) fields.add(QueryFields.getFieldParentGuid(parentMessage.getGuid()));
-		return ((MessageFactory)Factories.getFactory(FactoryEnumType.MESSAGE)).getMessages(fields.toArray(new QueryField[0]), 0, organizationId);
+		if(parentMessage != null) fields.add(QueryFields.getFieldParentObjectId(parentMessage.getObjectId()));
+		return ((MessageFactory)Factories.getFactory(FactoryEnumType.MESSAGE)).getMessages(fields.toArray(new QueryField[0]), 0, 10, organizationId);
 		
 	}
 	/// Returns messages at the specified level for the specified parent with a given status, and optionally not including the filter statuses
@@ -150,8 +150,8 @@ public class FirstContactMessageService {
 			fields.add(QueryFields.getFieldSpoolStatus(status));
 		}
 
-		if(parentMessage != null) fields.add(QueryFields.getFieldParentGuid(parentMessage.getGuid()));
-		return ((MessageFactory)Factories.getFactory(FactoryEnumType.MESSAGE)).getMessages(fields.toArray(new QueryField[0]), 0, user.getOrganizationId());
+		if(parentMessage != null) fields.add(QueryFields.getFieldParentObjectId(parentMessage.getObjectId()));
+		return ((MessageFactory)Factories.getFactory(FactoryEnumType.MESSAGE)).getMessages(fields.toArray(new QueryField[0]), 0, 10, user.getOrganizationId());
 		
 	}
 	
@@ -259,7 +259,7 @@ public class FirstContactMessageService {
 				}
 			}
 			for(int i = 0; i < messages.size(); i++){
-				logger.info(messages.get(i).getName() + " " + messages.get(i).getCreated());
+				logger.info(messages.get(i).getName() + " " + messages.get(i).getCreatedDate());
 			}
 		} catch (FactoryException | ArgumentException e) {
 			outType = QueueStatusEnumType.ERROR;
