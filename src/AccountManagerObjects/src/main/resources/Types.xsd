@@ -142,6 +142,7 @@
     		<enumeration value="GOAL"></enumeration>
     		<enumeration value="LIFECYCLE"></enumeration>
     		<enumeration value="METHODOLOGY"></enumeration>
+    		<enumeration value="MESSAGE"></enumeration>
     		<enumeration value="MODEL"></enumeration>
     		<enumeration value="MODULE"></enumeration>
     		<enumeration value="NOTE"></enumeration>
@@ -458,6 +459,7 @@
     		<enumeration value="PATTERN"></enumeration>
     		<enumeration value="POLICY"></enumeration>
     		<enumeration value="RULE"></enumeration>
+    		<enumeration value="MESSAGE"></enumeration>
     	</restriction>
     </simpleType>
 
@@ -722,7 +724,6 @@
 			<enumeration value="ISBLOB"></enumeration>
 			<enumeration value="ISENCIPHERED"></enumeration>
 			<enumeration value="ISPASSWORDPROTECTED"></enumeration>
-
 			<enumeration value="ISPOINTER"></enumeration>
 			<enumeration value="SIZE"></enumeration>
 			<enumeration value="RATING"></enumeration>
@@ -806,15 +807,13 @@
 			<enumeration value="SECURITYID"></enumeration>
 			<enumeration value="SESSIONCREATED"></enumeration>
 			<enumeration value="SESSIONEXPIRATION"></enumeration>
-			<enumeration value="EXPIRATION"></enumeration>
 			<enumeration value="SESSIONACCESSED"></enumeration>
 			<enumeration value="SESSIONSTATUS"></enumeration>
 			<enumeration value="SESSIONDATASIZE"></enumeration>
-			<enumeration value="GUID"></enumeration>
 			<enumeration value="CLASSIFICATION"></enumeration>
 			<enumeration value="CURRENTLEVEL"></enumeration>
 			<enumeration value="ENDLEVEL"></enumeration>
-			<enumeration value="PARENTGUID"></enumeration>
+			<enumeration value="PARENTOBJECTID"></enumeration>
 			<enumeration value="EXPIRES"></enumeration>
 			<enumeration value="SPOOLSTATUS"></enumeration>
 			<enumeration value="SPOOLBUCKETNAME"></enumeration>
@@ -836,6 +835,8 @@
 			<enumeration value="PRIMARYCREDENTIAL"></enumeration>
 			<enumeration value="PRIMARYKEY"></enumeration>
 			<enumeration value="CREDENTIALID"></enumeration>
+			<enumeration value="SENDERID"></enumeration>
+			<enumeration value="SENDERTYPE"></enumeration>
 			<enumeration value="RECIPIENTID"></enumeration>
 			<enumeration value="TRANSPORTID"></enumeration>
 			<enumeration value="RECIPIENTTYPE"></enumeration>

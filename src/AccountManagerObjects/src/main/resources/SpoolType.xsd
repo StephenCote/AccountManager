@@ -19,12 +19,12 @@
 		<attribute name="spoolBucketType"
 			type="Q2:SpoolBucketEnumType">
 		</attribute>
-		<attribute name="guid" type="string"></attribute>
+		<attribute name="objectId" type="string"></attribute>
 		<attribute name="spoolBucketName" type="Q2:SpoolNameEnumType"></attribute>
 		<attribute name="valueType" type="Q2:ValueEnumType"></attribute>
 		<attribute name="name" type="string"></attribute>
-		<attribute name="created" type="dateTime"></attribute>
-		<attribute name="expiration" type="dateTime"></attribute>
+		<attribute name="createdDate" type="dateTime"></attribute>
+		<attribute name="expiryDate" type="dateTime"></attribute>
 		<attribute name="ownerId" type="long" default="0"></attribute>
 		<attribute name="spoolStatus" type="Q2:SpoolStatusEnumType"
 			default="UNKNOWN">
@@ -37,7 +37,7 @@
 		<attribute name="transportId" type="long"></attribute>
 		<attribute name="transportType" type="Q2:FactoryEnumType"></attribute>
 		<attribute name="credentialId" type="long"></attribute>
-		<attribute name="parentGuid" type="string"></attribute>
+		<attribute name="parentObjectId" type="string"></attribute>
 		<attribute name="currentLevel" type="int" default="0"></attribute>
 		<attribute name="endLevel" type="int" default="0"></attribute>
 		<attribute name="classification" type="string"></attribute>
@@ -45,6 +45,10 @@
 		<attribute name="organizationId" type="long"></attribute>
 		<attribute name="groupPath" type="string"></attribute>
 		<attribute name="organizationPath" type="string"></attribute>
+		<attribute name="modifiedDate" type="dateTime"></attribute>
+		<attribute name="senderId" type="long"></attribute>
+		<attribute name="senderType" type="Q2:FactoryEnumType"></attribute>
+		<attribute name="nameType" type="Q2:NameEnumType"></attribute>
 	</complexType>
 
 

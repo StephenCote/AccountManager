@@ -142,6 +142,7 @@ DROP TABLE IF EXISTS resource CASCADE;
 create table resource (
 	ResourceId bigint not null default 0,
 	ResourceType varchar(16) not null,
+	ResourceData text,
 	EstimateId bigint not null default 0,
 	ScheduleId bigint not null default 0,
 	Utilization double precision not null default 0

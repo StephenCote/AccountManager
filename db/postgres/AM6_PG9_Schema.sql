@@ -361,8 +361,8 @@ CREATE TABLE tagparticipation (
 
 DROP TABLE IF EXISTS spool CASCADE;
 CREATE TABLE spool (
-	Guid varchar(42) not null,
-	ParentGuid varchar(42),
+	ObjectId varchar(64) not null,
+	ParentObjectId varchar(64),
 	SpoolBucketName varchar(64) not null,
 	SpoolBucketType varchar(16) not null,
 	SpoolValueType varchar(32) not null,
@@ -376,13 +376,15 @@ CREATE TABLE spool (
 	ReferenceType varchar(64) not null,
 	RecipientId bigint not null default 0,
 	RecipientType varchar(64) not null,
+	SenderId bigint not null default 0,
+	SenderType varchar(64) not null,
 	TransportId bigint not null default 0,
 	TransportType varchar(64) not null,
 	CredentialId bigint not null default 0,
 	Name varchar(511) not null,
 	GroupId bigint not null default 0
 ) inherits (orgid,objectdate);
-CREATE UNIQUE INDEX spool_spool_guid ON spool(Guid);
+CREATE UNIQUE INDEX spool_spool_objectid ON spool(ObjectId);
 CREATE INDEX spool_spool_expiry ON spool(Expires,ExpirationDate);
 CREATE INDEX spool_spool_group ON spool(GroupId,OrganizationId);
 CREATE INDEX spool_spool_bucknametype ON spool(SpoolBucketName,SpoolBucketType,OrganizationId);
