@@ -691,9 +691,6 @@ public class QueryFields {
 	public static QueryField getFieldSessionExpiration(XMLGregorianCalendar val){
 		return getTimestampField(FieldMap.Columns.get(ColumnEnumType.SESSIONEXPIRATION), val);
 	}
-	public static QueryField getFieldExpiration(XMLGregorianCalendar val){
-		return getTimestampField(FieldMap.Columns.get(ColumnEnumType.EXPIRATION), val);
-	}
 
 	public static QueryField getFieldSessionAccessed(XMLGregorianCalendar val){
 		return getTimestampField(FieldMap.Columns.get(ColumnEnumType.SESSIONACCESSED), val);
@@ -707,10 +704,6 @@ public class QueryFields {
 		return getIntField(FieldMap.Columns.get(ColumnEnumType.SESSIONDATASIZE), val);
 	}
 
-	public static QueryField getFieldGuid(String guid)
-	{
-		return getStringField(FieldMap.Columns.get(ColumnEnumType.GUID), guid);
-	}
 	public static QueryField getFieldClassification(String cls)
 	{
 		return getStringField(FieldMap.Columns.get(ColumnEnumType.CLASSIFICATION), cls);
@@ -723,9 +716,9 @@ public class QueryFields {
 	{
 		return getIntField(FieldMap.Columns.get(ColumnEnumType.ENDLEVEL), level);
 	}
-	public static QueryField getFieldParentGuid(String guid)
+	public static QueryField getFieldParentObjectId(String id)
 	{
-		return getStringField(FieldMap.Columns.get(ColumnEnumType.PARENTGUID), guid);
+		return getStringField(FieldMap.Columns.get(ColumnEnumType.PARENTOBJECTID), id);
 	}
 	
 	public static QueryField getFieldExpires(boolean val)
@@ -798,6 +791,16 @@ public class QueryFields {
 	{
 		return getBigIntField(FieldMap.Columns.get(ColumnEnumType.CREDENTIALID), b);
 	}
+	public static QueryField getFieldSenderId(long b)
+	{
+		return getBigIntField(FieldMap.Columns.get(ColumnEnumType.SENDERID), b);
+	}
+	public static QueryField getFieldSenderType(FactoryEnumType type)
+	{
+		return getStringField(FieldMap.Columns.get(ColumnEnumType.SENDERTYPE), type.toString());
+	}
+
+	
 	public static QueryField getFieldRecipientId(long b)
 	{
 		return getBigIntField(FieldMap.Columns.get(ColumnEnumType.RECIPIENTID), b);
