@@ -51,18 +51,22 @@ import org.cote.accountmanager.data.BulkFactories;
 import org.cote.accountmanager.data.DataAccessException;
 import org.cote.accountmanager.data.Factories;
 import org.cote.accountmanager.data.factory.INameIdFactory;
+import org.cote.accountmanager.data.factory.MessageFactory;
 import org.cote.accountmanager.data.factory.RequestFactory;
+import org.cote.accountmanager.data.services.AuditService;
 import org.cote.accountmanager.data.services.TagService;
 import org.cote.accountmanager.exceptions.ArgumentException;
 import org.cote.accountmanager.exceptions.FactoryException;
 import org.cote.accountmanager.objects.AccessRequestType;
 import org.cote.accountmanager.objects.AccountType;
 import org.cote.accountmanager.objects.ApproverEnumType;
+import org.cote.accountmanager.objects.AuditType;
 import org.cote.accountmanager.objects.BaseRoleType;
 import org.cote.accountmanager.objects.BaseTagType;
 import org.cote.accountmanager.objects.ControlEnumType;
 import org.cote.accountmanager.objects.ControlType;
 import org.cote.accountmanager.objects.DirectoryGroupType;
+import org.cote.accountmanager.objects.MessageSpoolType;
 import org.cote.accountmanager.objects.NameIdType;
 import org.cote.accountmanager.objects.PersonType;
 import org.cote.accountmanager.objects.UserType;
@@ -118,7 +122,48 @@ public class GenericResourceService {
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response getObject(@PathParam("type") String type, @PathParam("objectId") String objectId,@Context HttpServletRequest request){
 		logger.debug("Request for object: " + type + " " + objectId);
-		Object obj = BaseService.readByObjectId(AuditEnumType.valueOf(type), objectId, request);
+		AuditEnumType atype = AuditEnumType.valueOf(type);
+		UserType user = ServiceUtil.getUserFromSession(request);
+		Object obj = null;
+		if(atype.equals(AuditEnumType.MESSAGE)) {
+			/// messagefactory does not entirely follow the NameIdFactory pattern, so the authorization services won't work for it.
+			///
+
+			AuditType audit = AuditService.beginAudit(ActionEnumType.READ, objectId, AuditEnumType.USER, user.getUrn());
+
+			try {
+				MessageFactory mfact = Factories.getFactory(FactoryEnumType.MESSAGE);
+				MessageSpoolType mst = mfact.getMessageByObjectId(objectId, user.getOrganizationId());
+				if(mst != null) {
+					/// same owner
+
+					AuditService.targetAudit(audit, AuditEnumType.MESSAGE, mst.getName());
+					if(
+						mst.getOwnerId().equals(user.getId())
+						||
+						RoleService.getIsUserInRole(RoleService.getAccountAdministratorUserRole(user.getOrganizationId()), user)
+						||
+						RoleService.getIsUserInRole(RoleService.getDataAdministratorUserRole(user.getOrganizationId()), user)
+					) {
+						obj = mst;
+						AuditService.permitResult(audit, "Authorized");
+					}
+					else {
+						AuditService.denyResult(audit, "Not authorized");
+					}
+							
+				}
+				else {
+					AuditService.denyResult(audit, "Object doesn't exist");
+				}
+			}
+			catch(FactoryException | ArgumentException e) {
+				logger.error(e);
+			}
+		}
+		else {
+			obj = BaseService.readByObjectId(atype, objectId, user);
+		}
 		return Response.status(200).entity(obj).build();
 	}
 	
