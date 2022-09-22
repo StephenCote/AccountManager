@@ -132,14 +132,12 @@ public class FieldMap {
 	   columnMap.put(ColumnEnumType.SECURITYID, "securityid");
 	   columnMap.put(ColumnEnumType.SESSIONCREATED, "sessioncreated");
 	   columnMap.put(ColumnEnumType.SESSIONEXPIRATION, "sessionexpiration");
-	   columnMap.put(ColumnEnumType.EXPIRATION, "expiration");
 	   columnMap.put(ColumnEnumType.SESSIONACCESSED, "sessionaccessed");
 	   columnMap.put(ColumnEnumType.SESSIONSTATUS, "sessionstatus");
 	   columnMap.put(ColumnEnumType.SESSIONDATASIZE, "sessiondatasize");
-	   columnMap.put(ColumnEnumType.GUID, "guid");
 	   columnMap.put(ColumnEnumType.CURRENTLEVEL, "currentlevel");
 	   columnMap.put(ColumnEnumType.ENDLEVEL, "endlevel");
-	   columnMap.put(ColumnEnumType.PARENTGUID, "parentguid");
+	   columnMap.put(ColumnEnumType.PARENTOBJECTID, "parentobjectid");
 	   columnMap.put(ColumnEnumType.EXPIRES, "expires");
 	   columnMap.put(ColumnEnumType.SPOOLSTATUS, "spoolstatus");
 	   columnMap.put(ColumnEnumType.SPOOLBUCKETNAME, "spoolbucketname");
@@ -169,6 +167,8 @@ public class FieldMap {
 	   columnMap.put(ColumnEnumType.PRIMARYCREDENTIAL, "primarycredential");
 	   columnMap.put(ColumnEnumType.PRIMARYKEY, "primarykey");
 	   columnMap.put(ColumnEnumType.CREDENTIALID, "credentialid");
+	   columnMap.put(ColumnEnumType.SENDERID, "senderid");
+	   columnMap.put(ColumnEnumType.SENDERTYPE, "sendertype");
 	   columnMap.put(ColumnEnumType.RECIPIENTID, "recipientid");
 	   columnMap.put(ColumnEnumType.TRANSPORTID, "transportid");
 	   columnMap.put(ColumnEnumType.RECIPIENTTYPE, "recipienttype");
