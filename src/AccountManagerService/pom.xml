@@ -71,6 +71,12 @@
 			<artifactId>javax.ws.rs-api</artifactId>
 			<version>${jaxrs.version}</version>
 		</dependency>
+		<!-- WebSocket -->
+		<dependency>
+		    <groupId>javax</groupId>
+		    <artifactId>javaee-api</artifactId>
+		    <version>8.0.1</version>
+		</dependency>
 		<!-- Jersey 2.19 -->
 		<dependency>
 			<groupId>org.glassfish.jersey.containers</groupId>
