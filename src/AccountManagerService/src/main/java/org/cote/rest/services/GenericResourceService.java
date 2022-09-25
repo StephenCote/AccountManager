@@ -138,8 +138,14 @@ public class GenericResourceService {
 					/// same owner
 
 					AuditService.targetAudit(audit, AuditEnumType.MESSAGE, mst.getName());
+					DirectoryGroupType dgt = null;
+					if(mst.getGroupId() > 0L) {
+						dgt = BaseService.readById(AuditEnumType.GROUP, mst.getGroupId(), user);
+					}
 					if(
 						mst.getOwnerId().equals(user.getId())
+						||
+						(dgt != null && BaseService.canViewType(AuditEnumType.GROUP, user, dgt))
 						||
 						RoleService.getIsUserInRole(RoleService.getAccountAdministratorUserRole(user.getOrganizationId()), user)
 						||
@@ -173,11 +179,59 @@ public class GenericResourceService {
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response deleteObject(@PathParam("type") String type, @PathParam("objectId") String objectId,@Context HttpServletRequest request){
 		logger.debug("Request for object: " + type + " " + objectId);
-		Object obj = BaseService.readByObjectId(AuditEnumType.valueOf(type), objectId, request);
+		AuditEnumType atype = AuditEnumType.valueOf(type);
+		UserType user = ServiceUtil.getUserFromSession(request);
+
 		boolean outBool = false;
-		if(obj != null){
-			outBool = BaseService.delete(AuditEnumType.valueOf(type), obj, request);
+		if(atype.equals(AuditEnumType.MESSAGE)) {
+
+			AuditType audit = AuditService.beginAudit(ActionEnumType.DELETE, objectId, AuditEnumType.USER, user.getUrn());
+
+			try {
+				MessageFactory mfact = Factories.getFactory(FactoryEnumType.MESSAGE);
+				MessageSpoolType mst = mfact.getMessageByObjectId(objectId, user.getOrganizationId());
+				if(mst != null) {
+					AuditService.targetAudit(audit, AuditEnumType.MESSAGE, mst.getName());
+					DirectoryGroupType dgt = null;
+					if(mst.getGroupId() > 0L) {
+						dgt = BaseService.readById(AuditEnumType.GROUP, mst.getGroupId(), user);
+					}
+					if(
+						mst.getOwnerId().equals(user.getId())
+						||
+						(dgt != null && BaseService.canChangeType(AuditEnumType.GROUP, user, dgt))
+						||
+						RoleService.getIsUserInRole(RoleService.getAccountAdministratorUserRole(user.getOrganizationId()), user)
+						||
+						RoleService.getIsUserInRole(RoleService.getDataAdministratorUserRole(user.getOrganizationId()), user)
+					) {
+						outBool = mfact.deleteMessage(mst);
+						AuditService.permitResult(audit, "Authorized");
+					}
+					else {
+						AuditService.denyResult(audit, "Not authorized");
+					}
+				}
+				else {
+					AuditService.denyResult(audit, "Object is null");
+				}
+							
+			}
+			catch(FactoryException | ArgumentException e) {
+				logger.error(e);
+			}
 		}
+		else {
+			Object obj = BaseService.readByObjectId(AuditEnumType.valueOf(type), objectId, user);
+			if(obj != null) {
+				outBool = BaseService.delete(atype, obj, request);
+			}
+			else {
+				logger.warn("Object " + objectId + " is null on not accessible");
+			}
+		}
+		
+
 		return Response.status(200).entity(outBool).build();
 	}
 	
