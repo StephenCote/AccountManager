@@ -71,6 +71,7 @@ import org.cote.accountmanager.objects.BaseGroupType;
 import org.cote.accountmanager.objects.BasePermissionType;
 import org.cote.accountmanager.objects.BaseRoleType;
 import org.cote.accountmanager.objects.BaseSearchRequestType;
+import org.cote.accountmanager.objects.BaseSpoolType;
 import org.cote.accountmanager.objects.BucketGroupType;
 import org.cote.accountmanager.objects.DataType;
 import org.cote.accountmanager.objects.DirectoryGroupType;
@@ -164,7 +165,7 @@ public class BaseService {
 		if(obj.getNameType() == NameEnumType.UNKNOWN){
 			throw new ArgumentException("Invalid object: A NameType was not specified");
 		}
-		if(user != null && obj.getOrganizationPath() == null){
+		if(user != null && (obj.getOrganizationPath() == null || obj.getOrganizationPath().length() == 0)){
 			logger.debug("Organization path not specified. Using context user's organization");
 			obj.setOrganizationPath(((OrganizationFactory)Factories.getFactory(FactoryEnumType.ORGANIZATION)).getOrganizationPath(user.getOrganizationId()));
 		}
@@ -406,6 +407,57 @@ public class BaseService {
 	
 	}
 
+	private static boolean internalPolicyApplies(UserType user, BaseSpoolType obj, boolean create, boolean read, boolean update, boolean delete) {
+		boolean outBool = false;
+		DirectoryGroupType dgt = null;
+		if(obj.getGroupId() > 0L) {
+			dgt = BaseService.readById(AuditEnumType.GROUP, obj.getGroupId(), user);
+		}
+		try {
+			if(
+				/// Internal ownership policy
+				obj.getOwnerId().equals(user.getId())
+				||
+				/// Group change policy
+				(dgt != null && 
+					(
+						(create && BaseService.canCreateType(AuditEnumType.GROUP, user, dgt))
+						||
+						(read && BaseService.canViewType(AuditEnumType.GROUP, user, dgt))
+						||
+						(update && BaseService.canChangeType(AuditEnumType.GROUP, user, dgt))
+						||
+						(delete && BaseService.canDeleteType(AuditEnumType.GROUP, user, dgt))
+					)
+				)
+				||
+				/// Admin role
+				RoleService.getIsUserInRole(RoleService.getAccountAdministratorUserRole(user.getOrganizationId()), user)
+				||
+				/// Admin role
+				RoleService.getIsUserInRole(RoleService.getDataAdministratorUserRole(user.getOrganizationId()), user)
+			) {
+				outBool = true;
+			}
+		}
+		catch(FactoryException | ArgumentException e) {
+			logger.error(e);
+		}
+		return outBool;
+	}
+	public static boolean canViewType(AuditEnumType type, UserType user, BaseSpoolType obj) throws ArgumentException, FactoryException{
+		return internalPolicyApplies(user, obj, false, true, false, false);
+	}
+	public static boolean canCreateType(AuditEnumType type, UserType user, BaseSpoolType obj) throws ArgumentException, FactoryException{
+		return internalPolicyApplies(user, obj, true, false, false, false);
+	}
+	public static boolean canChangeType(AuditEnumType type, UserType user, BaseSpoolType obj) throws ArgumentException, FactoryException{
+		return internalPolicyApplies(user, obj, false, false, true, false);
+	}
+	public static boolean canDeleteType(AuditEnumType type, UserType user, BaseSpoolType obj) throws ArgumentException, FactoryException{
+		return internalPolicyApplies(user, obj, false, false, false, true);
+	}
+	
 	public static boolean canViewType(AuditEnumType type, UserType user, NameIdType obj) throws ArgumentException, FactoryException{
 		return AuthorizationService.canView(user, obj);
 	}
@@ -605,6 +657,7 @@ public class BaseService {
 		} catch (ArgumentException | FactoryException | DataException | DataAccessException e) {
 			
 			logger.error(e);
+			e.printStackTrace();
 			AuditService.denyResult(audit, e.getMessage());
 		}
 
