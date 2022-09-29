@@ -8,6 +8,8 @@ import org.cote.accountmanager.data.factory.BulkFactory;
 import org.cote.accountmanager.data.factory.GroupFactory;
 import org.cote.accountmanager.data.factory.INameIdFactory;
 import org.cote.accountmanager.data.factory.MessageFactory;
+import org.cote.accountmanager.data.factory.UserFactory;
+import org.cote.accountmanager.data.query.QueryField;
 import org.cote.accountmanager.exceptions.ArgumentException;
 import org.cote.accountmanager.exceptions.FactoryException;
 import org.cote.accountmanager.objects.DirectoryGroupType;
@@ -26,6 +28,7 @@ import org.cote.accountmanager.util.JSONUtil;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.HashMap;
@@ -50,8 +53,12 @@ public class WebSocketService  extends HttpServlet {
 	// private Map<String, Map<String, UserType>> sessionMap =
 	// Collections.synchronizedMap(new HashMap<>());
 	//private Map<String, Session> objectIdSession = Collections.synchronizedMap(new HashMap<>());
-	private Map<String, UserType> userMap = Collections.synchronizedMap(new HashMap<>());
+	private static Map<String, UserType> userMap = Collections.synchronizedMap(new HashMap<>());
+	private static Map<String, Session> urnToSession = Collections.synchronizedMap(new HashMap<>());
 	
+	public static List<UserType> activeUsers(){
+		return new ArrayList<>(userMap.values());
+	}
 	
 	//private static Map<String, UserType> 
 
@@ -61,7 +68,7 @@ public class WebSocketService  extends HttpServlet {
 	 * HashMap<>()); } return sessionMap.get(sessionId); }
 	 */
 
-	private Map<String, List<String>> buffer = Collections.synchronizedMap(new HashMap<>());
+	//private Map<String, List<String>> buffer = Collections.synchronizedMap(new HashMap<>());
 
 	private MessageSpoolType newMessage(Session session, String messageName, String messageContent) {
 
@@ -70,15 +77,22 @@ public class WebSocketService  extends HttpServlet {
 			return null;
 		}
 		user = userMap.get(session.getId());
-		return newMessage(user, messageName, messageContent, null);
+		return newMessage(null, user, messageName, messageContent, null);
 	}
-	private MessageSpoolType newMessage(UserType user, String messageName, String messageContent, NameIdType ref) {
+	private MessageSpoolType newMessage(UserType sender, UserType recipient, String messageName, String messageContent, NameIdType ref) {
 
 		List<MessageSpoolType> msgs = new ArrayList<>();
 		try {
+			if(sender == null) {
+				sender = Factories.getDocumentControl(recipient.getOrganizationId());	
+			}
 			MessageFactory mfact = Factories.getFactory(FactoryEnumType.MESSAGE);
-			MessageSpoolType msg = mfact.newMessage(user);
+			MessageSpoolType msg = mfact.newMessage(recipient);
 			msg.setName(messageName);
+			msg.setRecipientId(recipient.getId());
+			msg.setRecipientType(FactoryEnumType.USER);
+			msg.setSenderId(sender.getId());
+			msg.setSenderType(FactoryEnumType.USER);
 			msg.setData(messageContent.getBytes(StandardCharsets.UTF_8));
 			msg.setValueType(ValueEnumType.STRING);
 			msg.setSpoolStatus(SpoolStatusEnumType.SPOOLED);
@@ -96,9 +110,9 @@ public class WebSocketService  extends HttpServlet {
 				logger.error("Failed to add message");
 			}
 			else {
-				logger.info("Spooled " + messageName + " for " + user.getUrn());
+				logger.info("Spooled " + messageName + " for " + recipient.getUrn());
 			}
-			msgs = mfact.getMessagesFromUserGroup(messageName, SpoolNameEnumType.MESSAGE, SpoolStatusEnumType.SPOOLED, null, user);
+			msgs = mfact.getMessagesFromUserGroup(messageName, SpoolNameEnumType.MESSAGE, SpoolStatusEnumType.SPOOLED, null, recipient);
 		}
 		catch(FactoryException | ArgumentException e) {
 			logger.error(e);
@@ -129,21 +143,75 @@ public class WebSocketService  extends HttpServlet {
 		}
 		return msgs;
 	}
-
-	private void sendMessage(Session session) {
+	
+	private static int countNewMessages(Session session){
+		UserType user = null;
+		if(!userMap.containsKey(session.getId())) {
+			return 0;
+		}
+		user = userMap.get(session.getId());
+		return countNewMessages(user);
+	}
+	private static int countNewMessages(UserType user) {
+		int count = 0;
+		try {
+			MessageFactory mfact = Factories.getFactory(FactoryEnumType.MESSAGE);
+			List<QueryField> fields = mfact.getUserGroupQueryFields(user, SpoolBucketEnumType.MESSAGE_QUEUE, SpoolNameEnumType.MESSAGE, SpoolStatusEnumType.SPOOLED, mfact.getUserMessagesGroup(user), null, null);
+			count = mfact.countMessages(fields.toArray(new QueryField[0]), user.getOrganizationId());
+		}
+		catch(FactoryException | ArgumentException e) {
+			logger.error(e);
+		}
+		return count;
+	}
+	public static boolean chirpUser(UserType user, String[] chirps) {
+		if(user == null) {
+			logger.error("Null user");
+			return false;
+		}
+		if(urnToSession.containsKey(user.getUrn())) {
+			logger.warn("User does not have an active WebSocket");
+			return false;
+		}
+		
+		sendMessage(urnToSession.get(user.getUrn()), chirps, true);
+		return true;
+	}
+	private static void sendMessage(Session session) {
+		sendMessage(session, new String[0], false);
+	}
+	private static void sendMessage(Session session, String[] chirps, boolean sync) {
 		if (!userMap.containsKey(session.getId())) {
 			logger.warn("Session is not mapped to a key");
 			return;
 		}
 
-		RemoteEndpoint.Async asyncRemote = session.getAsyncRemote();
 		//asyncRemote.sendText(builder.build().toString());
 		// Send pending messages
+		SocketMessage msg = new SocketMessage();
+		msg.setUser(userMap.get(session.getId()).getUrn());
+		msg.setNewMessageCount(countNewMessages(session));
+		msg.getChirps().addAll(Arrays.asList(chirps));
+		if(sync) {
+			RemoteEndpoint.Basic basicRemote = session.getBasicRemote();
+			try {
+				basicRemote.sendText(JSONUtil.exportObject(msg));
+			}
+			catch(IOException e) {
+				logger.error(e);
+			}
+		}
+		else {
+			RemoteEndpoint.Async asyncRemote = session.getAsyncRemote();
+			asyncRemote.sendText(JSONUtil.exportObject(msg));
+		}
+		/*
 		List<MessageSpoolType> messages = getTransmitMessages(session);
 		if (messages != null) {
 			//messages.forEach(asyncRemote::sendText);
 			asyncRemote.sendText(JSONUtil.exportObject(messages));
 		}
+		*/
 	}
 
 	@OnOpen
@@ -160,7 +228,8 @@ public class WebSocketService  extends HttpServlet {
 					// map.put(objectId, user);
 					//objectIdSession.put(objectId, session);
 					userMap.put(session.getId(), user);
-					newMessage(session, "Pickup the phone", "New session started");
+					urnToSession.put(user.getUrn(), session);
+					//newMessage(session, "Pickup the phone", "New session started");
 				}
 			} catch (FactoryException | ArgumentException e) {
 				logger.error(e);
@@ -174,7 +243,9 @@ public class WebSocketService  extends HttpServlet {
 	public void onMessage(String txt, Session session) throws IOException {
 		UserType user = userMap.get(session.getId());
 		
-		MessageSpoolType message = JSONUtil.importObject(txt,  MessageSpoolType.class);
+		SocketMessage msg = JSONUtil.importObject(txt,  SocketMessage.class);
+	
+		MessageSpoolType message = msg.getSendMessage();
 		if(user != null && message != null) {
 			logger.info("Send message " + message.getName() + " to " + message.getRecipientId() + " from " + user.getUrn() + " (" + user.getObjectId() + ")");
 			if(message.getRecipientId() != null && message.getRecipientType().equals(FactoryEnumType.USER)) {
@@ -183,7 +254,14 @@ public class WebSocketService  extends HttpServlet {
 					fact = Factories.getFactory(FactoryEnumType.USER);
 					UserType targUser = fact.getById(message.getRecipientId(), user.getOrganizationId());
 					if (targUser != null) {
-						newMessage(targUser, message.getName(), new String(message.getData(), StandardCharsets.UTF_8), user);
+						newMessage(user, targUser, message.getName(), new String(message.getData(), StandardCharsets.UTF_8), user);
+						if(!targUser.getId().equals(user.getId()) && urnToSession.containsKey(targUser.getUrn())) {
+							logger.info("Let active session for " + targUser.getUrn() + " know about their message");
+							sendMessage(urnToSession.get(targUser.getUrn()));
+						}
+						else {
+							logger.info("No active session for " + targUser.getUrn());
+						}
 					}
 					else {
 						logger.error("Did not find user #" + message.getRecipientId());
@@ -206,7 +284,11 @@ public class WebSocketService  extends HttpServlet {
 	public void onClose(CloseReason reason, Session session) {
 		//logger.info(String.format("Closing a WebSocket (%s) due to %s", session.getId(), reason.getReasonPhrase()));
 		//newMessage(session, "Hangup the phone", "Session ended");
+		if(userMap.containsKey(session.getId())){
+			urnToSession.remove(userMap.get(session.getId()).getUrn());
+		}
 		userMap.remove(session.getId());
+		
 	}
 	
 	@OnError
@@ -215,3 +297,39 @@ public class WebSocketService  extends HttpServlet {
 	}
 		
 }
+
+class SocketMessage {
+	private String user = null;
+	private int newMessageCount = 0;
+	private MessageSpoolType sendMessage = null;
+	private List<String> chirps = new ArrayList<>();
+	public SocketMessage() {
+		
+	}
+	public String getUser() {
+		return user;
+	}
+	public void setUser(String user) {
+		this.user = user;
+	}
+	public int getNewMessageCount() {
+		return newMessageCount;
+	}
+	public void setNewMessageCount(int newMessageCount) {
+		this.newMessageCount = newMessageCount;
+	}
+	public MessageSpoolType getSendMessage() {
+		return sendMessage;
+	}
+	public void setSendMessage(MessageSpoolType sendMessage) {
+		this.sendMessage = sendMessage;
+	}
+	public List<String> getChirps() {
+		return chirps;
+	}
+	public void setChirps(List<String> chirps) {
+		this.chirps = chirps;
+	}
+	
+}
+
