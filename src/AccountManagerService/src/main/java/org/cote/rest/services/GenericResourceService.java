@@ -138,19 +138,7 @@ public class GenericResourceService {
 					/// same owner
 
 					AuditService.targetAudit(audit, AuditEnumType.MESSAGE, mst.getName());
-					DirectoryGroupType dgt = null;
-					if(mst.getGroupId() > 0L) {
-						dgt = BaseService.readById(AuditEnumType.GROUP, mst.getGroupId(), user);
-					}
-					if(
-						mst.getOwnerId().equals(user.getId())
-						||
-						(dgt != null && BaseService.canViewType(AuditEnumType.GROUP, user, dgt))
-						||
-						RoleService.getIsUserInRole(RoleService.getAccountAdministratorUserRole(user.getOrganizationId()), user)
-						||
-						RoleService.getIsUserInRole(RoleService.getDataAdministratorUserRole(user.getOrganizationId()), user)
-					) {
+					if(BaseService.canChangeType(AuditEnumType.MESSAGE, user, mst)) {
 						obj = mst;
 						AuditService.permitResult(audit, "Authorized");
 					}
@@ -192,19 +180,8 @@ public class GenericResourceService {
 				MessageSpoolType mst = mfact.getMessageByObjectId(objectId, user.getOrganizationId());
 				if(mst != null) {
 					AuditService.targetAudit(audit, AuditEnumType.MESSAGE, mst.getName());
-					DirectoryGroupType dgt = null;
-					if(mst.getGroupId() > 0L) {
-						dgt = BaseService.readById(AuditEnumType.GROUP, mst.getGroupId(), user);
-					}
-					if(
-						mst.getOwnerId().equals(user.getId())
-						||
-						(dgt != null && BaseService.canChangeType(AuditEnumType.GROUP, user, dgt))
-						||
-						RoleService.getIsUserInRole(RoleService.getAccountAdministratorUserRole(user.getOrganizationId()), user)
-						||
-						RoleService.getIsUserInRole(RoleService.getDataAdministratorUserRole(user.getOrganizationId()), user)
-					) {
+
+					if(BaseService.canDeleteType(AuditEnumType.MESSAGE, user, mst)) {
 						outBool = mfact.deleteMessage(mst);
 						AuditService.permitResult(audit, "Authorized");
 					}
@@ -353,24 +330,54 @@ public class GenericResourceService {
 		boolean updated = false;
 		AuditEnumType auditType = AuditEnumType.valueOf(type);
 		Class<?> cls = Factories.getFactoryTypeClasses().get(FactoryEnumType.valueOf(type));
+		UserType user = ServiceUtil.getUserFromSession(request);
 		if(cls != null){
-			NameIdType obj = (NameIdType)JSONUtil.importObject(json, cls);
-			if(obj != null){
-				if(auditType.equals(AuditEnumType.REQUEST)) {
-					updated = org.cote.accountmanager.data.services.RequestService.updateRequest(ServiceUtil.getUserFromSession(request), (AccessRequestType)obj);
+			if(auditType.equals(AuditEnumType.MESSAGE)) {
+				AuditType audit = AuditService.beginAudit(ActionEnumType.MODIFY, "json", AuditEnumType.USER, user.getUrn());
+				try {
+					MessageFactory mfact = Factories.getFactory(FactoryEnumType.MESSAGE);
+					MessageSpoolType mst = (MessageSpoolType)JSONUtil.importObject(json,  cls);
+					
+					if(mst != null) {
+						/// same owner
+						audit.setAuditActionSource(mst.getObjectId());
+						AuditService.targetAudit(audit, AuditEnumType.MESSAGE, mst.getName());
+						if(BaseService.canChangeType(AuditEnumType.MESSAGE, user, mst)) {
+							updated = mfact.updateMessage(mst);
+							AuditService.permitResult(audit, "Authorized");
+						}
+						else {
+							AuditService.denyResult(audit, "Not authorized");
+						}
+								
+					}
+					else {
+						AuditService.denyResult(audit, "Object doesn't exist");
+					}
 				}
-				else if(auditType.equals(AuditEnumType.CONTROL)) {
-					updated = org.cote.accountmanager.data.services.PolicyService.updateControl(ServiceUtil.getUserFromSession(request), (ControlType)obj);
-				}
-				else if(obj.getObjectId() == null || obj.getObjectId().length() == 0 || obj.getObjectId().equalsIgnoreCase("undefined")){
-					updated = BaseService.add(auditType, obj, request);
-				}
-				else{
-					updated = BaseService.update(auditType, obj, request);
+				catch(FactoryException | ArgumentException f) {
+					logger.error(f);
 				}
 			}
-			else{
-				logger.error("Failed to restore object", json);
+			else {
+				NameIdType obj = (NameIdType)JSONUtil.importObject(json, cls);
+				if(obj != null){
+					if(auditType.equals(AuditEnumType.REQUEST)) {
+						updated = org.cote.accountmanager.data.services.RequestService.updateRequest(ServiceUtil.getUserFromSession(request), (AccessRequestType)obj);
+					}
+					else if(auditType.equals(AuditEnumType.CONTROL)) {
+						updated = org.cote.accountmanager.data.services.PolicyService.updateControl(ServiceUtil.getUserFromSession(request), (ControlType)obj);
+					}
+					else if(obj.getObjectId() == null || obj.getObjectId().length() == 0 || obj.getObjectId().equalsIgnoreCase("undefined")){
+						updated = BaseService.add(auditType, obj, request);
+					}
+					else{
+						updated = BaseService.update(auditType, obj, request);
+					}
+				}
+				else{
+					logger.error("Failed to restore object", json);
+				}
 			}
 		}
 		return Response.status(200).entity(updated).build();
