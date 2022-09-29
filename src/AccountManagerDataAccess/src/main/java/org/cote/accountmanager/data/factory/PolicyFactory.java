@@ -126,7 +126,7 @@ public class PolicyFactory extends NameIdGroupFactory {
 		obj.setCreatedDate(dtFactory.newXMLGregorianCalendar(cal));
 		obj.setModifiedDate(dtFactory.newXMLGregorianCalendar(cal));
 		cal.add(GregorianCalendar.YEAR, 1);
-		obj.setExpiresDate(dtFactory.newXMLGregorianCalendar(cal));
+		obj.setExpiryDate(dtFactory.newXMLGregorianCalendar(cal));
 
 		return obj;
 	}
@@ -147,7 +147,7 @@ public class PolicyFactory extends NameIdGroupFactory {
 			row.setCellValue("logicalorder", obj.getLogicalOrder());
 			row.setCellValue("createddate", obj.getCreatedDate());
 			row.setCellValue("modifieddate", obj.getModifiedDate());
-			row.setCellValue("expirationdate", obj.getExpiresDate());
+			row.setCellValue("expirationdate", obj.getExpiryDate());
 			row.setCellValue("decisionage", obj.getDecisionAge());
 			row.setCellValue("enabled", obj.getEnabled());
 			row.setCellValue("condition", obj.getCondition().toString());
@@ -193,7 +193,7 @@ public class PolicyFactory extends NameIdGroupFactory {
 		newObj.setDecisionAge(rset.getLong("decisionage"));
 		newObj.setCreatedDate(CalendarUtil.getXmlGregorianCalendar(rset.getTimestamp("createddate")));
 		newObj.setModifiedDate(CalendarUtil.getXmlGregorianCalendar(rset.getTimestamp("modifieddate")));
-		newObj.setExpiresDate(CalendarUtil.getXmlGregorianCalendar(rset.getTimestamp("expirationdate")));
+		newObj.setExpiryDate(CalendarUtil.getXmlGregorianCalendar(rset.getTimestamp("expirationdate")));
 		newObj.setCondition(ConditionEnumType.fromValue(rset.getString("condition")));
 		return newObj;
 	}
@@ -242,7 +242,7 @@ public class PolicyFactory extends NameIdGroupFactory {
 		fields.add(QueryFields.getFieldEnabled(useMap.getEnabled()));
 		//fields.add(QueryFields.getFieldCreatedDate(useMap.getCreated()));
 		fields.add(QueryFields.getFieldModifiedDate(useMap.getModifiedDate()));
-		fields.add(QueryFields.getFieldExpirationDate(useMap.getExpiresDate()));
+		fields.add(QueryFields.getFieldExpirationDate(useMap.getExpiryDate()));
 		fields.add(QueryFields.getFieldDecisionAge(useMap.getDecisionAge()));
 
 	}

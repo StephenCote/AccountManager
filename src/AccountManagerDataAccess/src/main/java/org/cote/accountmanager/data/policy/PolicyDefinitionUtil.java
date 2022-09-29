@@ -82,7 +82,7 @@ public class PolicyDefinitionUtil {
 		pdt.setCreatedDate(pol.getCreatedDate());
 		pdt.setDecisionAge(pol.getDecisionAge());
 		pdt.setEnabled(pol.getEnabled());
-		pdt.setExpiresDate(pol.getExpiresDate());
+		pdt.setExpiryDate(pol.getExpiryDate());
 		pdt.setModifiedDate(pol.getModifiedDate());
 		pdt.setUrn(pol.getUrn());
 		pdt.setOrganizationPath(((OrganizationFactory)Factories.getFactory(FactoryEnumType.ORGANIZATION)).getOrganizationPath(pol.getOrganizationId()));
@@ -245,7 +245,7 @@ public class PolicyDefinitionUtil {
 		buff.append("\turn\t" + pol.getUrn()+ "\n");
 		buff.append("\tenabled\t" + pol.getEnabled()+ "\n");
 		buff.append("\tcreated\t" + pol.getCreatedDate().toString()+ "\n");
-		buff.append("\texpires\t" + pol.getExpiresDate().toString()+ "\n");
+		buff.append("\texpires\t" + pol.getExpiryDate().toString()+ "\n");
 		List<RuleType> rules = pol.getRules();
 		for(int i = 0; i < rules.size();i++){
 			RuleType rule = rules.get(i);

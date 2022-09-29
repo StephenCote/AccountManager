@@ -104,7 +104,7 @@ public class PolicyEvaluator {
 		GregorianCalendar cal = new GregorianCalendar();
 	    cal.setTime(new Date());
 		cal.add(GregorianCalendar.MILLISECOND, pol.getDecisionAge().intValue());
-		prr.setExpiresDate(dtFactory.newXMLGregorianCalendar(cal));
+		prr.setExpiryDate(dtFactory.newXMLGregorianCalendar(cal));
 		
 		List<FactType> facts = prt.getFacts();
 		if(!pol.getEnabled()){
