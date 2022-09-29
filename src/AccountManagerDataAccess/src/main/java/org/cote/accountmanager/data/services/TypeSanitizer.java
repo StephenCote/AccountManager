@@ -344,7 +344,7 @@ public class TypeSanitizer implements ITypeSanitizer{
 	
 				MapUtil.shallowCloneAznType(v9bean, new_po);
 				new_po.setDecisionAge(v9bean.getDecisionAge());
-				new_po.setExpiresDate(v9bean.getExpiresDate());
+				new_po.setExpiryDate(v9bean.getExpiryDate());
 				new_po.setEnabled(v9bean.getEnabled());
 				new_po.getRules().addAll(v9bean.getRules());
 				new_po.setCondition(v9bean.getCondition());
@@ -405,7 +405,7 @@ public class TypeSanitizer implements ITypeSanitizer{
 				BaseRoleType rlbean = (BaseRoleType)in_obj;
 				BaseRoleType parentRole = null;
 				if(rlbean.getParentId() > 0L){
-					parentRole = iFact.getById(rlbean.getParentId(), rlbean.getOrganizationId());
+					parentRole = iFact.getById(rlbean.getParentId(), user.getOrganizationId());
 					if(parentRole == null) throw new ArgumentException("Role parent #" + rlbean.getParentId() + " is invalid");
 				}
 				BaseRoleType new_role = ((RoleFactory)iFact).newRoleType(rlbean.getRoleType(),user, rlbean.getName(), parentRole);
@@ -416,10 +416,10 @@ public class TypeSanitizer implements ITypeSanitizer{
 				BasePermissionType perbean = (BasePermissionType)in_obj;
 				BasePermissionType parentPermission = null;
 				if(perbean.getParentId() > 0L){
-					parentPermission = iFact.getById(perbean.getParentId(), perbean.getOrganizationId());
+					parentPermission = iFact.getById(perbean.getParentId(), user.getOrganizationId());
 					if(parentPermission == null) throw new ArgumentException("Permission parent #" + perbean.getParentId() + " is invalid");
 				}
-				BasePermissionType new_per2 = ((PermissionFactory)iFact).newPermission(user, perbean.getName(), perbean.getPermissionType(), parentPermission, perbean.getOrganizationId());
+				BasePermissionType new_per2 = ((PermissionFactory)iFact).newPermission(user, perbean.getName(), perbean.getPermissionType(), parentPermission, user.getOrganizationId());
 				outObj = (T)new_per2;
 				break;
 				
