@@ -361,7 +361,7 @@ public class TokenService {
 					logger.info("Validating credential for '" + authnRequest.getSubject() + "'");
 					UserType user = SessionSecurity.login(authnRequest.getSubject(), authnRequest.getCredentialType(), credStr,org.getId());
 					if(user != null){
-						outToken = getJWTToken(user);
+						outToken = TokenUtil.getJWTToken(user);
 						outResp.setMessage(outToken);
 						outResp.setResponse(AuthenticationResponseEnumType.AUTHENTICATED);
 					}
@@ -391,7 +391,7 @@ public class TokenService {
 	public Response validatePostJWT(AuthenticationRequestType authRequest, @Context HttpServletRequest request){
 		AuthenticationResponseType outResp = new AuthenticationResponseType();
 		outResp.setResponse(AuthenticationResponseEnumType.NOT_AUTHENTICATED);
-		String subjectUrn = validateJWTToken(new String(authRequest.getCredential()));
+		String subjectUrn = TokenUtil.validateJWTToken(new String(authRequest.getCredential()));
 		
 		if(subjectUrn != null){
 			outResp.setResponse(AuthenticationResponseEnumType.AUTHENTICATED);
@@ -405,7 +405,7 @@ public class TokenService {
 	@Path("/jwt/validate/{token:[A-Za-z0-9\\-\\.]+}")
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response validateGetJWT(@PathParam("token") String token, @Context HttpServletRequest request){
-		String subjectUrn = validateJWTToken(token);
+		String subjectUrn = TokenUtil.validateJWTToken(token);
 		return Response.status(200).entity((subjectUrn != null)).build();
 	}
 	
@@ -416,7 +416,7 @@ public class TokenService {
 		String outToken = null;
 		UserType user = ServiceUtil.getUserFromSession(request);
 		if(user != null){
-			outToken = getJWTToken(user);
+			outToken = TokenUtil.getJWTToken(user);
 		}
 		return Response.status(200).entity(outToken).build();
 	}
@@ -457,37 +457,6 @@ public class TokenService {
 	}
 	
 	
-	private String validateJWTToken(String token){
-		logger.info("Validating token: '" + token + "'");
-		return Jwts.parser().setSigningKeyResolver(new AM5SigningKeyResolver()).parseClaimsJws(token).getBody().getSubject();
-	}
-	
-	
-	
-	private String getJWTToken(UserType user){
-		
-		SecurityBean bean = TokenUtil.getJWTSecurityBean(user);
-		if(bean == null){
-			logger.error("Null security bean");
-			return null;
-		}
-		if(bean.getSecretKey() == null){
-			logger.error("Null secret key");
-			logger.error(JSONUtil.exportObject(bean));
-			return null;
-		}
-		
-		Map<String,Object> claims = new HashMap<>();
-		claims.put("objectId", user.getObjectId());
-		claims.put("organizationPath", user.getOrganizationPath());
-		return Jwts.builder()
-		  .setClaims(claims)
-		  .setSubject(user.getName())
-		  .setId(user.getUrn())
-		  .compressWith(CompressionCodecs.GZIP)
-		  .signWith(SignatureAlgorithm.HS512, bean.getSecretKey())
-		  .compact();
-	}
 	
 }
 

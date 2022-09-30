@@ -23,7 +23,9 @@
  *******************************************************************************/
 package org.cote.accountmanager.data.security;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -44,7 +46,12 @@ import org.cote.accountmanager.objects.types.ActionEnumType;
 import org.cote.accountmanager.objects.types.AuditEnumType;
 import org.cote.accountmanager.objects.types.FactoryEnumType;
 import org.cote.accountmanager.service.rest.BaseService;
+import org.cote.accountmanager.util.JSONUtil;
 import org.cote.accountmanager.util.SecurityUtil;
+
+import io.jsonwebtoken.CompressionCodecs;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
 
 public class TokenUtil {
 	public static final Logger logger = LogManager.getLogger(TokenUtil.class);
@@ -109,4 +116,37 @@ public class TokenUtil {
 		}
 		return outBean;
 	}
+	
+	public static String validateJWTToken(String token){
+		logger.info("Validating token: '" + token + "'");
+		return Jwts.parser().setSigningKeyResolver(new AM5SigningKeyResolver()).parseClaimsJws(token).getBody().getSubject();
+	}
+	
+	
+	
+	public static String getJWTToken(UserType user){
+		
+		SecurityBean bean = TokenUtil.getJWTSecurityBean(user);
+		if(bean == null){
+			logger.error("Null security bean");
+			return null;
+		}
+		if(bean.getSecretKey() == null){
+			logger.error("Null secret key");
+			logger.error(JSONUtil.exportObject(bean));
+			return null;
+		}
+		
+		Map<String,Object> claims = new HashMap<>();
+		claims.put("objectId", user.getObjectId());
+		claims.put("organizationPath", user.getOrganizationPath());
+		return Jwts.builder()
+		  .setClaims(claims)
+		  .setSubject(user.getName())
+		  .setId(user.getUrn())
+		  .compressWith(CompressionCodecs.GZIP)
+		  .signWith(SignatureAlgorithm.HS512, bean.getSecretKey())
+		  .compact();
+	}
+	
 }
