@@ -75,10 +75,12 @@ public class RestServiceConfig extends ResourceConfig{
 
         @Override
         public void onShutdown(Container container) {
+        	/*
         	logger.info("Chirping users");
         	WebSocketService.activeUsers().forEach(user ->{
         		WebSocketService.chirpUser(user, new String[] {"Service going offline"});
         	});
+        	*/
             logger.info("Cleaning up AccountManager");
 
             try {
