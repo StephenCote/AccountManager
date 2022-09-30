@@ -1,4 +1,4 @@
-package org.cote.rest.services;
+package org.cote.sockets;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
