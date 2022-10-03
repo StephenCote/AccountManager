@@ -10,6 +10,7 @@ import org.cote.accountmanager.data.factory.INameIdFactory;
 import org.cote.accountmanager.data.factory.MessageFactory;
 import org.cote.accountmanager.data.factory.UserFactory;
 import org.cote.accountmanager.data.query.QueryField;
+import org.cote.accountmanager.data.security.TokenUtil;
 import org.cote.accountmanager.exceptions.ArgumentException;
 import org.cote.accountmanager.exceptions.FactoryException;
 import org.cote.accountmanager.objects.DirectoryGroupType;
@@ -174,23 +175,28 @@ public class WebSocketService  extends HttpServlet {
 			return false;
 		}
 		
-		sendMessage(urnToSession.get(user.getUrn()), chirps, true);
+		sendMessage(urnToSession.get(user.getUrn()), chirps, true, false, true);
 		return true;
 	}
 	private static void sendMessage(Session session) {
-		sendMessage(session, new String[0], false);
+		sendMessage(session, new String[0], true, false, false);
 	}
-	private static void sendMessage(Session session, String[] chirps, boolean sync) {
+	private static void sendMessage(Session session, String[] chirps, boolean count, boolean auth, boolean sync) {
 		if (!userMap.containsKey(session.getId())) {
 			logger.warn("Session is not mapped to a key");
 			return;
 		}
-
+		UserType user = userMap.get(session.getId());
 		//asyncRemote.sendText(builder.build().toString());
 		// Send pending messages
 		SocketMessage msg = new SocketMessage();
-		msg.setUser(userMap.get(session.getId()).getUrn());
-		msg.setNewMessageCount(countNewMessages(session));
+		msg.setUser(user.getUrn());
+		if(count) {
+			msg.setNewMessageCount(countNewMessages(session));
+		}
+		if(auth) {
+			msg.setAuthToken(TokenUtil.getJWTToken(user));
+		}
 		msg.getChirps().addAll(Arrays.asList(chirps));
 		if(sync) {
 			RemoteEndpoint.Basic basicRemote = session.getBasicRemote();
@@ -217,26 +223,22 @@ public class WebSocketService  extends HttpServlet {
 	@OnOpen
 	public void onOpen(Session session, @PathParam("objectId") String objectId) {
 		logger.info("Opened socket for " + session.getId() + " / " + objectId);
-		// Map<String, UserType> map = getMap(session.getId());
-		//if (!userMap.containsKey(objectId)) {
-			// if(!map.containsKey(objectId)) {
-			INameIdFactory fact;
-			try {
-				fact = Factories.getFactory(FactoryEnumType.USER);
-				UserType user = fact.getByObjectId(objectId, 0);
-				if (user != null) {
-					// map.put(objectId, user);
-					//objectIdSession.put(objectId, session);
-					userMap.put(session.getId(), user);
-					urnToSession.put(user.getUrn(), session);
-					//newMessage(session, "Pickup the phone", "New session started");
-				}
-			} catch (FactoryException | ArgumentException e) {
-				logger.error(e);
-			}
-			sendMessage(session);
 
-		//}
+		INameIdFactory fact;
+		try {
+			fact = Factories.getFactory(FactoryEnumType.USER);
+			UserType user = fact.getByObjectId(objectId, 0);
+			if (user != null) {
+				// map.put(objectId, user);
+				//objectIdSession.put(objectId, session);
+				userMap.put(session.getId(), user);
+				urnToSession.put(user.getUrn(), session);
+				//newMessage(session, "Pickup the phone", "New session started");
+			}
+		} catch (FactoryException | ArgumentException e) {
+			logger.error(e);
+		}
+		sendMessage(session, new String[] {"New Session"}, false, true, false);
 	}
 
 	@OnMessage
@@ -302,10 +304,20 @@ class SocketMessage {
 	private String user = null;
 	private int newMessageCount = 0;
 	private MessageSpoolType sendMessage = null;
+	private String authToken = null;
 	private List<String> chirps = new ArrayList<>();
 	public SocketMessage() {
 		
 	}
+	
+	public String getAuthToken() {
+		return authToken;
+	}
+
+	public void setAuthToken(String authToken) {
+		this.authToken = authToken;
+	}
+
 	public String getUser() {
 		return user;
 	}

@@ -5,7 +5,7 @@ import javax.servlet.ServletContextListener;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.cote.rest.services.WebSocketService;
+import org.cote.sockets.WebSocketService;
 
 public class AccountManagerContextListener implements ServletContextListener{
 	public static final Logger logger = LogManager.getLogger(AccountManagerContextListener.class);

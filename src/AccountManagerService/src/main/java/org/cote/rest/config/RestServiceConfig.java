@@ -50,7 +50,6 @@ import org.cote.accountmanager.services.ThreadService;
 import org.cote.accountmanager.util.JSONUtil;
 import org.cote.accountmanager.util.StreamUtil;
 import org.cote.jaas.AM5LoginModule;
-import org.cote.rest.services.WebSocketService;
 import org.glassfish.jersey.server.ResourceConfig;
 import org.glassfish.jersey.server.filter.RolesAllowedDynamicFeature;
 import org.glassfish.jersey.server.spi.AbstractContainerLifecycleListener;
