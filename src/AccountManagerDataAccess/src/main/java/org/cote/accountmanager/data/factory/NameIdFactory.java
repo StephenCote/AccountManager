@@ -30,9 +30,11 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 import java.util.UUID;
 
 import org.apache.commons.lang3.ArrayUtils;
@@ -60,6 +62,7 @@ import org.cote.accountmanager.objects.types.ComparatorEnumType;
 import org.cote.accountmanager.objects.types.FactoryEnumType;
 import org.cote.accountmanager.objects.types.NameEnumType;
 import org.cote.accountmanager.objects.types.SqlDataEnumType;
+import org.cote.accountmanager.util.JSONUtil;
 
 public abstract class NameIdFactory extends FactoryBase implements INameIdFactory{
 	public static final Logger logger = LogManager.getLogger(NameIdFactory.class);
@@ -280,13 +283,56 @@ public abstract class NameIdFactory extends FactoryBase implements INameIdFactor
 		}
 	}
 
-	public <T >boolean update(T obj) throws FactoryException
+	public boolean validateHierarchy(NameIdType object) {
+		boolean outBool = true;
+		if(hasParentId == false) {
+			return outBool;
+		}
+		/*
+		else if(object.getParentId() == 0L) {
+			logger.warn("Invalid parent id");
+			logger.warn(JSONUtil.exportObject(object));
+			return false;
+		}
+		*/
+		/// Negative values are used with bulk operations
+		else if(object.getParentId() != 0L) {
+			try {
+				Set<Long> idSet = new HashSet<>();
+				idSet.add(object.getId());
+				NameIdType parent = null;
+				NameIdType node = object;
+				while( node.getParentId() != 0L && (parent = this.getById(node.getParentId(), node.getOrganizationId())) != null) {
+					// logger.info("Scanning " + node.getName() + " -> " + parent.getName());
+					node = parent;
+					
+					if(idSet.contains(node.getId())) {
+						logger.warn("Parent hierarchy recursion detected");
+						outBool = false;
+						break;
+					}
+					idSet.add(node.getId());
+				}
+			}
+			catch(ArgumentException | FactoryException ae) {
+				logger.error(ae.getMessage());
+			}
+		}
+		return outBool;
+	}
+
+	public <T> boolean update(T obj) throws FactoryException
 	{
 		return update(obj, null);
 	}
 	
 	public <T> boolean update(T obj, ProcessingInstructionType instruction) throws FactoryException
 	{
+		/*
+		if(!validateHierarchy((NameIdType)obj)) {
+			throw new FactoryException("Object failed hierarchy validation");
+		}
+		*/
 		if(this.bulkMode){
 			return true;
 		}

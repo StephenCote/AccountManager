@@ -48,6 +48,7 @@ public interface INameIdFactory {
 	public boolean isClusterByGroup();
 	public boolean isClusterByParent();
 	public boolean isParticipation();
+	public boolean validateHierarchy(NameIdType object);
 	public FactoryEnumType getFactoryType();
 	public String getCacheReport();
 	public void writeSpool();

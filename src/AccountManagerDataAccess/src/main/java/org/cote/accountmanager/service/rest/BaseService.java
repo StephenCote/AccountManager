@@ -212,6 +212,10 @@ public class BaseService {
 		boolean outBool = false;
 		INameIdFactory iFact = Factories.getNameIdFactory(FactoryEnumType.valueOf(type.toString()));
 		ITypeSanitizer sanitizer = Factories.getSanitizer(NameEnumType.valueOf(type.toString()));
+		if(!iFact.validateHierarchy((NameIdType)inObj)) {
+			logger.error("Object hierarchy is invalid");
+			return false;
+		}
 		if(sanitizer == null){
 			logger.error(String.format(FactoryException.TYPE_NOT_REGISTERED,"Sanitizer"));
 			return false;
@@ -235,6 +239,10 @@ public class BaseService {
 		INameIdFactory iFact = Factories.getFactory(FactoryEnumType.valueOf(type.toString()));
 		ITypeSanitizer sanitizer = Factories.getSanitizer(NameEnumType.valueOf(type.toString()));
 		
+		if(!iFact.validateHierarchy((NameIdType)inObj)) {
+			logger.error("Object hierarchy is invalid");
+			return false;
+		}
 		if(sanitizer == null){
 			logger.error(String.format(FactoryException.TYPE_NOT_REGISTERED,"Sanitizer"));
 			return false;
