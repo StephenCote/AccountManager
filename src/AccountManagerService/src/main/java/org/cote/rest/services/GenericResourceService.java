@@ -121,6 +121,11 @@ public class GenericResourceService {
 	@Path("/{objectId:[0-9A-Za-z\\-]+}")
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response getObject(@PathParam("type") String type, @PathParam("objectId") String objectId,@Context HttpServletRequest request){
+		Object obj = getBaseObject(type, objectId, request);
+		return Response.status(200).entity(obj).build();
+	}
+	
+	private Object getBaseObject(String type, String objectId, HttpServletRequest request) {
 		logger.debug("Request for object: " + type + " " + objectId);
 		AuditEnumType atype = AuditEnumType.valueOf(type);
 		UserType user = ServiceUtil.getUserFromSession(request);
@@ -158,7 +163,7 @@ public class GenericResourceService {
 		else {
 			obj = BaseService.readByObjectId(atype, objectId, user);
 		}
-		return Response.status(200).entity(obj).build();
+		return obj;
 	}
 	
 	@RolesAllowed({"user"})
@@ -233,14 +238,14 @@ public class GenericResourceService {
 			INameIdFactory iFact = BaseService.getFactory(auditType);
 			if(iFact.isClusterByParent() && !iFact.isClusterByGroup()){
 				logger.debug("Request to get " + type + " object by parent in " + type + " " + parentId);
-				NameIdType parentObj = (NameIdType)getObject(type,parentId,request).getEntity();
+				NameIdType parentObj = (NameIdType)getBaseObject(type,parentId,request);
 				if(parentObj != null){
 					obj = BaseService.readByNameInParent(auditType, parentObj, name, "UNKNOWN", request);
 				}
 			}
 			else if(auditType == AuditEnumType.DATA || iFact.isClusterByGroup()){
 				logger.debug("Request to get " + type + " object by name in GROUP " + parentId);
-				DirectoryGroupType dir = (DirectoryGroupType)getObject("GROUP",parentId,request).getEntity();
+				DirectoryGroupType dir = (DirectoryGroupType)getBaseObject("GROUP",parentId,request);
 				if(dir != null) obj = BaseService.readByName(auditType, dir, name, request);
 			}
 			else{
@@ -294,7 +299,7 @@ public class GenericResourceService {
 			if(!iFact.isClusterByParent() || !iFact.isClusterByGroup()){
 				logger.warn("Service intended for factories that are both clustered by group and parent");
 			}
-			NameIdType parentObj = (NameIdType)getObject(type,parentId,request).getEntity();
+			NameIdType parentObj = (NameIdType)getBaseObject(type,parentId,request);
 			if(parentObj == null){
 				logger.error("Parent Object " + type + " " + parentId + " is null or not accessible");
 				return Response.status(200).entity(obj).build();

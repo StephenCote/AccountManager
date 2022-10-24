@@ -24,6 +24,9 @@
 package org.cote.rest.services;
 
 import java.security.Principal;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.annotation.security.DeclareRoles;
 import javax.annotation.security.RolesAllowed;
@@ -66,6 +69,12 @@ public class PrincipalService {
 	private static final Logger logger = LogManager.getLogger(Principal.class);
 	private static SchemaBean schemaBean = null;
 	
+	private static Map<String, ApplicationProfileType> profiles = Collections.synchronizedMap(new HashMap<>());	
+	
+	public static void clearCache() {
+		profiles.clear();
+	}
+	
 	@GET @Path("/smd") @Produces(MediaType.APPLICATION_JSON)
 	 public SchemaBean getSmdSchema(@Context UriInfo uri){
 		 if(schemaBean != null) return schemaBean;
@@ -91,8 +100,13 @@ public class PrincipalService {
 	@Path("/person/{objectId:[0-9A-Za-z\\-]+}")
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response getOtherPerson(@PathParam("objectId") String objectId,@Context HttpServletRequest request){
-		UserType contUser = BaseService.readByObjectId(AuditEnumType.USER, objectId, request);
+		PersonType person = getPerson(objectId, request);
+		return Response.status(200).entity(person).build();
+	}
+	
+	public PersonType getPerson(String objectId, @Context HttpServletRequest request){
 		UserType user = ServiceUtil.getUserFromSession(request);
+		UserType contUser = BaseService.readByObjectId(AuditEnumType.USER, objectId, user);
 		PersonType person = null;
 		if(contUser != null && user != null){
 			person = UserService.readSystemPersonForUser(user, contUser);
@@ -100,16 +114,17 @@ public class PrincipalService {
 				Factories.getAttributeFactory().populateAttributes(person);
 			}
 		}
-		return Response.status(200).entity(person).build();
+		return person;
 	}
+	
 	
 	@RolesAllowed({"user"})
 	@GET
 	@Path("/person")
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response getSelfPerson(@Context HttpServletRequest request){
-		UserType user = (UserType)getSelf(request).getEntity();
-		PersonType person = (PersonType)getOtherPerson(user.getObjectId(),request).getEntity();
+		UserType user = getSelfUser(request);
+		PersonType person = getPerson(user.getObjectId(), request);
 		return Response.status(200).entity(person).build();
 	}
 
@@ -118,29 +133,35 @@ public class PrincipalService {
 	@Path("/application")
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response getApplicationProfile(@Context HttpServletRequest request){
-		ApplicationProfileType app = new ApplicationProfileType();
-		UserType user = (UserType)getSelf(request).getEntity();
-		try {
-			if(
-					RoleService.isFactoryAdministrator(user, ((AccountFactory)Factories.getFactory(FactoryEnumType.ACCOUNT)))
-					||
-					RoleService.isFactoryReader(user, ((RoleFactory)Factories.getFactory(FactoryEnumType.ROLE)))
-			) {
-				//app.getSystemRoles().addAll(RoleService.getSystemRoles(user.getOrganizationId()));
-				app.getSystemRoles().addAll(BaseService.listSystemEntitlements(AuditEnumType.ROLE, user));
-				app.getSystemPermissions().addAll(BaseService.listSystemEntitlements(AuditEnumType.PERMISSION, user));
+		ApplicationProfileType app = null;
+		UserType user = getSelfUser(request);//(UserType)getSelf(request).getEntity();
+		if(!profiles.containsKey(user.getUrn())) {
+			app = new ApplicationProfileType();
+			try {
+				if(
+						RoleService.isFactoryAdministrator(user, ((AccountFactory)Factories.getFactory(FactoryEnumType.ACCOUNT)))
+						||
+						RoleService.isFactoryReader(user, ((RoleFactory)Factories.getFactory(FactoryEnumType.ROLE)))
+				) {
+					//app.getSystemRoles().addAll(RoleService.getSystemRoles(user.getOrganizationId()));
+					app.getSystemRoles().addAll(BaseService.listSystemEntitlements(AuditEnumType.ROLE, user));
+					app.getSystemPermissions().addAll(BaseService.listSystemEntitlements(AuditEnumType.PERMISSION, user));
+				}
+			} catch (ArgumentException | FactoryException e1) {
+				logger.error(FactoryException.LOGICAL_EXCEPTION,e1);
 			}
-		} catch (ArgumentException | FactoryException e1) {
-			logger.error(FactoryException.LOGICAL_EXCEPTION,e1);
+			app.setUser(user);
+			app.setPerson(getPerson(user.getObjectId(), request));
+			try {
+				app.getUserRoles().addAll(EffectiveAuthorizationService.getEffectiveRoles(user));
+			} catch (ArgumentException | FactoryException e) {
+				logger.error(e);
+			}
+			app.setOrganizationPath(user.getOrganizationPath());
 		}
-		app.setUser(user);
-		app.setPerson((PersonType)getOtherPerson(user.getObjectId(),request).getEntity());
-		try {
-			app.getUserRoles().addAll(EffectiveAuthorizationService.getEffectiveRoles(user));
-		} catch (ArgumentException | FactoryException e) {
-			logger.error(e);
+		else {
+			profiles.put(user.getUrn(), app);
 		}
-		app.setOrganizationPath(user.getOrganizationPath());
 		return Response.status(200).entity(app).build();
 	}
 	
@@ -148,6 +169,11 @@ public class PrincipalService {
 	@Path("/")
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response getSelf(@Context HttpServletRequest request){
+		UserType outUser = getSelfUser(request);
+		return Response.status(200).entity(outUser).build();
+	}
+	
+	private UserType getSelfUser(HttpServletRequest request){
 		Principal principal = request.getUserPrincipal();
 		UserType outUser = null;
 		if(principal != null && principal instanceof UserPrincipal){
@@ -174,6 +200,6 @@ public class PrincipalService {
 		else{
 			logger.debug("Don't know what: " + (principal == null ? "Null" : "Uknown") + " principal");
 		}
-		return Response.status(200).entity(outUser).build();
+		return outUser;
 	}
 }

@@ -345,6 +345,11 @@ public class TokenService {
 	@Path("/jwt/authenticate")
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response loginToResponse(AuthenticationRequestType authnRequest, @Context HttpServletRequest request, @Context HttpServletResponse response){
+		AuthenticationResponseType outResp = loginToResponseType(authnRequest, request);
+		return Response.status(200).entity(outResp).build();
+	}
+	
+	private AuthenticationResponseType loginToResponseType(AuthenticationRequestType authnRequest, HttpServletRequest request){
 		AuthenticationResponseType outResp = new AuthenticationResponseType();
 		outResp.setResponse(AuthenticationResponseEnumType.NOT_AUTHENTICATED);
 		//authnRequest.
@@ -373,7 +378,7 @@ public class TokenService {
 		else{
 			logger.error("Unknown credential type");
 		}
-		return Response.status(200).entity(outResp).build();
+		return outResp;
 	}
 	
 	
