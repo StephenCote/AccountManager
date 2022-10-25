@@ -36,6 +36,7 @@ import org.cote.accountmanager.data.DataTable;
 import org.cote.accountmanager.data.Factories;
 import org.cote.accountmanager.data.query.QueryField;
 import org.cote.accountmanager.data.services.RoleService;
+import org.cote.accountmanager.data.services.SessionSecurity;
 import org.cote.accountmanager.exceptions.ArgumentException;
 import org.cote.accountmanager.exceptions.FactoryException;
 import org.cote.accountmanager.objects.AccountType;
@@ -327,6 +328,12 @@ public class UserFactory extends NameIdFactory {
 	@Override
 	public <T> List<T> search(QueryField[] filters, ProcessingInstructionType instruction, long organizationId){
 		return searchByIdInView("userContact", filters,instruction,organizationId);
+	}
+	
+	@Override
+	public void clearCache(){
+		super.clearCache();
+		SessionSecurity.clearCache();
 	}
 		
 
