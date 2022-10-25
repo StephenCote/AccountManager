@@ -85,10 +85,12 @@ import org.cote.accountmanager.data.security.KeyService;
 import org.cote.accountmanager.data.services.AuthorizationService;
 import org.cote.accountmanager.data.services.EffectiveAuthorizationService;
 import org.cote.accountmanager.data.services.ITypeSanitizer;
+import org.cote.accountmanager.data.services.SessionSecurity;
 import org.cote.accountmanager.data.services.TypeSanitizer;
 import org.cote.accountmanager.data.services.VaultService;
 import org.cote.accountmanager.exceptions.ArgumentException;
 import org.cote.accountmanager.exceptions.FactoryException;
+import org.cote.accountmanager.factory.FieldMap;
 import org.cote.accountmanager.objects.AccessRequestType;
 import org.cote.accountmanager.objects.AccountType;
 import org.cote.accountmanager.objects.AddressType;
@@ -110,6 +112,8 @@ import org.cote.accountmanager.objects.FunctionType;
 import org.cote.accountmanager.objects.MessageSpoolType;
 import org.cote.accountmanager.objects.OperationType;
 import org.cote.accountmanager.objects.OrganizationType;
+import org.cote.accountmanager.objects.PatchSetType;
+import org.cote.accountmanager.objects.PatchType;
 import org.cote.accountmanager.objects.PatternType;
 import org.cote.accountmanager.objects.PersonType;
 import org.cote.accountmanager.objects.PolicyType;
@@ -118,9 +122,11 @@ import org.cote.accountmanager.objects.SecuritySpoolType;
 import org.cote.accountmanager.objects.SecurityType;
 import org.cote.accountmanager.objects.StatisticsType;
 import org.cote.accountmanager.objects.UserType;
+import org.cote.accountmanager.objects.types.ColumnEnumType;
 import org.cote.accountmanager.objects.types.FactoryEnumType;
 import org.cote.accountmanager.objects.types.NameEnumType;
 import org.cote.accountmanager.objects.types.OrganizationEnumType;
+import org.cote.accountmanager.objects.types.SqlDataEnumType;
 
 
 public class Factories {
@@ -543,7 +549,7 @@ public class Factories {
 		}
 
 		EffectiveAuthorizationService.clearCache();
-		
+		SessionSecurity.clearCache();
 		return true;
 	}
 	public static <T> T getBulkFactory(FactoryEnumType factoryType) throws FactoryException{
@@ -639,6 +645,44 @@ public class Factories {
 		}
 		clearCaches();
 		return outBool;
+	}
+	
+	public static PatchSetType newPatchSet(ColumnEnumType identityField, String identity) {
+		PatchSetType pst = new PatchSetType();
+
+		if(!identityField.equals(ColumnEnumType.ID) && !identityField.equals(ColumnEnumType.OBJECTID) && !identityField.equals(ColumnEnumType.URN)){
+			logger.error("Only id, objectId, and urn may be used for identity fields");
+			return null;
+		}
+		pst.setIdentity(identity);
+		pst.setIdentityField(identityField);
+		return pst;
+	}
+	public static PatchType newPatch(ColumnEnumType valueField, String value) {
+		SqlDataEnumType valueType = FieldMap.ColumnDataTypes.get(valueField);
+		if(valueType.equals(SqlDataEnumType.BLOB) && valueField.equals(ColumnEnumType.DATABLOB)) {
+			logger.error("Patching data byte array outside of DataUtil.setValue misses related settings including: hash computation, encryption, vault encryption, and compression");
+			return null;
+		}
+		PatchType patch = new PatchType();
+		patch.setValue(value);
+		patch.setValueField(valueField);
+		return patch;
+	}	
+	public static PatchType newPatch(ColumnEnumType valueField, byte[] dataStore) {
+		SqlDataEnumType valueType = FieldMap.ColumnDataTypes.get(valueField);
+		if(dataStore != null && dataStore.length > 0 && !valueType.equals(SqlDataEnumType.BLOB)) {
+			logger.error("Unable to assign byte array to field other than blob");
+			return null;
+		}
+		else if(valueType.equals(SqlDataEnumType.BLOB) && valueField.equals(ColumnEnumType.DATABLOB)) {
+			logger.error("Patching data byte array outside of DataUtil.setValue misses related settings including: hash computation, encryption, vault encryption, and compression");
+			return null;
+		}
+		PatchType patch = new PatchType();
+		patch.setValueField(valueField);
+		patch.setByteStore(dataStore);
+		return patch;
 	}
 	
 }
