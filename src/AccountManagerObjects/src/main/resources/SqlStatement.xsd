@@ -99,4 +99,26 @@
 		<attribute name="encodedValue" type="string"></attribute>
 		<attribute name="fieldName" type="pref:ColumnEnumType"></attribute>
 	</complexType>
+
+	<complexType name="PatchType">
+		<sequence>
+			<element name="value" type="string"></element>
+			<element name="byteStore" type="base64Binary" minOccurs="0"
+				maxOccurs="1">
+			</element>
+		</sequence>
+		<attribute name="valueField" type="pref:ColumnEnumType"></attribute>
+    </complexType>
+
+	<complexType name="PatchSetType">
+		<sequence>
+			<element name="patches" type="tns:PatchType" minOccurs="0"
+				maxOccurs="unbounded">
+			</element>
+		</sequence>
+		<attribute name="identityField" type="pref:ColumnEnumType"></attribute>
+		<attribute name="identity" type="string"></attribute>
+
+		<attribute name="patchType" type="pref:NameEnumType" default="UNKNOWN"></attribute>
+	</complexType>
 </schema>
