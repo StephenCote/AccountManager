@@ -176,7 +176,8 @@ public class ServiceUtil {
 		OrganizationType org = null;
 		Principal principal = request.getUserPrincipal();
 		if(principal != null){
-			user = SessionSecurity.authenticatePrincipal(principal,  sessionId);
+			//user = SessionSecurity.authenticatePrincipal(principal,  sessionId);
+			user = SessionSecurity.getPrincipalUser(request);
 		}
 		else{
 			try {
