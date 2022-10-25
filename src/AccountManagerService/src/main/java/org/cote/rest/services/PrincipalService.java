@@ -48,6 +48,7 @@ import org.cote.accountmanager.data.factory.OrganizationFactory;
 import org.cote.accountmanager.data.factory.RoleFactory;
 import org.cote.accountmanager.data.security.UserPrincipal;
 import org.cote.accountmanager.data.services.EffectiveAuthorizationService;
+import org.cote.accountmanager.data.services.SessionSecurity;
 import org.cote.accountmanager.data.services.UserService;
 import org.cote.accountmanager.exceptions.ArgumentException;
 import org.cote.accountmanager.exceptions.FactoryException;
@@ -123,7 +124,7 @@ public class PrincipalService {
 	@Path("/person")
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response getSelfPerson(@Context HttpServletRequest request){
-		UserType user = getSelfUser(request);
+		UserType user = SessionSecurity.getPrincipalUser(request);
 		PersonType person = getPerson(user.getObjectId(), request);
 		return Response.status(200).entity(person).build();
 	}
@@ -134,7 +135,7 @@ public class PrincipalService {
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response getApplicationProfile(@Context HttpServletRequest request){
 		ApplicationProfileType app = null;
-		UserType user = getSelfUser(request);//(UserType)getSelf(request).getEntity();
+		UserType user = SessionSecurity.getPrincipalUser(request);
 		if(!profiles.containsKey(user.getUrn())) {
 			app = new ApplicationProfileType();
 			try {
@@ -169,10 +170,11 @@ public class PrincipalService {
 	@Path("/")
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response getSelf(@Context HttpServletRequest request){
-		UserType outUser = getSelfUser(request);
+		UserType outUser = SessionSecurity.getPrincipalUser(request);
 		return Response.status(200).entity(outUser).build();
 	}
 	
+	/*
 	private UserType getSelfUser(HttpServletRequest request){
 		Principal principal = request.getUserPrincipal();
 		UserType outUser = null;
@@ -202,4 +204,5 @@ public class PrincipalService {
 		}
 		return outUser;
 	}
+	*/
 }
