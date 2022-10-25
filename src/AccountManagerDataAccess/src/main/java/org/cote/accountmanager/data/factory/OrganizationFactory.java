@@ -28,7 +28,10 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.cote.accountmanager.data.BulkFactories;
 import org.cote.accountmanager.data.ConnectionFactory;
@@ -54,6 +57,7 @@ import org.cote.accountmanager.objects.types.OrganizationEnumType;
 
 public class OrganizationFactory extends NameIdFactory {
 	
+	private static Map<String, OrganizationType> pathMap = Collections.synchronizedMap(new HashMap<>());
 	public OrganizationFactory(){
 		super();
 		this.scopeToOrganization = false;
@@ -259,8 +263,17 @@ public class OrganizationFactory extends NameIdFactory {
 		return (T)findOrganization(path);
 	}
 	
+	@Override
+	public void clearCache(){
+		super.clearCache();
+		pathMap.clear();
+	}
+	
 	public OrganizationType findOrganization(String path) throws FactoryException, ArgumentException
 	{
+		if(pathMap.containsKey(path)) {
+			return pathMap.get(path);
+		}
 		
 		OrganizationType outOrg = null;
 		if (path == null || path.length() == 0) throw new FactoryException("Invalid path");
@@ -294,7 +307,9 @@ public class OrganizationFactory extends NameIdFactory {
 			}
 		}
 		outOrg = nestedOrg;
-
+		if(outOrg != null) {
+			pathMap.put(path,  outOrg);
+		}
 		return outOrg;
 	}
 
