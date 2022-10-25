@@ -368,10 +368,10 @@ public class GenericResourceService {
 				NameIdType obj = (NameIdType)JSONUtil.importObject(json, cls);
 				if(obj != null){
 					if(auditType.equals(AuditEnumType.REQUEST)) {
-						updated = org.cote.accountmanager.data.services.RequestService.updateRequest(ServiceUtil.getUserFromSession(request), (AccessRequestType)obj);
+						updated = org.cote.accountmanager.data.services.RequestService.updateRequest(user, (AccessRequestType)obj);
 					}
 					else if(auditType.equals(AuditEnumType.CONTROL)) {
-						updated = org.cote.accountmanager.data.services.PolicyService.updateControl(ServiceUtil.getUserFromSession(request), (ControlType)obj);
+						updated = org.cote.accountmanager.data.services.PolicyService.updateControl(user, (ControlType)obj);
 					}
 					else if(obj.getObjectId() == null || obj.getObjectId().length() == 0 || obj.getObjectId().equalsIgnoreCase("undefined")){
 						updated = BaseService.add(auditType, obj, request);
