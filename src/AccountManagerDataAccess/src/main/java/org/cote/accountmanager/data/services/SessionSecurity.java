@@ -25,7 +25,12 @@ package org.cote.accountmanager.data.services;
 
 import java.security.Principal;
 import java.util.Calendar;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
+
+import javax.servlet.http.HttpServletRequest;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -47,9 +52,13 @@ import org.cote.accountmanager.objects.UserSessionType;
 import org.cote.accountmanager.objects.UserType;
 import org.cote.accountmanager.objects.types.FactoryEnumType;
 import org.cote.accountmanager.objects.types.SessionStatusEnumType;
+import org.cote.accountmanager.service.rest.BaseService;
 import org.cote.accountmanager.util.CalendarUtil;
+import org.cote.accountmanager.util.JSONUtil;
 public class SessionSecurity {
 	public static final Logger logger = LogManager.getLogger(SessionSecurity.class);
+	private static Map<UserPrincipal, UserType> principalCache = Collections.synchronizedMap(new HashMap<>());
+	
 	// default expiry in hours
 	//
 	private static int defaultSessionExpiry = 1;
@@ -62,6 +71,9 @@ public class SessionSecurity {
 	private static boolean enableLegacyPasswordAuthentication = false;
 	public static void setEnableLegacyPasswordAuthentication(boolean b){
 		enableLegacyPasswordAuthentication = b;
+	}
+	public static void clearCache() {
+		principalCache.clear();
 	}
 	public static boolean isAuthenticated(UserType user){
 		if(user == null) return false;
@@ -184,6 +196,40 @@ public class SessionSecurity {
 	public static UserType login(String sessionId, String userName, CredentialEnumType credType, String suppliedCredential, long organizationId) throws FactoryException, ArgumentException{
 		return authenticateSession(sessionId, userName, credType, suppliedCredential, organizationId);
 	}
+	
+	public static UserType getPrincipalUser(HttpServletRequest request){
+		Principal principal = request.getUserPrincipal();
+		UserType outUser = null;
+		if(principal != null && principal instanceof UserPrincipal){
+			UserPrincipal userp = (UserPrincipal)principal;
+			logger.info("UserPrincipal: " + userp.toString());
+			if(principalCache.containsKey(userp)) return principalCache.get(userp);
+			
+			try {
+				OrganizationType org = ((OrganizationFactory)Factories.getFactory(FactoryEnumType.ORGANIZATION)).findOrganization(userp.getOrganizationPath());
+
+				UserType user = Factories.getNameIdFactory(FactoryEnumType.USER).getById(userp.getId(), org.getId());
+				if(user != null){
+					outUser = user;
+					if(BaseService.getEnableExtendedAttributes()){
+						Factories.getAttributeFactory().populateAttributes(outUser);
+					}
+					principalCache.put(userp, user);
+				}
+				else {
+					logger.warn("User is null for " + userp.getId() + " in " + org.getId());
+				}
+			} catch (FactoryException | ArgumentException e) {
+				
+				logger.error(FactoryException.LOGICAL_EXCEPTION,e);
+			}
+		}
+		else{
+			logger.debug("Don't know what: " + (principal == null ? "Null" : "Uknown") + " principal");
+		}
+		return outUser;
+	}
+	
 	/// 2015/06/24
 	/// Rebranded API to reflect change in approach and actual intent of authenticating against a session using a user and a credential
 	///
@@ -250,25 +296,40 @@ public class SessionSecurity {
 		authenticateUser(user, sessionId);
 		return user;
 	}
+
 	public static UserType authenticatePrincipal(Principal principal, String sessionId){
 		UserType user = null;
 		if(principal != null && principal instanceof UserPrincipal){
 			UserPrincipal userp = (UserPrincipal)principal;
 			try {
-				OrganizationType org = ((OrganizationFactory)Factories.getFactory(FactoryEnumType.ORGANIZATION)).findOrganization(userp.getOrganizationPath());
-				user = Factories.getNameIdFactory(FactoryEnumType.USER).getById(userp.getId(), org.getId());
-				if(user != null){
+				if(principalCache.containsKey(userp)) {
+					user = principalCache.get(userp);
+				}
+				else {
+					OrganizationType org = ((OrganizationFactory)Factories.getFactory(FactoryEnumType.ORGANIZATION)).findOrganization(userp.getOrganizationPath());
+					user = Factories.getNameIdFactory(FactoryEnumType.USER).getById(userp.getId(), org.getId());
+					if(user != null){
+						principalCache.put(userp, user);
+					}
+				
+				}
+				if(user != null) {
 					authenticateUser(user, sessionId);
 				}
 			} catch (FactoryException | ArgumentException e) {
 				
 				logger.error(FactoryException.LOGICAL_EXCEPTION,e);
 			}
+
+		}
+		else {
+			logger.warn("Null principal");
 		}
 		return user;
 	}
 	private static void authenticateUser(UserType user, String sessionId) throws FactoryException, ArgumentException{
 		UserSessionType session = null;
+		
 		if(sessionId != null && sessionId.length() > 0){
 			session = Factories.getSessionFactory().getCreateSession(sessionId, user.getOrganizationId());
 			if (session == null){
