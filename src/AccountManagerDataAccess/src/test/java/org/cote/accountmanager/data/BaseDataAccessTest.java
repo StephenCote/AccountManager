@@ -288,6 +288,16 @@ public class BaseDataAccessTest{
 		return tag;
 	}
 	
+	public UserRoleType getUserRole(UserType owner) {
+		UserRoleType role = null;
+		try {
+			role = ((RoleFactory)Factories.getFactory(FactoryEnumType.ROLE)).getUserRole(owner, RoleEnumType.USER, owner.getOrganizationId());
+		} catch (FactoryException | ArgumentException e) {
+			logger.error(e.getMessage());
+		}
+		return role;
+	}
+	
 	public UserRoleType getRole(UserType owner, String roleName, UserRoleType parent){
 		UserRoleType role = null;
 		try {
