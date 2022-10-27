@@ -68,6 +68,7 @@ import org.cote.accountmanager.objects.ControlType;
 import org.cote.accountmanager.objects.DirectoryGroupType;
 import org.cote.accountmanager.objects.MessageSpoolType;
 import org.cote.accountmanager.objects.NameIdType;
+import org.cote.accountmanager.objects.PatchSetType;
 import org.cote.accountmanager.objects.PersonType;
 import org.cote.accountmanager.objects.UserType;
 import org.cote.accountmanager.objects.types.ActionEnumType;
@@ -325,6 +326,19 @@ public class GenericResourceService {
 		AuditEnumType auditType = AuditEnumType.valueOf(type);
 		Object obj = BaseService.readByUrn(auditType, urn, request);
 		return Response.status(200).entity(obj).build();
+	}
+	
+	@RolesAllowed({"user"})
+	@POST
+	@Path("/patch")
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response patchObject(PatchSetType patchset, @PathParam("type") String type, @Context HttpServletRequest request){
+		AuditEnumType auditType = AuditEnumType.valueOf(type);
+		//logger.info(json);
+		//PatchSetType patchset = JSONUtil.importObject(json, PatchSetType.class);
+		UserType user = ServiceUtil.getUserFromSession(request);
+		boolean patched = BaseService.patch(auditType,  patchset, user);
+		return Response.status(200).entity(patched).build();
 	}
 	
 	@RolesAllowed({"user"})
