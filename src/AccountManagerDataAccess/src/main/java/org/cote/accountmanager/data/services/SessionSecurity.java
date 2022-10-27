@@ -202,14 +202,16 @@ public class SessionSecurity {
 		UserType outUser = null;
 		if(principal != null && principal instanceof UserPrincipal){
 			UserPrincipal userp = (UserPrincipal)principal;
-			logger.info("UserPrincipal: " + userp.toString());
+			// logger.info("UserPrincipal: " + userp.toString());
 			if(principalCache.containsKey(userp)) return principalCache.get(userp);
 			
 			try {
 				OrganizationType org = ((OrganizationFactory)Factories.getFactory(FactoryEnumType.ORGANIZATION)).findOrganization(userp.getOrganizationPath());
 
 				UserType user = Factories.getNameIdFactory(FactoryEnumType.USER).getById(userp.getId(), org.getId());
+				//UserType user = getUserBySession(request.getSession().getId(), org.getId());
 				if(user != null){
+					authenticateUser(user, request.getSession().getId());
 					outUser = user;
 					if(BaseService.getEnableExtendedAttributes()){
 						Factories.getAttributeFactory().populateAttributes(outUser);
