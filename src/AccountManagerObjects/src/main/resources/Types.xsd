@@ -470,6 +470,7 @@
     		<enumeration value="EXECUTE"></enumeration>
     		<enumeration value="DELETE"></enumeration>
     		<enumeration value="MODIFY"></enumeration>
+    		<enumeration value="PATCH"></enumeration>
     		<enumeration value="READ"></enumeration>
     		<enumeration value="REQUEST"></enumeration>
     		<enumeration value="RESPONSE"></enumeration>
