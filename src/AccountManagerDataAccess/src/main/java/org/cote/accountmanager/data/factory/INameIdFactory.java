@@ -23,6 +23,8 @@
  *******************************************************************************/
 package org.cote.accountmanager.data.factory;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.cote.accountmanager.data.DataAccessException;
@@ -30,6 +32,7 @@ import org.cote.accountmanager.data.query.QueryField;
 import org.cote.accountmanager.exceptions.ArgumentException;
 import org.cote.accountmanager.exceptions.FactoryException;
 import org.cote.accountmanager.objects.NameIdType;
+import org.cote.accountmanager.objects.PatchSetType;
 import org.cote.accountmanager.objects.ProcessingInstructionType;
 import org.cote.accountmanager.objects.UserType;
 import org.cote.accountmanager.objects.types.FactoryEnumType;
@@ -86,7 +89,8 @@ public interface INameIdFactory {
 	public <T> List<T>  paginateList(QueryField[] fields, ProcessingInstructionType instruction, long startRecord, int recordCount, long organizationId)  throws FactoryException, ArgumentException;
 	public <T> List<T> listByIds(long[] ids, long organizationId) throws FactoryException, ArgumentException;
 	public <T> List<T> listByIds(long[] ids, ProcessingInstructionType instruction, long organizationId) throws FactoryException, ArgumentException;
-
+	public boolean patch(PatchSetType patchset) throws FactoryException;
+	public boolean patch(List<PatchSetType> patches) throws FactoryException;
 	public <T> T getByObjectId(String id, long organizationId) throws FactoryException, ArgumentException;
 	public <T> T getById(long id, long organizationId) throws FactoryException, ArgumentException;
 	public <T> T getByUrn(String urn);
