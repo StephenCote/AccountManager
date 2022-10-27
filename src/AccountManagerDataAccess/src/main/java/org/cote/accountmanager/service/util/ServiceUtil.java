@@ -181,6 +181,7 @@ public class ServiceUtil {
 		}
 		else{
 			try {
+				logger.warn("TODO: Add testing flag to continue supporting retrieving the user by the session id because it's deprecated except for integration testing");;
 				org = ServiceUtil.getOrganizationFromRequest(request);
 				if(org != null){
 					user = SessionSecurity.getUserBySession(sessionId, org.getId());

@@ -78,6 +78,8 @@ import org.cote.accountmanager.objects.DirectoryGroupType;
 import org.cote.accountmanager.objects.EntitlementType;
 import org.cote.accountmanager.objects.NameIdDirectoryGroupType;
 import org.cote.accountmanager.objects.NameIdType;
+import org.cote.accountmanager.objects.PatchSetType;
+import org.cote.accountmanager.objects.PatchType;
 import org.cote.accountmanager.objects.PersonGroupType;
 import org.cote.accountmanager.objects.PersonType;
 import org.cote.accountmanager.objects.ProcessingInstructionType;
@@ -86,6 +88,7 @@ import org.cote.accountmanager.objects.UserGroupType;
 import org.cote.accountmanager.objects.UserType;
 import org.cote.accountmanager.objects.types.ActionEnumType;
 import org.cote.accountmanager.objects.types.AuditEnumType;
+import org.cote.accountmanager.objects.types.ColumnEnumType;
 import org.cote.accountmanager.objects.types.FactoryEnumType;
 import org.cote.accountmanager.objects.types.GroupEnumType;
 import org.cote.accountmanager.objects.types.NameEnumType;
@@ -671,6 +674,116 @@ public class BaseService {
 
 		return outBool;
 	}
+	public static boolean patch(AuditEnumType type, PatchSetType patchset, UserType user){
+		boolean outBool = false;
+		AuditType audit = AuditService.beginAudit(ActionEnumType.PATCH, "patch", AuditEnumType.USER, user.getUrn());
+		ColumnEnumType idType = patchset.getIdentityField();
+		String id = patchset.getIdentity();
+		AuditService.targetAudit(audit, type, idType.toString() + " " + id);
+		try {
+			INameIdFactory iFact = getFactory(type);
+			NameIdType mat = null;
+			switch(idType) {
+			case ID:
+				mat = readById(type, Long.parseLong(id), user);
+				break;
+			case URN:
+				mat = readByUrn(type, id, user);
+				break;
+			case OBJECTID:
+				mat = readByObjectId(type, id, user);
+				break;
+			default:
+				logger.error("Invalid identity field type");
+				break;
+			}
+			if(mat != null) {
+				/// can the user change the existing object
+				///
+				if(canChangeType(type, user, mat)) {
+					boolean authZFailed = false;
+					for(PatchType patch : patchset.getPatches()){
+						boolean authorized = false;
+						ColumnEnumType valType = patch.getValueField();
+						String val = patch.getValue();
+						switch(valType) {
+							case GROUPID:
+								if(val != null) {
+									long groupId = Long.parseLong(val);
+									if(groupId <= 0L) {
+										logger.error("Group id outside of valid range");
+									}
+									else {
+										NameIdType group = readById(AuditEnumType.GROUP, groupId, user);
+										if(group != null) authorized = canChangeType(AuditEnumType.GROUP, user, group);
+									}
+								}
+								break;
+							case PARENTID:
+								if(val != null) {
+									long parentId = Long.parseLong(val);
+									if(parentId < 0L) {
+										logger.error("Parent id outside of valid range");
+									}
+									else if (parentId == 0L && iFact.isClusterByGroup()) {
+										authorized = true;
+									}
+									else {
+										NameIdType parent = readById(type, parentId, user);
+										if(parent != null) authorized = canChangeType(type, user, parent);
+									}
+								}
+								else {
+									authorized = true;
+								}
+								break;
+							case DATABLOB:
+							case OBJECTID:
+							case URN:
+							case ID:
+								logger.error(valType.toString() + " cannot be changed or may not be changed via a patch operation");
+								break;
+							case ORGANIZATIONID:
+								logger.error("Organization id cannot be changed");
+								break;
+							default:
+								authorized = true;
+								break;
+						}
+						if(!authorized) {
+							authZFailed = true;
+							logger.warn("Authorization failed on " + valType.toString() + " = " + val);
+						}
+					}
+					if(authZFailed) {
+						AuditService.denyResult(audit, "Unauthorized");
+					}
+					else {
+						outBool = iFact.patch(patchset);
+						if(outBool) {
+							AuditService.permitResult(audit, "Patched");
+						}
+						else {
+							AuditService.denyResult(audit, "Failed to patch");
+						}
+					}
+				}
+				else {
+					AuditService.denyResult(audit, "Unauthorized to change object");
+				}
+			}
+			else {
+				AuditService.denyResult(audit, "Invalid object");
+			}
+		} catch (NumberFormatException | FactoryException | ArgumentException e) {
+			logger.error(e);
+			AuditService.denyResult(audit, e.getMessage());
+		}
+		
+		
+		return outBool;
+	}
+	
 	public static <T> boolean update(AuditEnumType type, T bean,HttpServletRequest request){
 		AuditType audit = AuditService.beginAudit(ActionEnumType.MODIFY, "update",AuditEnumType.SESSION, ServiceUtil.getSessionId(request));
 		UserType user = ServiceUtil.getUserFromSession(audit,request);
