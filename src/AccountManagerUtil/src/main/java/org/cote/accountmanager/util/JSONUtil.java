@@ -31,7 +31,9 @@ import org.apache.logging.log4j.Logger;
 import org.cote.accountmanager.exceptions.FactoryException;
 
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
+import com.fasterxml.jackson.databind.JsonDeserializer;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.databind.type.TypeFactory;
 
 public class JSONUtil {
@@ -54,9 +56,18 @@ public class JSONUtil {
 	}
 	
 	public static <T> T importObject(String s,Class<T>  cls){
+	    return importObject(s, cls, null);
+	}
+	public static <T> T importObject(String s, Class<T> cls, SimpleModule module/*JsonDeserializer jdes*/) {
+	    
 		ObjectMapper mapper = new ObjectMapper();
+        if(module != null) {
+            //SimpleModule usageModule = new SimpleModule().addDeserializer(cls, jdes);
+            mapper.registerModule(module);
+        }
 		T outObj = null;
 		try {
+
 			outObj = mapper.readValue(s, cls);
 		} catch (IOException e) {
 			logger.error(e.getMessage());
