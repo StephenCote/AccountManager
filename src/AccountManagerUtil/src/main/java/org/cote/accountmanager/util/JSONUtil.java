@@ -32,7 +32,9 @@ import org.cote.accountmanager.exceptions.FactoryException;
 
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.databind.JsonDeserializer;
+import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.databind.type.TypeFactory;
 
@@ -77,7 +79,14 @@ public class JSONUtil {
 		
 	}
 	public static <T> String exportObject(T obj){
+	    return exportObject(obj, null);
+	}
+	
+	public static <T> String exportObject(T obj, SimpleModule module){
 		ObjectMapper mapper = new ObjectMapper();
+        if(module != null) {
+            mapper.registerModule(module);
+         }
 		mapper.setSerializationInclusion(Include.NON_EMPTY);
 		 String outStr = null;
 		try {
